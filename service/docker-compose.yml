@@ -1,0 +1,35 @@
+version: "3.8"
+        
+services:
+    php:
+        build:
+            context: ./
+            target: base
+            dockerfile: dockerfile
+        environment:             
+            - "TZ=Turkey"
+        volumes: 
+            - "./http:/var/www/html"
+            - "./http/vendor:/var/www/html/vendor"
+            - "./developer.sh:/developer.sh"
+        command: 
+            - "/developer.sh"
+        ports:
+            - "8002:80"
+    mysql:
+        image: mysql:8.0.28
+        command: 
+            - "--character-set-server=utf8"
+            - "--collation-server=utf8_turkish_ci"
+        environment:
+            TZ: Turkey
+            MYSQL_ROOT_PASSWORD: 12345
+            MYSQL_DATABASE: dojo
+        ports:
+            - 3306:3306
+        volumes:
+            - ./dbinit:/docker-entrypoint-initdb.d
+            - my8vol:/data/db
+
+volumes:
+    my8vol:

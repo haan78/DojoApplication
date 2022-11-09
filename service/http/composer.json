@@ -1,0 +1,11 @@
+{
+    "description": "dojo service",
+    "name":"dojo/service",
+
+    "require": {
+        "firebase/php-jwt": "^5.2",
+        "mongodb/mongodb": "^1.8",
+        "vlucas/phpdotenv": "^5.3",
+        "sendinblue/api-v3-sdk": "7.4.5"
+    }
+}
