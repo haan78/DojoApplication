@@ -9,18 +9,19 @@ require_once "vendor/autoload.php";
 require_once "./lib/Minmi.php";
 require_once "./db.php";
 
+use GuzzleHttp\Psr7\Response;
 use Minmi\DefaultJsonRouter;
 use Minmi\Request;
 use Minmi\MinmiExeption;
 
-$router = new DefaultJsonRouter("", function (Request $req) {
+$router = new DefaultJsonRouter("", function (Request $req,Response $res) {
 
     $dotenv = Dotenv\Dotenv::createImmutable("/etc", "dojo_service.env");
     $dotenv->load();
 
     if ($req->getUriPattern() != "/token") {
-        $headers = getallheaders();
-        $h = trim($headers["Authorization"] ?? $headers["authorization"] ?? $headers['HTTP_AUTHORIZATION'] ?? "");
+        //$headers = getallheaders();
+        $h = $req->getAuthHeader();
         if (!empty($h) && preg_match('/Bearer\s(\S+)/', $h, $matches)) {
             $token = $matches[1];
             $user = \Firebase\JWT\JWT::decode($token, $_ENV["JWT_KEY"], array('HS256'));
@@ -36,25 +37,25 @@ $router = new DefaultJsonRouter("", function (Request $req) {
             $user->exp = time() + 3600;
             $token = \Firebase\JWT\JWT::encode($user, $_ENV["JWT_KEY"], 'HS256');
             $req->setLocal($user);
-            header("Authorization: Bearer $token", true);            
+            array_push($res->headers,"Bearer $token");//header("Authorization: Bearer $token", true);            
         } else {
             throw new MinmiExeption("Authorization is required == " . $h);
         }
     }
 });
 
-$router->add("/token", function (Request $request) {    
-    if (isset($_SERVER["PHP_AUTH_USER"]) && isset($_SERVER["PHP_AUTH_PW"])) {
-        $user = validate(trim($_SERVER["PHP_AUTH_USER"]), trim($_SERVER["PHP_AUTH_PW"]));
+$router->add("/token", function (Request $request,Response $res) {    
+    if ($request->hasBasicAuth($username,$password)) {
+        $user = validate(trim($username), trim($password));
         if ($user) {
             if ($user["durum"] != "passive") {
                 $user["exp"] = time() + 600;
-                $token = \Firebase\JWT\JWT::encode($user, $_ENV["JWT_KEY"], 'HS256');
-                header("Authorization: Bearer $token", true);
+                $token = \Firebase\JWT\JWT::encode($user, $_ENV["JWT_KEY"], 'HS256');                
+                array_push($res->headers,"Bearer $token"); //header("Authorization: Bearer $token", true);
                 return [
                     "ad" => $user["ad"],
                     "uye_id" => $user["uye_id"],
-                    "email" => trim($_SERVER["PHP_AUTH_USER"]),
+                    "email" => trim($username),
                     "durum" => $user["durum"]
                 ];
             } else {

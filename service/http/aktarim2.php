@@ -202,7 +202,7 @@ function uye_ve_baglantililar(string $myconstr,string $mongoconstr): void {
                             }
                         }                        
                         if ( !$err && $doc["gelirgider"] instanceof ArrayObject && $doc["gelirgider"]->count() > 0 ) { //Muhasebe gelirgider
-                            $inssql = "INSERT INTO muhasebe (uye_id, tarih, tutar, kasa, aciklama, tanim, tahsilatci) VALUES ";
+                            $inssql = "INSERT INTO muhasebe (uye_id, tarih, tutar, kasa, aciklama, tanim, tahsilatci,ay,yil) VALUES ";                            
                             for ($i=0; $i< $doc["gelirgider"]->count(); $i++ ) {
                                 $tar = $doc["gelirgider"][$i]["tarih"]->toDateTime()->format("Y-m-d");
                                 $tutar = $doc["gelirgider"][$i]["tutar"];
@@ -210,11 +210,13 @@ function uye_ve_baglantililar(string $myconstr,string $mongoconstr): void {
                                 $aciklama =str_replace(["\n","'"]," ",$doc["gelirgider"][$i]["aciklama"]);
                                 $tanim = $doc["gelirgider"][$i]["tanim"];
                                 $tahsilatci = $doc["gelirgider"][$i]["user_text"];
+                                $ay = intval($doc["gelirgider"][$i]["ay"]);
+                                $yil = intval($doc["gelirgider"][$i]["yil"]);                                
                                 if ($i>0) {
                                     $inssql.=",";
                                 }
                                 
-                                $inssql.="(".getSqlVals([$uye_id, $tar, $tutar,$kasa,$aciklama, $tanim, $tahsilatci]).")";
+                                $inssql.="(".getSqlVals([$uye_id, $tar, $tutar,$kasa,$aciklama, $tanim, $tahsilatci, $ay, $yil]).")";
                             }
 
                             if (!mysqli_query($mysql,$inssql)) {

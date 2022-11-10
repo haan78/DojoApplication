@@ -1,0 +1,46 @@
+.btn {
+    font-weight: bold;
+    cursor: pointer;
+
+    font: inherit;
+    display: inline-block;
+    padding-top: var(--di-in-default);
+    padding-bottom: var(--di-in-default);
+    padding-left: calc(var(--di-in-default)*2);
+    padding-right: calc(var(--di-in-default)*2);
+    
+    border: var(--br-default);
+    border-radius: .8em;
+}
+
+.btn:hover {
+    border-color: var(--cl-br-hover);
+}
+
+.btn:active {
+    border-color: var(--cl-br-active);
+}
+
+.btn > svg:first-child  {
+    margin-right: var(--di-in-default);    
+}
+
+.btn.prm {
+    background-color: var(--cl-bg-primary);
+    color: var(--cl-tx-primary);
+}
+
+.btn.bad {
+    background-color: var(--cl-bg-bad);
+    color: var(--cl-tx-primary);
+}
+
+.btn.ugly {
+    background-color: var(--cl-bg-ugly);
+    color: var(--cl-tx-primary);
+}
+
+.btn.good {
+    background-color: var(--cl-bg-good);
+    color: var(--cl-tx-primary);
+}

@@ -1,0 +1,101 @@
+
+.alert {
+
+    position: fixed;
+    width: max-content;
+    max-width: 25em;
+    display: block;
+    z-index: 999;
+    margin-bottom: 1.3em;
+    margin-left: .5em;
+    margin-right: .5em;
+    margin-top: .5em;
+}
+
+@media only screen and (max-width:25em) {
+    .alert {
+        max-width: 20em;
+    }
+}
+
+@media only screen and (max-width:20em) {
+    .alert {
+        max-width: 15em;
+    }
+}
+
+@media only screen and (max-width:15em) {
+    .alert {
+        max-width: 10em;
+    }
+}
+
+
+.alert.top-center {
+    margin-left: auto;
+    margin-right: auto;
+    left: 0vw;
+    right: 0vw;
+    top: 0vh;
+}
+
+.alert.top-left {
+    left: 0vw;
+    top: 0vh;
+}
+
+.alert.frame.top-right {
+    right: 0vw;
+    top: 0vh;
+}
+
+.alert.bottom-center {
+    margin-left: auto;
+    margin-right: auto;
+    left: 0vw;
+    right: 0vw;
+    bottom: 0vh;
+    
+}
+
+.alert.bottom-left {
+    left: 0vw;
+    bottom: 0vh;
+}
+
+.alert.bottom-right {
+    right: 0vw;
+    bottom: 0vh;
+}
+
+.alert.center {
+    top: 50vh;
+    left: 50vw;
+    transform: translate(-50%, -50%);
+}
+
+.alert > .frame {
+    display: block;
+    padding: .5em;
+    border-radius: 20px;
+    filter: var(--alert-shadow);
+    opacity: 0.95;
+    text-align: center;
+    cursor: pointer;
+    margin-bottom: .6em;
+}
+
+.alert > .frame.good {
+    background-color: var(--alert-bg-good);
+    color: var(--alert-cl-good);
+}
+
+.alert > .frame.bad {
+    background-color: var(--alert-bg-bad);
+    color: var(--alert-cl-bad);
+}
+
+.alert > .frame.ugly {
+    background-color: var(--alert-bg-ugly);
+    color: var(--alert-cl-ugly);
+}

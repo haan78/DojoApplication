@@ -1,0 +1,85 @@
+:root {
+    --alert-bg-good: darkgreen;
+    --alert-bg-bad: darkred;
+    --alert-bg-ugly: darkgoldenrod;
+    --alert-cl-good: lightgray;
+    --alert-cl-bad: lightgray;
+    --alert-cl-ugly: black;
+    --alert-shadow:drop-shadow(8px 8px 5px darkgray);
+    --disabled-cl: darkgray;
+    --normal-cl:black;
+    --cl-bad:red;
+    --bg-cl-primary:#1E90FF;
+    --cl-primary: #FFFAF0;
+
+    --cl-br-default: black;
+    --cl-br-hover: darkgray;
+    --cl-br-active: lightgray;
+
+    --cl-bg-primary:#1E90FF;
+    --cl-bg-bad:brown;
+    --cl-bg-ugly: darkgoldenrod;
+    --cl-bg-good: darkgreen;
+    --cl-bg-input:rgb(243, 247, 235);
+    --cl-bg-default:white;
+    --cl-bg-shadow:rgb(66, 64, 64);
+    
+    --cl-tx-primary: #FFFAF0;
+    --cl-tx-info:rgb(116, 111, 111);
+    --cl-tx-bad:brown;
+    --cl-tx-input:black;
+    --cl-tx-disabled:#959495;
+    --cl-tx-good: darkgreen;
+    
+    --font-family-default: Arial, Helvetica, sans-serif;
+    --font-size-default: 14px;
+
+    --di-in-default:.5em;
+    --di-br-default:.2em;
+
+    --br-default:calc(var(--di-br-default)/2) var(--cl-br-default) solid;
+    --br-rd-default:.8em;
+    --default-z-index-1: 1001;
+    --default-z-index-2: 1002;
+    --default-z-index-3: 1003;
+
+}
+
+html {
+    padding: 0;
+}
+
+body {
+    padding: 0;
+    margin: 0;
+    font-family: var(--font-family-default);
+    font-size:var(--font-size-default);
+    background-color: var(--cl-bg-default);
+}
+
+input[type=text],textarea,input[type=date],input[type=datetime-local],select,input[type=email],input[type=password] {
+    box-sizing: border-box;
+    /*background-color: --cl-bg-input;*/
+    background-color: var(--cl-bg-input);
+
+    color: var(--cl-tx-input);
+    display: inline-block;
+    border-radius: .5em;
+    padding: var(--di-in-default);    
+    border: var(--br-default);
+    font-style: italic;
+    color: var(--cl-tx-info);
+    width: 100%;
+}
+
+:is(input[type=text],textarea,input[type=date],input[type=datetime-local],select,input[type=email],input[type=password]):focus {    
+    outline: var(--di-br-default) var(--cl-br-active) solid;
+}
+
+:is(input[type=text],textarea,input[type=date],input[type=datetime-local],select,input[type=email],input[type=password]):hover {
+    outline: var(--di-br-default) var(--cl-br-hover) solid;
+}
+
+select  option:checked {
+    font-weight: bold;
+}

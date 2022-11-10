@@ -41,6 +41,7 @@ namespace Minmi {
         public ?\Exception $error = null;
         public $result = null;
         public string $debug = "";
+        public array $headers = [];
         public int $status = 0;
     }
 
@@ -91,6 +92,22 @@ namespace Minmi {
 
         public function getUriPattern():string {
             return $_SERVER["PATH_INFO"] ?? "";
+        }
+
+        public function getAuthHeader():string {
+            $headers = getallheaders();
+            return trim($headers["Authorization"] ?? $headers["authorization"] ?? $headers['HTTP_AUTHORIZATION'] ?? "");
+        }
+
+        public function hasBasicAuth(string &$username,string &$password): bool {
+            if ( $_SERVER["PHP_AUTH_USER"] && $_SERVER["PHP_AUTH_PW"] ) {
+                $username = $_SERVER["PHP_AUTH_USER"];
+                $password = $_SERVER["PHP_AUTH_PW"];
+                return true;
+            } else {
+                $username = $password = "";
+                return false;
+            }
         }
 
         public function setLocal($local) {
@@ -185,9 +202,10 @@ namespace Minmi {
             $method = $_SERVER['REQUEST_METHOD'];
             $request = new Request();
             $response = new Response();  
-            try {                
+            try {  
+                           
                 if ( !is_null($this->authmethod) && $request->__match($this->prefix,true) ) {                            
-                    call_user_func_array($this->authmethod, [$request]);
+                    call_user_func_array($this->authmethod, [$request,$response]);
                 }
                 $matched = false;
                 for ($i = 0; $i < count($this->list); $i++) {
@@ -196,9 +214,8 @@ namespace Minmi {
                     $methods = $this->list[$i][2];                    
                     if ((empty($methods) || in_array($method, $methods)) && $request->__match($this->prefix . $uri,false)) {
                         $matched = true;
-                        $status = 200;
-                        $response->result = call_user_func_array($fnc, [$request,&$status]);
-                        $response->status = $status;                        
+                        $response->status = 200;                        
+                        $response->result = call_user_func_array($fnc, [$request,$response]);                        
                         break;
                     }                  
                 }
@@ -230,6 +247,9 @@ namespace Minmi {
         {
             http_response_code($response->status);
             header(static::$HEADER);
+            foreach($response->headers as $h) {
+                header($h,true);
+            }
             if (!$response->error) {
                 echo json_encode(["success" => true, "status" => $response->status, "data"=>$response->result ], static::$JSON_FLAGS);
             } else {
