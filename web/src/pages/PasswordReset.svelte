@@ -1,1 +1,1 @@
-<h1>Password</h1>
+<h1>Password Reset</h1>

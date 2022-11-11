@@ -1,0 +1,126 @@
+html,
+body {
+    padding: 0;
+    margin: 0;
+}
+
+:root {
+    --fontsize: 16px;
+}
+
+.main {
+    width: 100%;
+    font-size: var(--fontsize);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    justify-items: center;
+    align-items: stretch;
+    height: 100vh;
+    background-color: white;
+}
+
+.main>.header {
+    display: flex;
+    color: red;
+    height: 3em;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.main>.body {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    max-width: 500px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.main>.footer {
+    display: flex;
+    background-color: lightsteelblue;
+    color: red;
+    font-size: large;
+    font-weight: bold;
+    height: 3.3em;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
+.main>.body>.item {
+    padding: 1em;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.main>.body>.item>button {
+    width: 100%;
+    font-size: var(--fontsize);
+}
+
+.main>.body>.item>label>span {
+    font-size: smaller;
+    color: darkgrey;
+    display: block;
+}
+
+.main>.body>.item input[type=text],
+.main>.body>.item input[type=password],
+.main>.body>.item input[type=date],
+.main>.body>.item select {
+    box-sizing: border-box;
+    width: 100%;
+    font-size: var(--fontsize);
+    width: 100%;
+    padding: 8px 16px;
+
+    display: inline-block;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+.main a {
+    color: darkblue;
+    text-decoration: underline;
+}
+
+.main a:active {
+    color: aqua;
+    text-decoration: underline;
+}
+
+.main a:hover {
+    color: dodgerblue;
+    text-decoration: underline;
+}
+
+.button {
+    display: inline-block;
+    padding: 10px 20px;
+    font-size: 22px;
+    cursor: pointer;
+    text-align: center;
+    text-decoration: none;
+    outline: none;
+    color: #fff;
+    background-color: darkgreen;
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 2px 6px black;
+}
+
+.button:hover {
+    background-color: #3e8e41
+}
+
+.button:active {
+    background-color: #3e8e41;
+    box-shadow: none;
+    transform: translateY(4px);
+}

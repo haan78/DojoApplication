@@ -100,11 +100,11 @@ namespace Minmi {
         }
 
         public function hasBasicAuth(string &$username,string &$password): bool {
-            if ( $_SERVER["PHP_AUTH_USER"] && $_SERVER["PHP_AUTH_PW"] ) {
+            if ( isset($_SERVER["PHP_AUTH_USER"]) && isset($_SERVER["PHP_AUTH_PW"]) ) {
                 $username = $_SERVER["PHP_AUTH_USER"];
                 $password = $_SERVER["PHP_AUTH_PW"];
                 return true;
-            } else {
+            } else {                
                 $username = $password = "";
                 return false;
             }
@@ -203,10 +203,9 @@ namespace Minmi {
             $request = new Request();
             $response = new Response();  
             try {  
-                           
                 if ( !is_null($this->authmethod) && $request->__match($this->prefix,true) ) {                            
                     call_user_func_array($this->authmethod, [$request,$response]);
-                }
+                }                
                 $matched = false;
                 for ($i = 0; $i < count($this->list); $i++) {
                     $uri = $this->list[$i][0];

@@ -9,7 +9,7 @@ require_once "vendor/autoload.php";
 require_once "./lib/Minmi.php";
 require_once "./db.php";
 
-use GuzzleHttp\Psr7\Response;
+use Minmi\Response;
 use Minmi\DefaultJsonRouter;
 use Minmi\Request;
 use Minmi\MinmiExeption;
@@ -25,47 +25,56 @@ $router = new DefaultJsonRouter("", function (Request $req,Response $res) {
         if (!empty($h) && preg_match('/Bearer\s(\S+)/', $h, $matches)) {
             $token = $matches[1];
             $user = \Firebase\JWT\JWT::decode($token, $_ENV["JWT_KEY"], array('HS256'));
-            
+
             if (!property_exists($user, "exp")) {
                 throw new MinmiExeption("exp is required in token");
             }
 
-            if (!in_array($user->durum ?? "", ["admin", "super-admin"]) && str_starts_with($req->getUriPattern(),"/admin") ) {
+            if (!in_array($user->durum ?? "", ["admin", "super-admin"]) && str_starts_with($req->getUriPattern(), "/admin")) {
                 throw new MinmiExeption("Unauthorized request for admin action");
             }
 
             $user->exp = time() + 3600;
             $token = \Firebase\JWT\JWT::encode($user, $_ENV["JWT_KEY"], 'HS256');
             $req->setLocal($user);
-            array_push($res->headers,"Bearer $token");//header("Authorization: Bearer $token", true);            
+            array_push($res->headers, "Bearer $token"); //header("Authorization: Bearer $token", true);            
         } else {
             throw new MinmiExeption("Authorization is required == " . $h);
         }
     }
 });
 
-$router->add("/token", function (Request $request,Response $res) {    
-    if ($request->hasBasicAuth($username,$password)) {
-        $user = validate(trim($username), trim($password));
-        if ($user) {
-            if ($user["durum"] != "passive") {
-                $user["exp"] = time() + 600;
-                $token = \Firebase\JWT\JWT::encode($user, $_ENV["JWT_KEY"], 'HS256');                
-                array_push($res->headers,"Bearer $token"); //header("Authorization: Bearer $token", true);
-                return [
-                    "ad" => $user["ad"],
-                    "uye_id" => $user["uye_id"],
-                    "email" => trim($username),
-                    "durum" => $user["durum"]
-                ];
+$router->add("/token", function (Request $request) {
+    $jdata = $request->json();
+    $captcha = $jdata->captcha ?? "";
+    $username = $password = "";
+    if ($request->hasBasicAuth($username, $password) && $captcha) {
+        require_once("hcaptcha.php");
+        if (hcaptcha($captcha)) {
+            $user = validate(trim($username), trim($password));
+            if ($user) {                
+                if ($user["durum"] != "passive") {
+                    $user["exp"] = time() + 600;
+                    $token = \Firebase\JWT\JWT::encode($user, $_ENV["JWT_KEY"], 'HS256');
+                    //array_push($res->headers,"Bearer $token"); //header("Authorization: Bearer $token", true);
+                    return [
+                        "ad" => $user["ad"],
+                        "uye_id" => $user["uye_id"],
+                        "email" => trim($username),
+                        "durum" => $user["durum"],
+                        "token" => $token
+                    ];
+                } else {
+                    throw new MinmiExeption("Unauthorized request", 404);
+                }
             } else {
-                throw new MinmiExeption("Unauthorized request", 403);
+                throw new MinmiExeption("Username or password is wrong", 402);
             }
         } else {
-            throw new MinmiExeption("Username or password is wrong", 401);
+            throw new MinmiExeption("Captcha is wrong", 401);
         }
     } else {
-        throw new MinmiExeption("Username and password are required", 400);
+        throw new MinmiExeption("Username, password and captcha are required", 400);
     }
 });
 
@@ -73,17 +82,17 @@ $router->add("admin/uye/#uye_id", function (Request $req) {
     return uye($req->params()["uye_id"]);
 });
 
-$router->add("admin/uyeseviyeekle",function(Request $req){
+$router->add("admin/uyeseviyeekle", function (Request $req) {
     $jdata = $req->json();
-    if (!seviye_ekle($jdata->uye_id,$jdata->seviye,$jdata->tarih,$jdata->aciklama,$err)) {
+    if (!seviye_ekle($jdata->uye_id, $jdata->seviye, $jdata->tarih, $jdata->aciklama, $err)) {
         throw new Exception($err);
     }
 });
 
-$router->add("admin/uyeseviyesil/#uye_id/@seviye",function(Request $req){
+$router->add("admin/uyeseviyesil/#uye_id/@seviye", function (Request $req) {
     $uye_id = $req->params()["uye_id"];
     $seviye = $req->params()["seviye"];
-    if (!seviye_sil($uye_id,$seviye,$err)) {
+    if (!seviye_sil($uye_id, $seviye, $err)) {
         throw new Exception($err);
     }
 });

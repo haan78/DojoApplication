@@ -9,16 +9,22 @@
     padding-left: calc(var(--di-in-default)*2);
     padding-right: calc(var(--di-in-default)*2);
     
-    border: var(--br-default);
+    border: none; /* var(--br-default);*/
     border-radius: .8em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: .2em .2em .4em var(--cl-br-hover);
 }
 
 .btn:hover {
     border-color: var(--cl-br-hover);
+    box-shadow: .1em .1em .2em var(--cl-br-hover);;
 }
 
 .btn:active {
     border-color: var(--cl-br-active);
+    box-shadow: none;
 }
 
 .btn > svg:first-child  {
