@@ -1,41 +1,40 @@
-<main class="login">
-    <label>
-        <span>E-Posta</span><br/>
-        <input type="text" bind:value={formdata.username} placeholder="E-Posta" />
-    </label>
-
-    <label>
-        <span>Poarola</span><br/>
-        <input type="password" bind:value={formdata.password} placeholder="Parola" />
-    </label>    
-    
-    <div style="text-align: center;">
-        <button class="btn prm" style="width: 100%" ><LogInIcon size="1x"/>Giriş</button>
-    </div>
-    <div class="bottomline">
-        <button type="button" class="btn" on:click={()=>{push("/new")}}><HelpCircleIcon size="1x" />Şifremi Bilmiyorum</button>
-        <button type="button" class="btn" on:click={()=>{push("/password-reset")}}><UserPlusIcon size="1x"/>Yeni Kayıt</button>
-    </div>
-    
+<main>
+    <iframe class="frame" src={serviceroot} title="Giriş"/>
 </main>
 <script lang="ts">
-    import { store_title } from '../store';
-    import { LogInIcon,HelpCircleIcon,UserPlusIcon } from 'svelte-feather-icons';
+    import { onMount } from 'svelte';
+    import { store_title,store_user } from '../store';
+    import type {UserData} from '../store';
     import { push } from 'svelte-spa-router';
+    import { setCookie } from 'typescript-cookie';
+
+
+    const serviceroot = import.meta.env.VITE_SERVICE_ROOT;
+    
     store_title.set("Login");
-    let formdata = {
-        username:"",
-        password:""
-    };
+
+    function loginSucced(data:UserData) {
+        const token = data.token;        
+        sessionStorage.setItem("bearer-auth",`Bearer ${token}`);
+        data.token = "";
+        store_user.set(data);
+        push("/welcome");
+    }
+
+    window.addEventListener("message",e=>{
+        loginSucced(e.data);        
+    })
+
+    onMount(()=>{
+
+    });
+
 </script>
 <style>
-    .login label {        
-        display: block;
-        padding-bottom: 1.5em;
-    }
-    .login .bottomline {
-        padding-top: 2.5em;
-        display: flex;
-        justify-content: space-between;
+    .frame {
+        border: none;
+        width: 100%;
+        height: 400px;
+        max-width: 500px;
     }
 </style>

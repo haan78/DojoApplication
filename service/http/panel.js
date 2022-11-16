@@ -7,7 +7,7 @@ function setCookie(cname, cvalue, exdays) {
     const d = new Date();
     d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
     let expires = "expires=" + d.toUTCString();
-    document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/;SameSite=Lax";
+    document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/;SameSite=None; Secure";
 }
 
 function getCookie(cname) {
@@ -41,9 +41,8 @@ function isEmail(email) {
 function callback(data) {
     if (typeof MobileApp !== "undefined") {
         MobileApp.postMessage(JSON.stringify(data));
-    } else {
-        console.log(data);
-        raise("Mobil yok",5);
+    } else if (window.parent) {
+        window.parent.postMessage(data,"*");
     }
 }
 
@@ -92,8 +91,8 @@ function loginformsubmit(btn) {
                 setCookie("ankarakendo-login-user", user, 7);
                 setCookie("ankarakendo-login-pass", pass, 7);
                 callback(response.data);
-            } else {
-                raise(response.data, 4);
+            } else {                
+                raise(response.data.toString(), 4);
             }
         }).catch(err => {
             raise(err, 3)

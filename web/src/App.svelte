@@ -15,7 +15,6 @@
         <span style="margin-left: .5em; font-weight: bolder; font-size: x-large; ">Ankara Kendo</span>
     </div>
     <div class="body">
-        <div class="title" >{title}</div>
         <div class="content">
             <Router routes={pages} />
         </div>        

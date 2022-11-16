@@ -25,16 +25,9 @@ html,body {
     padding: 0;
 }
 
-.dojo > .body >.title {
-    display: block;
-    padding-left: .2em;
-    font-weight: bold;
-    font-size: large;
-}
-
 .dojo > .body > .content {
     display: block;
-    padding: 1em;
+    padding: .5em;
 }
 
 .dojo a {
