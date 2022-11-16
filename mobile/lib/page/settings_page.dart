@@ -27,7 +27,7 @@ class _SettingsPageState extends State<SettingsPage> {
   @override
   Widget build(BuildContext context) {
     store = Provider.of<Store>(context);
-    _url.text = store.ApiUrl;
+    _url.text = store.host;
     return Scaffold(
       appBar: appBarStandart(context),
       body: Padding(
@@ -50,7 +50,7 @@ class _SettingsPageState extends State<SettingsPage> {
               height: 40,
               child: ElevatedButton(
                   onPressed: () async {
-                    store.ApiUrl = _url.text.trim();
+                    store.host = _url.text.trim();
                     await writeSettings(store);
                     if (mounted) {
                       Navigator.pop(context);

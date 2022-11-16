@@ -6,6 +6,23 @@ body {
 
 :root {
     --fontsize: 16px;
+    --framelen:500px;
+}
+
+.AlertError {
+    z-index: 999;
+    position: fixed;
+    top: 5em;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: lightgoldenrodyellow;
+    background-color: darkred;
+    width: 10em;
+    height: 4em;
+    border-radius: .5em;
+    border: solid black .2em;
+    padding: .5em;
+    box-shadow: 0 4px 9px black;
 }
 
 .main {
@@ -22,25 +39,40 @@ body {
 
 .main>.header {
     display: flex;
-    color: red;
     height: 3em;
     flex-direction: row;
-    justify-content: space-around;
-    align-items: center;
+    justify-content: center;
+    align-items: baseline;
 }
 
 .main>.body {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
+    flex-wrap: wrap;
     height: 100%;
-    max-width: 500px;
+    width: 100%;
     margin-left: auto;
     margin-right: auto;
 }
 
+.main > .body > .form {
+    flex-grow: 1;
+    min-width: 300px;
+    width: 600px;
+    
+    margin: 1em;
+}
+
+.main > .body > .text {
+    flex-grow: 1;
+    min-width: 300px;
+    width: 600px;
+    
+    margin: 1em;
+}
+
 .main>.footer {
     display: flex;
-    background-color: lightsteelblue;
     color: red;
     font-size: large;
     font-weight: bold;
@@ -50,29 +82,48 @@ body {
     align-items: center;
 }
 
-.main>.body>.item {
-    padding: 1em;
+.main>.body>.form .column {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: start;  
+    align-items: flex-start;
+}
+
+.main>.body>.form .item {
+    padding: .3em;
+    display: flex;
+    flex-direction: column;    
     justify-content: center;
     align-items: center;
 }
 
-.main>.body>.item>button {
+.main>.body>.form .item>button {
     width: 100%;
     font-size: var(--fontsize);
 }
 
-.main>.body>.item>label>span {
+.main>.body>.form .item>span {
+    display: block;
+}
+
+
+.labelinfo {
     font-size: smaller;
     color: darkgrey;
     display: block;
 }
 
-.main>.body>.item input[type=text],
-.main>.body>.item input[type=password],
-.main>.body>.item input[type=date],
-.main>.body>.item select {
+.main>.body .link {
+    text-align: center;
+    margin-top: 2em;
+    font-size: small;
+}
+
+.main>.body .item input[type=text],
+.main>.body .item input[type=password],
+.main>.body .item input[type=date],
+.main>.body .item select, textarea {
     box-sizing: border-box;
     width: 100%;
     font-size: var(--fontsize);
@@ -85,9 +136,27 @@ body {
     box-sizing: border-box;
 }
 
+.main>.body .item textarea {
+    height: 5em;
+}
+
+.main > .body > .text  fieldset {
+    padding: 1em;
+    margin-bottom: 1em;
+}
+
+.main > .body > .text  fieldset > legend {
+    font-weight: bold;
+}
+
 .main a {
     color: darkblue;
     text-decoration: underline;
+}
+
+.main a > svg {
+    height: 1em;
+    fill: #3e8e41;
 }
 
 .main a:active {

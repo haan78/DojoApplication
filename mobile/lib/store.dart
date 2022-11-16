@@ -12,12 +12,14 @@ class Store {
   String ApiPassword = "";
   String UserStatus = "";
   String UserName = "";
+  String host = "";
   int id = 0;
   void copy(Store s) {
     AppName = s.AppName;
     ApiUser = s.ApiUser;
     ApiPassword = s.ApiPassword;
     ApiUrl = s.ApiUrl;
+    host = s.host;
     ApiToken = s.ApiToken;
     UserStatus = s.UserStatus;
     UserName = s.UserName;
@@ -33,15 +35,16 @@ Future<Store> LoadStore() async {
   if (data.containsKey("AppName")) {
     s.AppName = data["AppName"].toString();
   }
-  if (data.containsKey("ServiceUrl")) {
-    s.ApiUrl = data["ApiUrl"].toString();
+  if (data.containsKey("host")) {
+    s.host = data["host"];
   }
 
   const storage = FlutterSecureStorage();
 
   s.ApiUser = await storage.read(key: "ApiUser") ?? "";
   s.ApiPassword = await storage.read(key: "ApiPassword") ?? "";
-  s.ApiUrl = await storage.read(key: "ApiUrl") ?? "";
+  s.host = await storage.read(key: "host") ?? s.host;
+  s.ApiUrl = "${s.host}/service.php";
   return s;
 }
 
@@ -54,5 +57,5 @@ Future<void> writeSettings(Store s) async {
   const storage = FlutterSecureStorage();
   await storage.write(key: "ApiUser", value: s.ApiUser);
   await storage.write(key: "ApiPassword", value: s.ApiPassword);
-  await storage.write(key: "ApiUrl", value: s.ApiUrl);
+  await storage.write(key: "host", value: s.host);
 }

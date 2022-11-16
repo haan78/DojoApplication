@@ -1,4 +1,4 @@
 {
     "AppName":"Ankara Kendo",
-    "ApiUrl":"http://10.0.2.2:8002/service.php"
+    "host":"http://10.0.2.2:8002"
 }
