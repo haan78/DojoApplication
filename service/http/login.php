@@ -13,9 +13,13 @@
             </label>
         </div>
 
+        <div class="separate">
         <div class="item">
             <label style="cursor: pointer;"><input type="checkbox" onchange="" />Beni Hatırla</label>
         </div>
+        <a href="javascript:;" onclick="removelogincookie()">Beni Unut</a>
+        </div>
+        
         <div class="item">
             <div class="h-captcha" data-sitekey="<?php echo $HCAPTCHA_SITEKEY; ?>"></div>
         </div>

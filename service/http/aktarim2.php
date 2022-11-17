@@ -61,6 +61,7 @@ function uye_ve_baglantililar(string $myconstr,string $mongoconstr): void {
     mysqli_query($mysql,"TRUNCATE TABLE uye_seviye");
     mysqli_query($mysql,"TRUNCATE TABLE uye_yoklama");
     mysqli_query($mysql,"TRUNCATE TABLE uye_tahakkuk");
+    mysqli_query($mysql,"TRUNCATE TABLE muhasebe");
     
     $hatali = [];
     $it = new \IteratorIterator($cursor);    
@@ -202,7 +203,7 @@ function uye_ve_baglantililar(string $myconstr,string $mongoconstr): void {
                             }
                         }                        
                         if ( !$err && $doc["gelirgider"] instanceof ArrayObject && $doc["gelirgider"]->count() > 0 ) { //Muhasebe gelirgider
-                            $inssql = "INSERT INTO muhasebe (uye_id, tarih, tutar, kasa, aciklama, tanim, tahsilatci,ay,yil) VALUES ";                            
+                            $inssql = "INSERT INTO muhasebe (uye_id, tarih, tutar, kasa, aciklama, tanim, tahsilatci,ay, yil) VALUES ";                            
                             for ($i=0; $i< $doc["gelirgider"]->count(); $i++ ) {
                                 $tar = $doc["gelirgider"][$i]["tarih"]->toDateTime()->format("Y-m-d");
                                 $tutar = $doc["gelirgider"][$i]["tutar"];
@@ -211,7 +212,8 @@ function uye_ve_baglantililar(string $myconstr,string $mongoconstr): void {
                                 $tanim = $doc["gelirgider"][$i]["tanim"];
                                 $tahsilatci = $doc["gelirgider"][$i]["user_text"];
                                 $ay = intval($doc["gelirgider"][$i]["ay"]);
-                                $yil = intval($doc["gelirgider"][$i]["yil"]);                                
+                                $yil = intval($doc["gelirgider"][$i]["yil"]);  
+                                //echo "$ay.$yil ";
                                 if ($i>0) {
                                     $inssql.=",";
                                 }
@@ -219,6 +221,7 @@ function uye_ve_baglantililar(string $myconstr,string $mongoconstr): void {
                                 $inssql.="(".getSqlVals([$uye_id, $tar, $tutar,$kasa,$aciklama, $tanim, $tahsilatci, $ay, $yil]).")";
                             }
 
+                            //echo $inssql;
                             if (!mysqli_query($mysql,$inssql)) {
                                 $err = "muhasabe-ins: ".mysqli_error($mysql) . " / ".$inssql;
                             }
@@ -238,7 +241,6 @@ function uye_ve_baglantililar(string $myconstr,string $mongoconstr): void {
         
 
         if (!$err) {
-
             mysqli_commit($mysql);
         } else {
             echo "$ad($active) => $err".PHP_EOL;
@@ -251,12 +253,36 @@ function uye_ve_baglantililar(string $myconstr,string $mongoconstr): void {
         
         $it->next();
     }
+
+    $odenmistahakkuk = "INSERT into uye_tahakkuk (uye_id,tahakkuk_id,borc,tahakkuk_tarih,muhasebe_id,yil,ay,yoklama_id)
+    select uye_id,tahakkuk_id,borc,tahakkuk_tarih,muhasebe_id,yil,ay,yoklama_id from (
+    SELECT m.uye_id,if( tanim like '%tam%',1,2 ) as tahakkuk_id,tanim,m.tutar as borc,
+    date(CONCAT(m.yil,'-',LPAD(m.ay,2,'0'),'-01')) as tahakkuk_tarih,m.muhasebe_id, m.yil , m.ay,1 as yoklama_id  
+    FROM  muhasebe m left join uye_tahakkuk ut  on ut.muhasebe_id = m.muhasebe_id 
+    where ut.uye_tahakkuk_id  is null and COALESCE(m.ay,0) > 0 ) q";
+
+    $tanimduzeltme = "UPDATE muhasebe m SET m.tanim = CASE m.tanim 
+	WHEN 'AIDAT TAM' THEN 'Tam Aidat' 
+	WHEN 'AIDAT OGRENCI' THEN 'Ögrenci Aidat'
+	WHEN 'SINAV TAM' THEN 'Tam Sınav'
+	WHEN 'SINAV OGRENCI' THEN 'Öğrenci Sınav'
+	WHEN 'Salona Kirası' THEN 'Salon Kirası'
+	WHEN 'Diğer Harcamalar' THEN 'Diğer'
+	WHEN 'Diğer Masraflar' THEN 'Diğer'
+	WHEN 'Ögrenci Aidat' THEN 'Öğrenci Aidat'
+	WHEN 'Organizasyon Harcamaları' THEN 'Etkinlik Masrafı'
+	ELSE m.tanim 
+    END where 1 = 1;";
+
+    mysqli_query($mysql,$odenmistahakkuk);
+    mysqli_query($mysql,$tanimduzeltme);
+
     mysqli_close($mysql);
     //var_dump($hatali);
 }
 
 try {
-    $dotenv = Dotenv\Dotenv::createImmutable("/etc", "dojo_service.env");
+    $dotenv = Dotenv\Dotenv::createImmutable("/etc", "dojoservice.env"); //eski dosyaya baksin
     $dotenv->load();
 } catch (\Exception $ex) {
     die("Config File can't read");

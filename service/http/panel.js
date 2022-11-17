@@ -46,6 +46,12 @@ function callback(data) {
     }
 }
 
+function removelogincookie() {
+    setCookie("ankarakendo-login-user", "", -1);
+    setCookie("ankarakendo-login-pass", "", -1);
+    window.location.reload();
+}
+
 function loginformsubmit(btn) {
     if ( btn.getAttribute("data-loading") ) {
         return;

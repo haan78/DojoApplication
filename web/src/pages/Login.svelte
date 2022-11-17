@@ -34,7 +34,10 @@
     .frame {
         border: none;
         width: 100%;
-        height: 400px;
-        max-width: 500px;
+        height: 330px;
+        max-width: 330px;
+        border: solid 1px black;
+        border-radius: 1em;        
+        overflow: hidden;
     }
 </style>

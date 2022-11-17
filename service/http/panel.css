@@ -90,6 +90,14 @@ body {
     align-items: flex-start;
 }
 
+.main>.body>.form .separate {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-between;  
+    align-items: baseline;
+}
+
 .main>.body>.form .item {
     padding: .3em;
     display: flex;
