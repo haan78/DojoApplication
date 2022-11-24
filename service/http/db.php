@@ -21,7 +21,9 @@ function mysqlilink(): mysqli {
 
 function validate($username, $password) {
     $uye_id = $ad = $durum = $dosya_id = $err = "";
-    $sql = "SELECT ad,durum,uye_id,dosya_id FROM uye WHERE email = ? AND parola = IF(LENGTH(parola)<=6,?, UPPER(SHA1(TRIM(?))) )";
+    $sql = "SELECT ad,durum,uye_id,dosya_id FROM uye
+                WHERE durum IN ('active','admin','super-admin')
+                    email = ? AND parola = IF(LENGTH(parola)<=6,?, UPPER(SHA1(TRIM(?))) )";
     $mysqli = mysqlilink();
     $stmt = mysqli_prepare($mysqli, $sql);
     if ($stmt) {

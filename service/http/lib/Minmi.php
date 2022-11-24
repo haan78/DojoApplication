@@ -99,6 +99,15 @@ namespace Minmi {
             return trim($headers["Authorization"] ?? $headers["authorization"] ?? $headers['HTTP_AUTHORIZATION'] ?? "");
         }
 
+        public function getBearerToken():string {
+            $h = $this->getAuthHeader();
+            if (!empty($h) && preg_match('/Bearer\s(\S+)/', $h, $matches)) {
+                return $matches[1];
+            } else {
+                return "";
+            }
+        }
+
         public function hasBasicAuth(string &$username,string &$password): bool {
             if ( isset($_SERVER["PHP_AUTH_USER"]) && isset($_SERVER["PHP_AUTH_PW"]) ) {
                 $username = $_SERVER["PHP_AUTH_USER"];
