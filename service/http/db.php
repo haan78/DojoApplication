@@ -19,7 +19,19 @@ function mysqlilink(): mysqli {
     }
 }
 
-function validate($username, $password) {
+function create_identity(string $username,&$ad,&$code) : void {    
+    $p = new \MySqlTool\MySqlToolCall(mysqlilink());
+    $outs = $p->procedure("uye_kimlik_olustur")->out("code")->out("ad")->in($username)->call()->result("outs");
+    $ad = $outs["ad"];
+    $code = $outs["code"];
+}
+
+function reset_password(string $code, string $password) : void {
+    $p = new \MySqlTool\MySqlToolCall(mysqlilink());
+    $p->procedure("uye_kimlik_degistir")->in($code)->in($password)->call();
+}
+
+function validate(string $username, string $password) {
     $uye_id = $ad = $durum = $dosya_id = $err = "";
     $sql = "SELECT ad,durum,uye_id,dosya_id FROM uye
                 WHERE durum IN ('active','admin','super-admin')

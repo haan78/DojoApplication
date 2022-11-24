@@ -8,6 +8,7 @@ ini_set('display_startup_errors', TRUE);
 require_once "vendor/autoload.php";
 require_once "./lib/Minmi.php";
 require_once "./db.php";
+require_once("./hcaptcha.php");
 
 use Minmi\Response;
 use Minmi\DefaultJsonRouter;
@@ -48,12 +49,40 @@ $router = new DefaultJsonRouter("", function (Request $req,Response $res) {
     $req->setLocal($user);
 });
 
-$router->add("/reset-identity",function(Request $request) {
+$router->add("/email",function(Request $request) {
     $jdata = $request->json();
     $captcha = $jdata->captcha ?? "";
-    $email = $jdata->captcha ?? "";
+    $email = $jdata->email ?? "";
     
-    
+    if ($captcha && $email) {
+        if (hcaptcha($captcha)) {
+            create_identity($email,$ad,$code);
+            sendinblue($email,3,(object)[
+                "AD"=>$ad,
+                "URL"=>$_ENV["SERVICE_ROOT"]."/index.php?m=reset?code=$code"
+            ]);
+        } else {
+            throw new MinmiExeption("Captcha is wrong", 401);
+        }
+    } else {
+        throw new MinmiExeption("Email and captcha are required", 400);
+    }
+});
+
+$router->add("/reset",function(Request $request) {
+    $jdata = $request->json();
+    $captcha = $jdata->captcha ?? "";
+    $code = $jdata->code ?? "";
+    $pass = $jdata->password ?? "";
+    if ($captcha && $code) {
+        if (hcaptcha($captcha)) {
+            reset_password($code,$pass);
+        } else {
+            throw new MinmiExeption("Captcha is wrong", 401);
+        }
+    } else {
+        throw new MinmiExeption("Activation is required", 400);
+    }
 });
 
 $router->add("/token", function (Request $request) {
@@ -61,7 +90,6 @@ $router->add("/token", function (Request $request) {
     $captcha = $jdata->captcha ?? "";
     $username = $password = "";
     if ($request->hasBasicAuth($username, $password) && $captcha) {
-        require_once("hcaptcha.php");
         if (hcaptcha($captcha)) {
             $user = validate(trim($username), trim($password));
             if (!is_null($user)) {                

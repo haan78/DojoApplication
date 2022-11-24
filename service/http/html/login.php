@@ -26,7 +26,7 @@
 
         <div class="item">
             <button type="button" class="button" onclick="loginformsubmit(this)">
-            <img src="./assets/loading.gif" style="width: 1.2em;height: 1.2em; vertical-align: middle; display: none;" />
+            <img src="../assets/loading.gif" style="width: 1.2em;height: 1.2em; vertical-align: middle; display: none;" />
             Giriş</button>
         </div>
     </div>

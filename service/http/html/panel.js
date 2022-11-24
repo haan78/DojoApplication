@@ -52,6 +52,100 @@ function removelogincookie() {
     window.location.reload();
 }
 
+function resetformsubmit(btn) {
+    if ( btn.getAttribute("data-loading") ) {
+        return;
+    }
+    var code = document.querySelector("input[name=code]").value.trim();
+    var pass = document.querySelector("input[name=new]").value.trim();
+    var _repeat = document.querySelector("input[name=repeat]").value.trim();
+    var captcha = document.querySelector("[name=h-captcha-response]").value.trim();
+
+    if (pass.length < 6) {
+        raise("Parola en az 6 karakter olmalı", 1);
+        return;
+    }
+
+    if (pass != _repeat ) {
+        raise("Parola terarıyla uyuşmuyor", 1);
+        return;
+    }
+
+    if (!captcha) {
+        raise("Captcha doğrulaması gerekli", 1);
+        return;
+    }
+
+    btn.setAttribute("data-loading","loading");
+    btn.querySelector("img").style.display = "inline-block";
+
+    fetch("service.php/reset",{method: "POST",
+    cache: 'no-cache',
+    body: JSON.stringify({
+        "captcha": captcha,
+        "password":pass,
+        "code":code
+    })}).then(raw=>{
+        btn.setAttribute("data-loading","");
+        btn.querySelector("img").style.display = "none";
+        raw.json().then(response => {
+            if (response.success) {
+                window.location.href = "/?m=login";
+            } else {                
+                raise(response.data.toString(), 4);
+            }
+        }).catch(err => {
+            raise(err, 3);
+        });
+    }).catch(err=>{
+        btn.setAttribute("data-loading","");
+        raise(err, 2);
+    });
+}
+
+function emailformsubmit(btn) {
+    if ( btn.getAttribute("data-loading") ) {
+        return;
+    }
+    var email = document.querySelector("input[name=email]").value.trim();
+    var captcha = document.querySelector("[name=h-captcha-response]").value.trim();
+    if (!isEmail(user)) {
+        console.log(user);
+        raise("E-Posta formatı doğru değil", 1);
+        return;
+    }
+
+    if (!captcha) {
+        raise("Captcha doğrulaması gerekli", 1);
+        return;
+    }
+
+    btn.setAttribute("data-loading","loading");
+    btn.querySelector("img").style.display = "inline-block";
+
+    fetch("service.php/email",{method: "POST",
+    cache: 'no-cache',
+    body: JSON.stringify({
+        "captcha": captcha,
+        "email":email
+    })}).then(raw=>{
+        btn.setAttribute("data-loading","");
+        btn.querySelector("img").style.display = "none";
+        raw.json().then(response => {
+            if (response.success) {
+                window.location.href = "/?m=reset"
+            } else {                
+                raise(response.data.toString(), 4);
+            }
+        }).catch(err => {
+            raise(err, 3);
+        });
+    }).catch(err=>{
+        btn.setAttribute("data-loading","");
+        raise(err, 2);
+    });
+}
+
 function loginformsubmit(btn) {
     if ( btn.getAttribute("data-loading") ) {
         return;
@@ -101,7 +195,7 @@ function loginformsubmit(btn) {
                 raise(response.data.toString(), 4);
             }
         }).catch(err => {
-            raise(err, 3)
+            raise(err, 3);
         });
     }).catch(err => {
         btn.setAttribute("data-loading","");
@@ -121,6 +215,7 @@ function uploadComp() {
         var name = elm.getAttribute("data-name") || "file";
         var input = document.createElement("input");
         input.type = "file";
+        input.name = name;
         input.style.display = "none";
         input.setAttribute("accept", "image/png, image/jpeg");
         img.onclick = () => {
@@ -135,10 +230,8 @@ function uploadComp() {
         elm.append(img);
         elm.append(input);
     });
-
 }
 
 window.addEventListener("load", () => {
-
     uploadComp();
 });

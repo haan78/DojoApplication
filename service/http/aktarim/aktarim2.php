@@ -2,8 +2,8 @@
 if (PHP_SAPI != 'cli') {
     die("Works only CLI mode");
 }
-require_once __DIR__ . "/vendor/autoload.php";
-require_once __DIR__ . "/lib/MongoTools/Tools.php";
+require_once __DIR__ . "/../vendor/autoload.php";
+require_once __DIR__ . "/../lib/MongoTools/Tools.php";
 require_once "./uyequery.php";
 
 function mysqlconn(string $cs): mysqli {
