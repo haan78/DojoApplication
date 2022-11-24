@@ -14,34 +14,46 @@ use Minmi\DefaultJsonRouter;
 use Minmi\Request;
 use Minmi\MinmiExeption;
 
+function tokenPars(string &$token) {
+    if ($token) {
+        $payload = \Firebase\JWT\JWT::decode($token, $_ENV["JWT_KEY"], array('HS256'));
+        if (property_exists($payload, "exp") && property_exists($payload,"uye_id") && property_exists($payload,"durum")) {
+            $payload["exp"] = time() + $_ENV["TOKEN_TIME"];
+            $token = \Firebase\JWT\JWT::encode($payload, $_ENV["JWT_KEY"], 'HS256');
+            return [
+                "uye_id" => $payload["uye_id"],            
+                "durum" => $payload["durum"]
+            ];
+        } else {
+            throw new MinmiExeption("Token does not contain necessary values");
+        }
+    } else {
+        return null;
+    }
+    
+}
+
 $router = new DefaultJsonRouter("", function (Request $req,Response $res) {
 
-    $dotenv = Dotenv\Dotenv::createImmutable("/etc", "dojo_service.env");
-    $dotenv->load();
+    $urlpattern = $req->getUriPattern();
+    $token = $req->getBearerToken();
+    $user = tokenPars($token);
+    $durum = !is_null($user) ? $user["durum"] : "";
 
-    if ($req->getUriPattern() != "/token") {
-        //$headers = getallheaders();
-        $h = $req->getAuthHeader();
-        if (!empty($h) && preg_match('/Bearer\s(\S+)/', $h, $matches)) {
-            $token = $matches[1];
-            $user = \Firebase\JWT\JWT::decode($token, $_ENV["JWT_KEY"], array('HS256'));
-
-            if (!property_exists($user, "exp")) {
-                throw new MinmiExeption("exp is required in token");
-            }
-
-            if (!in_array($user->durum ?? "", ["admin", "super-admin"]) && str_starts_with($req->getUriPattern(), "/admin")) {
-                throw new MinmiExeption("Unauthorized request for admin action");
-            }
-
-            $user->exp = time() + 3600;
-            $token = \Firebase\JWT\JWT::encode($user, $_ENV["JWT_KEY"], 'HS256');
-            $req->setLocal($user);
-            array_push($res->headers, "Bearer $token"); //header("Authorization: Bearer $token", true);            
-        } else {
-            throw new MinmiExeption("Authorization is required == " . $h);
-        }
+    if (str_starts_with($urlpattern, "/admin") && !in_array($durum,["admin", "super-admin"])) {
+        throw new MinmiExeption("Unauthorized request for admin action");
+    } elseif (str_starts_with($urlpattern, "/member") && !in_array($durum,["admin", "super-admin", "active"])) {
+        throw new MinmiExeption("Unauthorized request");
     }
+    $req->setLocal($user);
+});
+
+$router->add("/reset-identity",function(Request $request) {
+    $jdata = $request->json();
+    $captcha = $jdata->captcha ?? "";
+    $email = $jdata->captcha ?? "";
+    
+    
 });
 
 $router->add("/token", function (Request $request) {
@@ -52,21 +64,21 @@ $router->add("/token", function (Request $request) {
         require_once("hcaptcha.php");
         if (hcaptcha($captcha)) {
             $user = validate(trim($username), trim($password));
-            if ($user) {                
-                if ($user["durum"] != "passive") {
-                    $user["exp"] = time() + 600;
-                    $token = \Firebase\JWT\JWT::encode($user, $_ENV["JWT_KEY"], 'HS256');
-                    //array_push($res->headers,"Bearer $token"); //header("Authorization: Bearer $token", true);
-                    return [
-                        "ad" => $user["ad"],
-                        "uye_id" => $user["uye_id"],
-                        "email" => trim($username),
-                        "durum" => $user["durum"],
-                        "token" => $token
-                    ];
-                } else {
-                    throw new MinmiExeption("Unauthorized request", 404);
-                }
+            if (!is_null($user)) {                
+                $payload = [
+                    "exp" => time() + $_ENV["TOKEN_TIME"],
+                    "durum" => $user["durum"],
+                    "uye_id" => $user["uye_id"]
+                ];                    
+                $token = \Firebase\JWT\JWT::encode($payload, $_ENV["JWT_KEY"], 'HS256');
+                return [
+                    "ad" => $user["ad"],
+                    "uye_id" => $user["uye_id"],
+                    "dosya_id" => $user["dosya_id"],
+                    "email" => trim($username),
+                    "durum" => $user["durum"],
+                    "token" => $token
+                ];
             } else {
                 throw new MinmiExeption("Username or password is wrong", 402);
             }
@@ -139,4 +151,5 @@ $router->add("member/bilgi", function (Request $req) {
     return uye($req->local()->dosya_id);
 });
 
+(Dotenv\Dotenv::createImmutable("/etc", "dojo_service.env"))->load();
 $router->execute();
