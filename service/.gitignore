@@ -1,3 +1,4 @@
 http/vendor
 http/composer.lock
+dbinit/dump-*
 dojo_service.env

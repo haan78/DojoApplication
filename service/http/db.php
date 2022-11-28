@@ -19,9 +19,15 @@ function mysqlilink(): mysqli {
     }
 }
 
-function create_identity(string $username,&$ad,&$code) : void {    
+function create_identity(int $uye_id, string $username,&$ad,&$code) : void {    
     $p = new \MySqlTool\MySqlToolCall(mysqlilink());
-    $outs = $p->procedure("uye_kimlik_olustur")->out("code")->out("ad")->in($username)->call()->result("outs");
+    $outs = $p->procedure("uye_kimlik_olustur")->
+                out("code")->
+                out("ad")->
+                in($username)->
+                in($uye_id < 1 ? null : $uye_id)->
+                call()->
+                result("outs");
     $ad = $outs["ad"];
     $code = $outs["code"];
 }
@@ -34,8 +40,8 @@ function reset_password(string $code, string $password) : void {
 function validate(string $username, string $password) {
     $uye_id = $ad = $durum = $dosya_id = $err = "";
     $sql = "SELECT ad,durum,uye_id,dosya_id FROM uye
-                WHERE durum IN ('active','admin','super-admin')
-                    email = ? AND parola = IF(LENGTH(parola)<=6,?, UPPER(SHA1(TRIM(?))) )";
+                WHERE durum IN ('active','admin','super-admin') AND
+                    email = ? AND parola = IF(LENGTH(parola)<=6,?, MD5(?) )";
     $mysqli = mysqlilink();
     $stmt = mysqli_prepare($mysqli, $sql);
     if ($stmt) {

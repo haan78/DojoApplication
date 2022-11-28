@@ -46,7 +46,7 @@ $router = new DefaultJsonRouter("", function (Request $req,Response $res) {
     } elseif (str_starts_with($urlpattern, "/member") && !in_array($durum,["admin", "super-admin", "active"])) {
         throw new MinmiExeption("Unauthorized request");
     }
-    $req->setLocal($user);
+    $req->setLocal((object)$user);
 });
 
 $router->add("/email",function(Request $request) {
@@ -56,7 +56,7 @@ $router->add("/email",function(Request $request) {
     
     if ($captcha && $email) {
         if (hcaptcha($captcha)) {
-            create_identity($email,$ad,$code);
+            create_identity(0,$email,$ad,$code);
             sendinblue($email,3,(object)[
                 "AD"=>$ad,
                 "URL"=>$_ENV["SERVICE_ROOT"]."/index.php?m=reset?code=$code"
@@ -171,12 +171,22 @@ $router->add("/member/password", function (Request $req) {
     }
 });
 
-$router->add("member/foto", function (Request $req) {
+$router->add("/member/foto", function (Request $req) {
     return download($req->local()->dosya_id);
 });
 
-$router->add("member/bilgi", function (Request $req) {
-    return uye($req->local()->dosya_id);
+$router->add("/member/bilgi", function (Request $req) {
+    return uye($req->local()->uye_id);
+});
+
+$router->add("/member/email",function(Request $req){
+    $params = $req->json();
+    $email = $params->email;
+    create_identity($req->local()->uye_id,$email,$ad,$code);
+    sendinblue($email,3,(object)[
+        "AD"=>$ad,
+        "URL"=>$_ENV["SERVICE_ROOT"]."/index.php?m=reset?code=$code"
+    ]);
 });
 
 (Dotenv\Dotenv::createImmutable("/etc", "dojo_service.env"))->load();

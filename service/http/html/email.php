@@ -1,5 +1,8 @@
 <div class="body">
     <div class="form">
+        <div class="text">
+            Sistemde kayıtlı olan e-postanızı bilmiyorsanız veya değiştirmek istiyorsanız. Lütfen dojo yöneticinizle görüşünüz.
+        </div>
         <div class="item">
             <label style="width: 100%">
                 <span>E-Posta</span>
@@ -15,6 +18,9 @@
             <button type="button" class="button" onclick="emailformsubmit(this)">
             <img src="../assets/loading.gif" style="width: 1.2em;height: 1.2em; vertical-align: middle; display: none;" />
             Doğrulama E-Postası Gönder</button>
+        </div>
+        <div class="link">
+        <a href="?m=login">Login</a>
         </div>
     </div>
 </div>

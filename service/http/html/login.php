@@ -29,6 +29,10 @@
             <img src="../assets/loading.gif" style="width: 1.2em;height: 1.2em; vertical-align: middle; display: none;" />
             Giriş</button>
         </div>
+        <div class="link">
+        <a href="?m=email">Şifremi Unuttum</a>
+        </div>
+        
     </div>
 </div>
 <script>

@@ -1,12 +1,14 @@
 <main>
-    <iframe class="frame" src={serviceroot} title="Giriş"/>
+    <div class="center">
+        <iframe class="frame" src={serviceroot} title="Giriş"/>
+    </div>
+    
 </main>
 <script lang="ts">
     import { onMount } from 'svelte';
     import { store_title,store_user } from '../store';
     import type {UserData} from '../store';
     import { push } from 'svelte-spa-router';
-    import { setCookie } from 'typescript-cookie';
 
 
     const serviceroot = import.meta.env.VITE_SERVICE_ROOT;
@@ -26,15 +28,22 @@
     })
 
     onMount(()=>{
-
     });
 
 </script>
 <style>
-    .frame {
+     .center {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+     }
+
+     .center > .frame {
         border: none;
         width: 100%;
-        height: 330px;
+        height: 360px;
         max-width: 330px;
         border: solid 1px black;
         border-radius: 1em;        

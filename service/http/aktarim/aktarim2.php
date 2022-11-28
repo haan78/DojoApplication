@@ -272,7 +272,7 @@ function uye_ve_baglantililar(string $myconstr,string $mongoconstr): void {
 	WHEN 'Ögrenci Aidat' THEN 'Öğrenci Aidat'
 	WHEN 'Organizasyon Harcamaları' THEN 'Etkinlik Masrafı'
 	ELSE m.tanim 
-    END where 1 = 1;";
+    END where 1 = 1";
 
     mysqli_query($mysql,$odenmistahakkuk);
     mysqli_query($mysql,$tanimduzeltme);

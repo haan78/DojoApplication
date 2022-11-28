@@ -92,7 +92,7 @@ function resetformsubmit(btn) {
             if (response.success) {
                 window.location.href = "/?m=login";
             } else {                
-                raise(response.data.toString(), 4);
+                raise(response.data.message, 4);
             }
         }).catch(err => {
             raise(err, 3);
@@ -109,8 +109,7 @@ function emailformsubmit(btn) {
     }
     var email = document.querySelector("input[name=email]").value.trim();
     var captcha = document.querySelector("[name=h-captcha-response]").value.trim();
-    if (!isEmail(user)) {
-        console.log(user);
+    if (!isEmail(email)) {        
         raise("E-Posta formatı doğru değil", 1);
         return;
     }
@@ -135,7 +134,7 @@ function emailformsubmit(btn) {
             if (response.success) {
                 window.location.href = "/?m=reset"
             } else {                
-                raise(response.data.toString(), 4);
+                raise(response.data.message, 4);
             }
         }).catch(err => {
             raise(err, 3);
@@ -192,7 +191,7 @@ function loginformsubmit(btn) {
                 setCookie("ankarakendo-login-pass", pass, 7);
                 callback(response.data);
             } else {                
-                raise(response.data.toString(), 4);
+                raise(response.data.message, 4);
             }
         }).catch(err => {
             raise(err, 3);
