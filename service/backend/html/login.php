@@ -25,9 +25,7 @@
         </div>
 
         <div class="item">
-            <button type="button" class="button" onclick="loginformsubmit(this)">
-            <img src="../assets/loading.gif" style="width: 1.2em;height: 1.2em; vertical-align: middle; display: none;" />
-            Giriş</button>
+            <?php button("loginformsubmit","Giriş"); ?>
         </div>
         <div class="link">
         <a href="?m=email">Şifremi Unuttum</a>

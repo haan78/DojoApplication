@@ -19,9 +19,7 @@
         </div>
 
         <div class="item">
-            <button type="button" class="button" onclick="resetformsubmit(this)">
-            <img src="../assets/loading.gif" style="width: 1.2em;height: 1.2em; vertical-align: middle; display: none;" />
-            Değiştir</button>
+            <?php button("resetformsubmit","Değiştir"); ?>
         </div>
     </div>
 </div>

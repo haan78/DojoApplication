@@ -16,9 +16,7 @@
         </div>
 
         <div class="item">
-            <button type="button" class="button" onclick="emailformsubmit(this)">
-            <img src="../assets/loading.gif" style="width: 1.2em;height: 1.2em; vertical-align: middle; display: none;" />
-            Doğrulama E-Postası Gönder</button>
+            <?php button("emailformsubmit","Doğrulama E-Postası Gönder") ?>
         </div>
         <div class="link">
         <a href="?m=login">Login</a>

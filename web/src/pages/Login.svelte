@@ -44,6 +44,7 @@
         align-items: center;
         justify-content: center;
         width: 100%;
+        margin-top: 3em;
      }
 
      .center > .frame {
