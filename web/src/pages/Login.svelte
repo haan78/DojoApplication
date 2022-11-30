@@ -1,4 +1,5 @@
 <main>
+    <AppBar title="Ankara Kendo" />
     <div class="center">
         <iframe class="frame" src={serviceroot} title="Giriş"/>
     </div>
@@ -9,18 +10,22 @@
     import { store_title,store_user } from '../store';
     import type {UserData} from '../store';
     import { push } from 'svelte-spa-router';
+    import AppBar from './comp/AppBar.svelte';
 
 
-    const serviceroot = import.meta.env.VITE_SERVICE_ROOT;
-    
+    const serviceroot = import.meta.env.VITE_SERVICE_HOST+import.meta.env.VITE_AUTH_PAGE;
+    console.log(serviceroot);
     store_title.set("Login");
 
     function loginSucced(data:UserData) {
-        const token = data.token;        
-        sessionStorage.setItem("bearer-auth",`Bearer ${token}`);
-        data.token = "";
-        store_user.set(data);
-        push("/welcome");
+        if (data.token) {           
+            sessionStorage.setItem("authorization",`Bearer ${data.token}`);            
+            store_user.set(data);
+            push("/welcome");
+        } else {
+            console.log("olmadi");
+        }
+        
     }
 
     window.addEventListener("message",e=>{
@@ -28,6 +33,7 @@
     })
 
     onMount(()=>{
+        sessionStorage.removeItem("authorization");
     });
 
 </script>

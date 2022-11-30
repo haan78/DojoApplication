@@ -1,13 +1,10 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:dojo_mobile/page/widget/alert.dart';
-import 'package:dojo_mobile/api.dart';
 import 'package:dojo_mobile/page/welcome_page.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'admin_page.dart';
-import 'settings_page.dart';
 import '../store.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
@@ -67,37 +64,25 @@ class _WebLoginPageState extends State<WebLoginPage> {
 
     return Scaffold(
         appBar: AppBar(
-          title: Row(
-            children: [
-              Image.asset(
-                "assets/logo.png",
-                fit: BoxFit.contain,
-                height: 48,
-              ),
-              const SizedBox(
-                width: 10,
-              ),
-              Text(Provider.of<Store>(context).AppName)
-            ],
-          ),
-          actions: [
-            IconButton(
-                onPressed: () {
-                  Navigator.push(context, MaterialPageRoute(
-                    builder: (context) {
-                      return const SettingsPage();
-                    },
-                  ));
-                },
-                icon: const Icon(Icons.settings))
+            title: Row(
+          children: [
+            Image.asset(
+              "assets/logo.png",
+              fit: BoxFit.contain,
+              height: 48,
+            ),
+            const SizedBox(
+              width: 10,
+            ),
+            Text(Provider.of<Store>(context).AppName)
           ],
-        ),
+        )),
         body: Padding(
             padding: const EdgeInsets.all(10),
             child: AspectRatio(
               aspectRatio: 1,
               child: WebView(
-                initialUrl: s.host,
+                initialUrl: s.LoginUrl,
                 javascriptMode: JavascriptMode.unrestricted,
                 javascriptChannels: <JavascriptChannel>{getMessage(context)},
               ),

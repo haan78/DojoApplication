@@ -1,4 +1,6 @@
-http/vendor
-http/composer.lock
+backend/vendor
+backend/composer.lock
+backend/dhtml
 dbinit/dump-*
+frontend
 dojo_service.env

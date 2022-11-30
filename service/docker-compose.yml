@@ -9,8 +9,9 @@ services:
         environment:             
             - "TZ=Turkey"
         volumes: 
-            - "./http:/var/www/html"
-            - "./http/vendor:/var/www/html/vendor"
+            - "./frontend:/var/www/html"
+            - "./backend:/var/www/html/backend"
+            ##- "./backend/vendor:/var/www/html/backend/vendor"
             - "./developer.sh:/developer.sh"
         command: 
             - "/developer.sh"

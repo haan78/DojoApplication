@@ -16,50 +16,57 @@ use Minmi\Request;
 use Minmi\MinmiExeption;
 
 function tokenPars(string &$token) {
-    if ($token) {
+    $payload = null;
+    try {
         $payload = \Firebase\JWT\JWT::decode($token, $_ENV["JWT_KEY"], array('HS256'));
-        if (property_exists($payload, "exp") && property_exists($payload,"uye_id") && property_exists($payload,"durum")) {
-            $payload["exp"] = time() + $_ENV["TOKEN_TIME"];
-            $token = \Firebase\JWT\JWT::encode($payload, $_ENV["JWT_KEY"], 'HS256');
-            return [
-                "uye_id" => $payload["uye_id"],            
-                "durum" => $payload["durum"]
-            ];
-        } else {
-            throw new MinmiExeption("Token does not contain necessary values");
-        }
-    } else {
-        return null;
+    } catch (Exception $ex) {
+        throw new MinmiExeption($ex->getMessage(),401);
     }
     
+    if (property_exists($payload, "exp") && property_exists($payload, "uye_id") && property_exists($payload, "durum")) {
+        $payload->exp = time() + $_ENV["TOKEN_TIME"];
+        $token = \Firebase\JWT\JWT::encode($payload, $_ENV["JWT_KEY"], 'HS256');
+        return [
+            "uye_id" => $payload->uye_id,
+            "durum" => $payload->durum
+        ];
+    } else {
+        throw new MinmiExeption("Token does not contain necessary values");
+    }
 }
 
-$router = new DefaultJsonRouter("", function (Request $req,Response $res) {
+$router = new DefaultJsonRouter("", function (Request $req, Response $res) {
 
     $urlpattern = $req->getUriPattern();
     $token = $req->getBearerToken();
-    $user = tokenPars($token);
-    $durum = !is_null($user) ? $user["durum"] : "";
 
-    if (str_starts_with($urlpattern, "/admin") && !in_array($durum,["admin", "super-admin"])) {
-        throw new MinmiExeption("Unauthorized request for admin action");
-    } elseif (str_starts_with($urlpattern, "/member") && !in_array($durum,["admin", "super-admin", "active"])) {
-        throw new MinmiExeption("Unauthorized request");
+    if ($token) {
+        $user = tokenPars($token);
+        $durum = $user["durum"];
+        if ( $durum == "passive" ) {
+            throw new MinmiExeption("Membership is passive", 401);
+        }
+        if (str_starts_with($urlpattern, "/admin") && !in_array($durum, ["admin", "super-admin"])) {
+            throw new MinmiExeption("Unauthorized request for admin action", 401);
+        }
+        $req->setLocal((object)$user);
+    } elseif ( !in_array($urlpattern,["/token","/email","/reset"]) ) {
+        throw new MinmiExeption("Unauthorized required", 401);
     }
-    $req->setLocal((object)$user);
+    
 });
 
-$router->add("/email",function(Request $request) {
+$router->add("/email", function (Request $request) {
     $jdata = $request->json();
     $captcha = $jdata->captcha ?? "";
     $email = $jdata->email ?? "";
-    
+
     if ($captcha && $email) {
         if (hcaptcha($captcha)) {
-            create_identity(0,$email,$ad,$code);
-            sendinblue($email,3,(object)[
-                "AD"=>$ad,
-                "URL"=>$_ENV["SERVICE_ROOT"]."/index.php?m=reset?code=$code"
+            create_identity(0, $email, $ad, $code);
+            sendinblue($email, 3, (object)[
+                "AD" => $ad,
+                "URL" => $_ENV["SERVICE_ROOT"] . "/index.php?m=reset?code=$code"
             ]);
         } else {
             throw new MinmiExeption("Captcha is wrong", 401);
@@ -69,14 +76,14 @@ $router->add("/email",function(Request $request) {
     }
 });
 
-$router->add("/reset",function(Request $request) {
+$router->add("/reset", function (Request $request) {
     $jdata = $request->json();
     $captcha = $jdata->captcha ?? "";
     $code = $jdata->code ?? "";
     $pass = $jdata->password ?? "";
     if ($captcha && $code) {
         if (hcaptcha($captcha)) {
-            reset_password($code,$pass);
+            reset_password($code, $pass);
         } else {
             throw new MinmiExeption("Captcha is wrong", 401);
         }
@@ -92,12 +99,12 @@ $router->add("/token", function (Request $request) {
     if ($request->hasBasicAuth($username, $password) && $captcha) {
         if (hcaptcha($captcha)) {
             $user = validate(trim($username), trim($password));
-            if (!is_null($user)) {                
+            if (!is_null($user)) {
                 $payload = [
                     "exp" => time() + $_ENV["TOKEN_TIME"],
                     "durum" => $user["durum"],
                     "uye_id" => $user["uye_id"]
-                ];                    
+                ];
                 $token = \Firebase\JWT\JWT::encode($payload, $_ENV["JWT_KEY"], 'HS256');
                 return [
                     "ad" => $user["ad"],
@@ -179,13 +186,13 @@ $router->add("/member/bilgi", function (Request $req) {
     return uye($req->local()->uye_id);
 });
 
-$router->add("/member/email",function(Request $req){
+$router->add("/member/email", function (Request $req) {
     $params = $req->json();
     $email = $params->email;
-    create_identity($req->local()->uye_id,$email,$ad,$code);
-    sendinblue($email,3,(object)[
-        "AD"=>$ad,
-        "URL"=>$_ENV["SERVICE_ROOT"]."/index.php?m=reset?code=$code"
+    create_identity($req->local()->uye_id, $email, $ad, $code);
+    sendinblue($email, 3, (object)[
+        "AD" => $ad,
+        "URL" => $_ENV["SERVICE_ROOT"] . "/index.php?m=reset?code=$code"
     ]);
 });
 

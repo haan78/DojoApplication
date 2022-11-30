@@ -15,7 +15,7 @@
         {#if module=="PasswordChange"}
         <PasswordChange />
         {:else if module == "Dues"}
-        <Dues/>
+        <Dues dues={duelist}/>
         {:else}
         <Member />
         {/if}
@@ -28,10 +28,22 @@
     import Member from './Member.svelte';    
     import Dues from './Dues.svelte';    
     import { onMount } from "svelte";
+    import {JRequest } from "../lib/JRequest";
+    import type { JRequestError } from "../lib/JRequest";
+    import type { Due } from "../Types";
+
+    let duelist:Array<Due> = [];
 
     let module:string = "";
     onMount(()=>{
         module = "Member";
+        JRequest("/member/bilgi").then(response=>{
+            duelist = response[2];
+        }).catch((err:JRequestError)=>{
+            if (err.status == 401) {
+                push("/");
+            }
+        });
     });
 
 </script>

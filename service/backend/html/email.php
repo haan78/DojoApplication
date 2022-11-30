@@ -3,6 +3,7 @@
         <div class="text">
             Sistemde kayıtlı olan e-postanızı bilmiyorsanız veya değiştirmek istiyorsanız. Lütfen dojo yöneticinizle görüşünüz.
         </div>
+        <hr/>
         <div class="item">
             <label style="width: 100%">
                 <span>E-Posta</span>
