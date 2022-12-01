@@ -7,7 +7,7 @@
 </main>
 <script lang="ts">
     import { onMount } from 'svelte';
-    import { store_title,store_user } from '../store';
+    import { store_user } from '../store';
     import type {UserData} from '../store';
     import { push } from 'svelte-spa-router';
     import AppBar from './comp/AppBar.svelte';
@@ -15,7 +15,7 @@
 
     const serviceroot = import.meta.env.VITE_SERVICE_HOST+import.meta.env.VITE_AUTH_PAGE;
     console.log(serviceroot);
-    store_title.set("Login");
+
 
     function loginSucced(data:UserData) {
         if (data.token) {           

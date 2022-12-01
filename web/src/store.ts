@@ -12,7 +12,7 @@ export function getUserData() : UserData {
     return <UserData>get(store_user);
 }
 
-export const store_title = writable("");
+
 export const store_user = writable(<UserData>{
     ad:"",
     email:"",

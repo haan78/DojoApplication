@@ -1,12 +1,19 @@
 <script lang="ts">
     import Popup from "./Popup.svelte";
-    export let settings: boolean = false;
-    import { SettingsIcon } from "svelte-feather-icons";
+
+    import { SettingsIcon,LogOutIcon } from "svelte-feather-icons";
+    import { createEventDispatcher } from "svelte";
     let popup: Popup;
     export let foregroundColor:string = "gold";
     export let backgroundColor:string = "black";
     export let logo:string = "/logo.png"
     export let title:string = "";
+    const eventDispatcher = createEventDispatcher();
+
+    function onExit() {
+        eventDispatcher("exit",null);
+    }
+
 </script>
 
 <div class="header" style="--foreground-color:{foregroundColor}; --background-color:{backgroundColor};" >
@@ -18,16 +25,19 @@
         >
     </div>
     <div class="right">
-        {#if settings}
+        {#if $$slots.settings}
             <a
                 href={"javascript:;"}
                 on:click={(event) => {
-                    popup.toggle(event);
+                    if (popup.toggle) popup.toggle(event);
                 }}><SettingsIcon size="1.5x" /></a
             >
             <Popup bind:this={popup}>
                 <slot name="settings" />
             </Popup>
+        {/if}
+        {#if $$slots.exit}
+            <a href={"javascript:;"} on:click={onExit} ><LogOutIcon size="1.5x" /><slot name="exit" /></a>
         {/if}
     </div>
 </div>

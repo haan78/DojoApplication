@@ -27,13 +27,13 @@ export class JRequestError extends Error {
 
 export type JRequestReject = (error:JRequestError)=>void;
 
-export function JRequest(uri:string,data:unknown = null) : Promise<unknown> {
+export function JRequest<T>(uri:string,data:unknown = null) : Promise<T> {
     const url = `${serviceurl}${uri}`;
     let headers:RequestHeader = {
         "Content-Type":`application/json; charset=UTF-8`,
         "authorization": sessionStorage.getItem("authorization") || ""
     };
-    return new Promise((resolve, reject:JRequestReject) => {        
+    return new Promise<T>((resolve, reject:JRequestReject) => {        
         fetch(url, {
             method: (data === null ? 'GET' : 'POST'),
             cache: 'no-cache',
@@ -47,7 +47,7 @@ export function JRequest(uri:string,data:unknown = null) : Promise<unknown> {
             }
             response.json().then(json=>{
                 if (json.success) {
-                    resolve(json.data);    
+                    resolve(<T>json.data);    
                 } else {
                     let err = new JRequestError(json.data.message,"Response",json.data.code,response.status);
                     reject(err);

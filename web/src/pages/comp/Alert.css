@@ -1,7 +1,7 @@
 
 .alert {
 
-    position: fixed;
+    position: absolute;
     width: max-content;
     max-width: 25em;
     display: block;
@@ -36,7 +36,7 @@
     margin-right: auto;
     left: 0vw;
     right: 0vw;
-    top: 0vh;
+    /*top: 0vh;*/
 }
 
 .alert.top-left {

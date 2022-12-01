@@ -11,6 +11,7 @@ export default (container) => {
         },
         // @ts-ignore
         __delete(frame, closefnc) {
+            
             if (frame && frame.parentElement) {
                 // @ts-ignore
                 this.__alert.removeChild(frame);

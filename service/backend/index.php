@@ -12,7 +12,7 @@ if ( !in_array($module,["login","email","reset"])) {
 function button(string $action, string $title) {
     ?>
     <button type="button" class="button" onclick="<?php echo $action; ?>(this)">
-    <img src="html/loading.gif" style="width: 1.2em;height: 1.2em; vertical-align: middle; display: none;" />
+    <img src="html/loading.svg" style="width: 1.5em;height: 1.5em; vertical-align: middle; display: none;" />
     <span><?php echo $title; ?></span>
     </button>
     <?php
@@ -34,6 +34,7 @@ function button(string $action, string $title) {
 
 <body>
     <div class="main">
+    
         <?php require("html/$module.php"); ?>
     </div>
 

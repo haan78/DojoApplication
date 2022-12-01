@@ -17,12 +17,12 @@
     box-shadow: .2em .2em .4em var(--cl-br-hover);
 }
 
-.btn:hover {
+.btn:hover:not([disabled]) {
     border-color: var(--cl-br-hover);
     box-shadow: .1em .1em .2em var(--cl-br-hover);;
 }
 
-.btn:active {
+.btn:active:not([disabled]) {
     border-color: var(--cl-br-active);
     box-shadow: none;
 }

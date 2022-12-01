@@ -1,37 +1,32 @@
 <main>
-    <h2>Aidatlar</h2>
-    <div class="list">
-        <div class="header" >
-            <div style="width: 1.2em">#</div>
-            <div style="width: 3em">Yıl</div>
-            <div style="width: 4em">Ay</div>
-            <div style="width: 4em">Çal.</div>
-            <div style="width: 5em">Tutar</div>
-            <div style="width: 5em">Bilgi</div>
-        </div>
-        <div class="body">
-            {#each dues as due,ind}
-            <div class={ `row ${due.muhasebe_id ? "" : "alert"}` }>
-                <div style="width: 1.2em">
-                    {#if due.muhasebe_id}<CheckCircleIcon size="1x" />{:else}<AlertCircleIcon size="1x" />{/if}
-                </div>
-                <div style="width: 3em">{due.yil}</div>
-                <div style="width: 4em">{aytr(due.ay)}</div>
-                <div style="width: 4em">{due.yoklama}</div>
-                <div style="width: 5em;">
-                    {#if due.muhasebe_id}
+    <table id="tbl1" style="width: 100%;">
+        <thead>
+            <tr>
+                <th></th>
+                <th>Ay/Yıl</th>                
+                <th>Çalışma</th>
+                <th>Tutar</th>            
+            </tr>
+        </thead>
+        <tbody>
+            {#each dues as due}
+            <tr style:color={due.muhasebe_id ? "darkgreen" : "brown"} on:click={()=>{bilgi(due)}} >
+                <td>
+                    {#if due.muhasebe_id}<CheckCircleIcon size="1.5x" />{:else}<AlertCircleIcon size="1.5x" />{/if}
+                </td>
+                <td>{aytr(due.ay)}/{due.yil}</td>
+                <td>{due.yoklama}</td>
+                <td>{#if due.muhasebe_id}
                     <span style="color: darkgreen">Ödendi</span>
                     {:else}
-                    <span style="color: brown">{due.borc}</span>
+                    <span style="color: brown; font-weight: bold;">{due.borc}</span>
                     {/if}
-                </div>
-                <div style="width: 5em">
-                    <a href={"javascript:;"} on:click={()=>{bilgi(due)}}><HelpCircleIcon size="2x" /></a>
-                </div>
-            </div>
+                </td>                
+            </tr>
             {/each}
-        </div>
-    </div>
+        </tbody>
+    </table>
+    
     <Dialog bind:visible={showdlg}>
         <fieldset class="dlg">
             <legend>{dlgtitle}</legend>
@@ -46,7 +41,7 @@
 </main>
 <script lang="ts">
     import { onMount } from 'svelte';
-    import { AlertCircleIcon, CheckCircleIcon,HelpCircleIcon } from 'svelte-feather-icons';
+    import { AlertCircleIcon, CheckCircleIcon } from 'svelte-feather-icons';
     import { Aylar, type Due } from "../Types";
     import Dialog from "./comp/Dialog.svelte";
     export let dues:Array<Due> = [];
@@ -80,73 +75,28 @@
     .dlg > ul > li {
         margin-bottom: .5em;
     }
-    .list {
-        display: flex;
+
+    #tbl1 {
         width: 100%;
-        height: 100%;
-        flex-direction: column;
-        align-content: flex-start;        
-        justify-content: start;
+        border-collapse: collapse;
     }
 
-    .list > .header {
-        display: flex;
-
-        flex-direction: row;
-        align-content: flex-start;        
-        justify-content: start;
-        flex-wrap: nowrap;
-    }
-    .list > .header > div {        
-        border-bottom: solid 2px black;
-        padding-left: .5em;
-        padding-bottom: .5em;
-        display: flex;
-        justify-content: start;
-        align-content: center;
-        font-weight: bolder;
-
-    }
-    .list > .body {
-        display: flex;
-        width: 100%;
-        flex-direction: column;
-        align-content: flex-start;        
-        justify-content: start;
-        overflow-y:scroll; 
-        max-height: 30em; 
-    }
-
-    .list > .body > .row {
-        display: flex;
-
-        flex-direction: row;
-        align-content: flex-start;        
-        justify-content: start;
-        flex-wrap: nowrap;
-        background-color: white;
-    }
-    .list > .body > .row:nth-child(even) > div {
-        background-color: rgb(221, 223, 224);
-    }
-    
-    .list > .body > .row > div:first-child {
-        color: darkgreen;
-    }
-    .list > .body > .row > div {
-        padding-top: .7em;
-        padding-bottom: .7em;
+    #tbl1 th {
+        text-align: left;
         border-bottom: solid 1px black;
-        padding-left: .5em;
-        display: flex;
-        align-content: center;        
-        justify-content: start;
-        flex-wrap: wrap;
     }
-    .list > .body > .row.alert {
-        font-weight: bold;
+
+    #tbl1 > tbody > tr {
+        cursor: pointer;
+        padding-top: .7em;
     }
-    .list > .body > .row.alert > div:first-child{
-        color: brown;
+
+    #tbl1 > tbody > tr > td {
+        padding-top: .7em;
+        border-bottom: solid 1px black;
+    }
+
+    #tbl1 > tbody > tr:nth-child(even) {
+        background-color: rgb(221, 223, 224);
     }
 </style>

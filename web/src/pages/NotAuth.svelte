@@ -1,1 +1,0 @@
-<h1>Yetkisiz Giriş Denemesi</h1>
