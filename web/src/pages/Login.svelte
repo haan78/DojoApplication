@@ -19,7 +19,8 @@
 
     function loginSucced(data:UserData) {
         if (data.token) {           
-            sessionStorage.setItem("authorization",`Bearer ${data.token}`);            
+            sessionStorage.setItem("authorization",`Bearer ${data.token}`);        
+            console.log(data); 
             store_user.set(data);
             push("/welcome");
         } else {

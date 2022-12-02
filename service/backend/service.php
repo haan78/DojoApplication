@@ -174,7 +174,7 @@ $router->add("/member/password", function (Request $req) {
     $uye_id = $req->local()->uye_id;
     $params = $req->json();
     if (!password($uye_id, $params->oldpass, $params->newpass, $err)) {
-        throw new MinmiExeption($err);
+        throw new MinmiExeption($err,401);
     }
 });
 
@@ -192,7 +192,7 @@ $router->add("/member/email", function (Request $req) {
     create_identity($req->local()->uye_id, $email, $ad, $code);
     sendinblue($email, 3, (object)[
         "AD" => $ad,
-        "URL" => $_ENV["SERVICE_ROOT"] . "/index.php?m=reset?code=$code"
+        "URL" => $_ENV["SERVICE_ROOT"] . "/backend/index.php?m=reset&code=$code"
     ]);
 });
 

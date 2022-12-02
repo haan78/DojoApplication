@@ -22,9 +22,9 @@
 </script>
 <main>
     {#if (visible)}
-    <div id="background"  on:click={()=>close('bg')}></div>
+    <div id="background"  on:click={()=>close('bg')} aria-hidden="true"></div>
     <div id="modal">
-        <span on:click={()=>close('x')}>&#x2715</span>
+        <span on:click={()=>close('x')} aria-hidden="true">&#x2715</span>
         <slot></slot>
     </div>
     {/if}

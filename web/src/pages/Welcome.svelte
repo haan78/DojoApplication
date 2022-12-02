@@ -19,19 +19,17 @@
     <div class="info">
         <div class="left">
             <img class="foto" src={ `data:image/png;base64, ${info.img64}` } alt="" />
+            <p>Üyelik bilgilerinizle ilgili bir sorun olduğunu düşüyor veya resminizi değiştirmek istiyorsanız. Lütfen çalışmadaki yetkili <i>Senpai</i> ile temasa geçin</p>
         </div>
         <div class="labels">
-            <span><b>Ad</b>{info.ad}</span>
-            <span><b>Cinsiyet</b>{info.cinsiyet}</span>
-            <span><b>Doğum Tar.</b>{ (new Date(info.dogum_tarih)).toLocaleDateString()}</span>
-            <span><b>Üyelik Tipi</b> {info.tahakkuk}</span>
+            <span><b>Üye</b>{info.ad} / {info.cinsiyet}</span>            
+            <span><b>Doğum Tar.</b>{trDate(info.dogum_tarih)}</span>
+            <span><b>Üyelik Tipi / Durumu</b> {info.tahakkuk} / {durum}</span>
             <hr/>            
             <span><b>Seviye</b>{level.seviye}</span>
-            <span><b>Seviye Tar.</b>{ level.tarih ? (new Date(level.tarih)).toLocaleDateString() : "" }</span>            
-                      
-        </div>
-        <div class="labels">
-            <span><b>Son Çal.</b>{attendances[0] ? ((new Date(attendances[0].tarih)).toLocaleDateString()) + " / " + attendances[0].tanim : "" }</span>
+            <span><b>Seviye Tar.</b>{ trDate(level.tarih)}</span>            
+            <hr/>        
+            <span><b>Son Çal.</b>{attendances[0] ? ( trDate(attendances[0].tarih) ) + " / " + attendances[0].tanim : "" }</span>
             <span><b>Son 3 Ay Çal.</b>{info.son3Ay}</span>  
             <hr/>
             {#if duesum_count > 0}
@@ -58,9 +56,11 @@
     import { onMount } from "svelte";
     import {JRequest } from "../lib/JRequest";
     import type { JRequestError } from "../lib/JRequest";
-    import type { Due, MemberInfo, Level, UyeYoklama, Uyebilgi } from "../Types";
+    import { type Due, type MemberInfo, type Level, type UyeYoklama, type Uyebilgi, trDate } from "../Types";
     import AppBar from "./comp/AppBar.svelte";
+    import { getUserData } from '../store';
 
+    let durum:string;
     let duelist:Array<Due> = [];
     let info:MemberInfo = {
         ad:"",
@@ -85,11 +85,11 @@
 
     let duesum_total:number = 0;
     let duesum_count:number = 0;
-    
 
 
     let module:string = "";
     onMount(()=>{
+        durum = getUserData().durum;
         module = "Loading";
         JRequest<Uyebilgi>("/member/bilgi").then(response=>{
             levels = response[1];
@@ -149,15 +149,26 @@
         display: flex;
         flex-wrap: wrap;
         min-width: 330px;
+        flex-direction: column;
     }
 
     .info > .left {
-        max-width: 40%;
+        display: flex;
+        flex-direction: row;        
+        flex-wrap: nowrap;
     }
 
     .info > .left > img {
-        width: 100%;
+        width: auto;
         height: auto;
+        max-width: 10em;
+        flex: 1 1 0;
+    }
+
+    .info > .left > p {
+        width: 60%;
+        padding-left: 1em;
+        flex-basis: 1;
     }
 
     .labels {

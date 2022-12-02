@@ -154,7 +154,7 @@ function password(int $uye_id, string $old, string $new, &$err): bool {
     if (strlen($pn) >= 6) {
         if ($pn != $po) {
             $mysqli = mysqlilink();
-            $sql = "UPDATE uye SET parola = UPPER(SHA1(?)) WHERE parola =  IF(LENGTH(parola)<=6,?, UPPER(SHA1(?)) ) AND uye_id = ?";
+            $sql = "UPDATE uye SET parola = MD5(?) WHERE parola =  IF(LENGTH(parola)<=6,?, MD5(?) ) AND uye_id = ?";
             $stmt = mysqli_prepare($mysqli, $sql);
             if ($stmt) {
                 if (mysqli_stmt_bind_param($stmt, "sssi", $pn, $po, $po, $uye_id)) {

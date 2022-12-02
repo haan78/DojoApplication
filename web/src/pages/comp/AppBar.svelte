@@ -61,5 +61,6 @@
 
     .right > a {
         color: var(--foreground-color);
+        padding: .5em;
     }
 </style>

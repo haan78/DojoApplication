@@ -49,7 +49,8 @@ CREATE  PROCEDURE `uye_bilgi`(
 BEGIN
 	SELECT 
     	u.`ad`,u.`cinsiyet`,u.`dosya_id`,u.`durum`,u.`ekfno`,u.`email`,u.`tahakkuk_id`,t.tanim  as "tahakkuk",u.dogum_tarih ,d.`icerik` as img64,
-    	(SELECT count(*) FROM  uye_yoklama uy WHERE uy.uye_id  = u.uye_id AND uy.tarih >= DATE_ADD(CURRENT_DATE,INTERVAL -3 MONTH)) as son3Ay 
+    	(SELECT count(*) FROM  uye_yoklama uy WHERE uy.uye_id  = u.uye_id AND uy.tarih >= DATE_ADD(CURRENT_DATE,INTERVAL -3 MONTH)) as son3Ay
+    	
     FROM uye u 
     INNER JOIN `tahakkuk` t ON t.`tahakkuk_id` = u.`tahakkuk_id`
     LEFT JOIN dosya d ON d.`dosya_id` = u.`dosya_id`
@@ -73,7 +74,9 @@ BEGIN
     LEFT JOIN yoklama y on y.yoklama_id = ut.yoklama_id 
 	    WHERE ut.`uye_id` = p_uye_id ORDER BY tahakkuk_tarih DESC;
     
-   SELECT uy.tarih,y.yoklama_id , y.tanim  FROM uye_yoklama uy inner JOIN yoklama y on y.yoklama_id  = uy.yoklama_id WHERE uy.uye_id  = p_uye_id;
+   SELECT uy.tarih,y.yoklama_id , y.tanim  
+  	FROM uye_yoklama uy inner JOIN yoklama y on y.yoklama_id  = uy.yoklama_id WHERE uy.uye_id  = p_uye_id
+  		ORDER BY uy.tarih DESC;
 END;;
 
 CREATE  PROCEDURE `uye_dogrula`(

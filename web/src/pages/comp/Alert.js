@@ -1,5 +1,5 @@
-import "./Alert.css";
 //@ts-ignore
+import "./Alert.css";
 export default (container) => {
     return {
         container: container,

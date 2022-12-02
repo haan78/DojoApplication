@@ -26,13 +26,19 @@
         </label>
         <button disabled={disemail} class="btn" on:click={validateemail}>E-Posta Değiştir</button>
     </div>
-    
+    <Dialog bind:visible={dlgemailshow}>
+        <p style="font-size: large">
+            Belirtiğiniz yeni adrese adresine bir doğrulama e-postası gönderildi. E-Posta doğrulamasını onayladıktan sonra. değişiklik gerçekleşecektir.            
+            <a href={"javascript:;"} on:click={()=>{ dlgemailshow = false; }}>Kapat</a>
+        </p>
+    </Dialog>
 </main>
 <script lang="ts">
     import { onMount } from "svelte";
     import { JRequest } from "../lib/JRequest";
     import validate from "../lib/Vaildate";
     import Alert from "./comp/Alert.js";
+    import Dialog from "./comp/Dialog.svelte";
     let oldpass:string = "";
     let newpass:string = "";
     let repatpass:string = "";
@@ -43,6 +49,7 @@
     let altemail:any;
     let disemail:boolean = false;
     let dispass:boolean = false;
+    let dlgemailshow:boolean = false;
     onMount(()=>{
         altpass = Alert(passform);
         altemail = Alert(emailform);
@@ -57,6 +64,16 @@
             if (altpass.bad) altpass.bad("Parolanın tekrarı hatalı");
         } else {
             dispass = true;
+            JRequest<void>("/member/password",{"oldpass":oldpass, "newpass":newpass}).then(()=>{                
+                altpass.good("Prolanız başarıyla değiştirildi");
+                dispass = false;
+                oldpass = "";
+                newpass = "";
+                repatpass = "";
+            }).catch(err=>{
+                altpass.bad(err.message);
+                dispass = false;
+            });
         }
     }
 
@@ -65,7 +82,14 @@
             if (altemail.bad) altemail.bad("Lütfen geçerli bir eposta adresi girin");
         } else {
             disemail = true;
-            JRequest()
+            JRequest<void>("/member/email",{"email":newemail}).then(()=>{                
+                dlgemailshow = true;
+                dispass = false;
+                newemail = "";
+            }).catch(err=>{
+                altemail.bad(err.message);
+                dispass = false;
+            });
         }
     }
 </script>

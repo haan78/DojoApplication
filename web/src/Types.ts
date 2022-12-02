@@ -15,6 +15,14 @@ export interface Due {
 }
 
 export const Aylar = ["Ocak","Şubat","Mart", "Nisan", "Mayıs", "Haziran", "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"];
+export function trDate(isodate:string|null ) : string {
+    if (isodate) {
+        if (/^[1-9][0-9]{3}-[0-1][0-9]-[0-9]{2}$/.test(isodate)) {
+            return (new Date(<string>isodate)).toLocaleDateString();
+        }
+    }
+    return "";
+}
 
 export interface MemberInfo {
     ad:string;
