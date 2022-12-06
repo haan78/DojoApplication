@@ -57,6 +57,7 @@
         display: flex;
         justify-content: left;
         align-items: center;
+        padding: .3em;
     }
 
     .right > a {

@@ -98,6 +98,7 @@ $router->add("/token", function (Request $request) {
     $username = $password = "";
     if ($request->hasBasicAuth($username, $password) && $captcha) {
         if (hcaptcha($captcha)) {
+            //echo "$username / $password";
             $user = validate(trim($username), trim($password));
             if (!is_null($user)) {
                 $payload = [

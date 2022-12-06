@@ -1,6 +1,6 @@
 backend/vendor
 backend/composer.lock
 backend/dhtml
-dbinit/dump-*
+dbinit/dump*
 frontend
 dojo_service.env
