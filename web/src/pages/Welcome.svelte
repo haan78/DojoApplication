@@ -18,7 +18,7 @@
         {:else}
     <div class="info">
         <div class="left">
-            <img class="foto" src={ `data:image/png;base64, ${info.img64}` } alt="" />
+            <img class="foto" src={ `data:${info.file_type};base64, ${info.img64}` } alt="" />
             <p>Üyelik bilgilerinizle ilgili bir sorun olduğunu düşüyor veya resminizi değiştirmek istiyorsanız. Lütfen çalışmadaki yetkili <i>Senpai</i> ile temasa geçin</p>
         </div>
         <div class="labels">
@@ -73,6 +73,7 @@
         son3Ay:0,
         tahakkuk:"",
         tahakkuk_id:0,
+        file_type:""
     };
     let levels:Array<Level> = [];
     let attendances:Array<UyeYoklama> = [];
@@ -172,6 +173,7 @@
     }
 
     .labels {
+        padding-top: .5em;
         display: flex;
         flex-direction: column;
         align-content: flex-start;

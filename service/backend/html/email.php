@@ -23,3 +23,8 @@
         </div>
     </div>
 </div>
+<script>
+    function setLoginData(email) {
+        document.querySelector("input[name=email]").value = email || "";
+    }
+</script>

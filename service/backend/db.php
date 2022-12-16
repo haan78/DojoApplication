@@ -37,10 +37,15 @@ function reset_password(string $code, string $password) : void {
     $p->procedure("uye_kimlik_degistir")->in($code)->in($password)->call();
 }
 
-function validate(string $username, string $password) {
+function validate(string $username, string $password, string $type) {
     $uye_id = $ad = $durum = $dosya_id = $err = "";
+    $list = "'active','admin','super-admin'";
+    if ($type == "admin") {
+        $list = "'admin','super-admin'";
+    }
+    //throw new Exception($list." - ".$type);
     $sql = "SELECT ad,durum,uye_id,dosya_id FROM uye
-                WHERE durum IN ('active','admin','super-admin') AND
+                WHERE durum IN ($list) AND
                     email = ? AND parola = IF(LENGTH(parola)<=6,?, MD5(?) )";
     $mysqli = mysqlilink();
     $stmt = mysqli_prepare($mysqli, $sql);

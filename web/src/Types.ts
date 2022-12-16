@@ -34,7 +34,8 @@ export interface MemberInfo {
     img64:string,
     son3Ay:number,
     tahakkuk:string,
-    tahakkuk_id:number
+    tahakkuk_id:number,
+    file_type:string
 }
 
 export interface Level {

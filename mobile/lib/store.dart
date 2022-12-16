@@ -13,6 +13,7 @@ class Store {
   String UserStatus = "";
   String UserName = "";
   String LoginUrl = "";
+  String WebUrl = "";
   int id = 0;
   void copy(Store s) {
     AppName = s.AppName;
@@ -20,6 +21,7 @@ class Store {
     ApiPassword = s.ApiPassword;
     ApiUrl = s.ApiUrl;
     LoginUrl = s.LoginUrl;
+    WebUrl = s.WebUrl;
     ApiToken = s.ApiToken;
     UserStatus = s.UserStatus;
     UserName = s.UserName;
@@ -31,23 +33,16 @@ Future<Store> LoadStore() async {
   Store s = Store();
   String jdata = await rootBundle.loadString("assets/defaults.json");
   final Map<String, dynamic> data = jsonDecode(jdata);
-
-  if (data.containsKey("AppName")) {
-    s.AppName = data["AppName"].toString();
-  }
-  if (data.containsKey("ApiUrl")) {
-    s.ApiUrl = data["ApiUrl"];
-  }
-  if (data.containsKey("LoginUrl")) {
-    s.ApiUrl = data["LoginUrl"];
-  }
+  String host = data["Host"].toString();
+  s.AppName = data["Name"].toString();
+  s.ApiUrl = host + data["Service"];
+  s.LoginUrl = host + data["Login"];
+  s.WebUrl = host + data["Web"];
 
   const storage = FlutterSecureStorage();
 
   s.ApiUser = await storage.read(key: "ApiUser") ?? "";
   s.ApiPassword = await storage.read(key: "ApiPassword") ?? "";
-  s.LoginUrl = await storage.read(key: "LoginUrl") ?? s.LoginUrl;
-  s.ApiUrl = await storage.read(key: "ApiUrl") ?? s.ApiUrl;
   return s;
 }
 
@@ -60,6 +55,4 @@ Future<void> writeSettings(Store s) async {
   const storage = FlutterSecureStorage();
   await storage.write(key: "ApiUser", value: s.ApiUser);
   await storage.write(key: "ApiPassword", value: s.ApiPassword);
-  await storage.write(key: "LoginUrl", value: s.LoginUrl);
-  await storage.write(key: "ApiUrl", value: s.ApiUrl);
 }

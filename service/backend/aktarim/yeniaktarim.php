@@ -494,7 +494,7 @@ while ($doc = $uyeit->current()) {
         "borc" => floatval($aidat["toplam"]),
         "yil" => intval($aidat["yil"]),
         "ay" => intval($aidat["ay"]),
-        "tahakkuk_tarih" => $aidat["tarih"]->toDateTime()->format('Y-m-d'),
+        "tahakkuk_tarih" => $aidat["yil"]."-".str_pad($aidat["ay"],2,"0",STR_PAD_LEFT)."-01",
         "muhasebe_id" => $muhasebe_id,
         "yoklama_id" => 1
       ]);
@@ -552,7 +552,7 @@ while ($doc = $uyeit->current()) {
     echo insert("uye_yoklama",$yoklamalar);
     echo insert("muhasebe",$muhasebe);
     echo insert("uye_tahakkuk", $aidatlar);
-    echo insert("dosya",[["tablo"=>"UYE","tablo_id"=>$id,"file_type"=>$type,"icerik"=>base64_encode($foto) ]]);
+    echo insert("dosya",[["tablo"=>"UYE","tablo_id"=>$id,"file_type"=>$type,"icerik"=>$foto ]]);
 
     array_push($emaillist, $uye["email"]);
     $id++;

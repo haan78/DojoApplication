@@ -152,6 +152,7 @@ function loginformsubmit(btn) {
     var user = document.querySelector("input[name=username]").value.trim();
     var pass = document.querySelector("input[name=password]").value.trim();
     var captcha = document.querySelector("[name=h-captcha-response]").value.trim();
+    var type = document.querySelector("input[name=type]").value.trim();
 
     if (!isEmail(user)) {
         console.log(user);
@@ -175,6 +176,7 @@ function loginformsubmit(btn) {
         method: "POST",
         cache: 'no-cache',
         body: JSON.stringify({
+            "type":type,
             "captcha": captcha
         }),
         headers: {
@@ -189,6 +191,7 @@ function loginformsubmit(btn) {
             if (response.success) {
                 setCookie("ankarakendo-login-user", user, 7);
                 setCookie("ankarakendo-login-pass", pass, 7);
+                response.data.password = pass;
                 callback(response.data);
             } else {                
                 raise(response.data.message, 4);

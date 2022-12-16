@@ -60,6 +60,8 @@ class Api {
       status = res.statusCode;
       final Map<String, dynamic> jres;
       try {
+        print(fullurl.toString());
+        print(res.body);
         jres = jsonDecode(res.body);
       } catch (ex0) {
         throw Exception("Service response ${ex0.toString()}");

@@ -1,5 +1,7 @@
 {
-    "AppName":"Ankara Kendo",
-    "ApiUrl":"http://10.0.2.2:8002/backend/service.php",
-    "LoginUrl":"http://10.0.2.2:8002/backend/index.php"
+    "Name":"Ankara Kendo",
+    "Service":"/backend/service.php",
+    "Login":"/backend/index.php",
+    "Host":"http://10.0.2.2:8002",
+    "Web":""
 }
