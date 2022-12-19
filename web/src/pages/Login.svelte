@@ -1,8 +1,13 @@
 <main>
     <AppBar title="Ankara Kendo" />
     <div class="center">
-        <iframe class="frame" src={serviceroot} title="Giriş"/>
+        <iframe class="frame" src={serviceroot} title="Giriş" bind:this={frame} on:load={fLoad}/>        
     </div>
+    <div class="remember">
+        <label>Beni Hatirla<input type="checkbox" bind:checked={remember} /></label>
+        <a href={"javascript:;"} on:click={removeUser}>Beni Unut</a>
+    </div>
+    
     
 </main>
 <script lang="ts">
@@ -11,16 +16,25 @@
     import type {UserData} from '../store';
     import { push } from 'svelte-spa-router';
     import AppBar from './comp/AppBar.svelte';
+    import Cookie from '../lib/Cookie';
+
+    let ankarakendo_login_user:string = "";
+    let ankarakendo_login_pass:string = "";
+    let frame:any;
+    let remember:boolean = false;
 
 
     const serviceroot = import.meta.env.VITE_SERVICE_HOST+import.meta.env.VITE_AUTH_PAGE;
-    console.log(serviceroot);
+    //console.log(serviceroot);
 
 
     function loginSucced(data:UserData) {
-        if (data.token) {           
-            sessionStorage.setItem("authorization",`Bearer ${data.token}`);        
-            console.log(data); 
+        if (data.token) {   
+            if (remember) {
+                Cookie.set("ankarakendo-login-user", ankarakendo_login_user, 2);
+                Cookie.set("ankarakendo-login-pass", ankarakendo_login_pass, 2);
+            }
+            sessionStorage.setItem("authorization",`Bearer ${data.token}`);
             store_user.set(data);
             push("/welcome");
         } else {
@@ -33,8 +47,22 @@
         loginSucced(e.data);        
     })
 
+    function fLoad() {        
+        ankarakendo_login_user = Cookie.get("ankarakendo-login-user") || "";
+        ankarakendo_login_pass = Cookie.get("ankarakendo-login-pass") || "";
+        if (frame.contentWindow  && typeof frame.contentWindow.setLoginData == "function") {
+            frame.contentWindow.setLoginData(ankarakendo_login_user,ankarakendo_login_pass,"");
+        }
+    }
+
+    function removeUser() {
+        Cookie.set("ankarakendo-login-user", "", -1);
+        Cookie.set("ankarakendo-login-pass", "", -1);
+        window.location.reload();
+    }
+
     onMount(()=>{
-        sessionStorage.removeItem("authorization");
+        sessionStorage.removeItem("authorization");        
     });
 
 </script>
@@ -56,5 +84,10 @@
         border: solid 1px black;
         border-radius: 1em;        
         overflow: hidden;
+    }
+    .remember {
+        padding: 1em;
+        display: flex;
+        justify-content: space-around;
     }
 </style>

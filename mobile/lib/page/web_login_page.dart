@@ -61,19 +61,20 @@ class _WebLoginPageState extends State<WebLoginPage> {
 
     return Scaffold(
         appBar: AppBar(
+            automaticallyImplyLeading: false,
             title: Row(
-          children: [
-            Image.asset(
-              "assets/logo.png",
-              fit: BoxFit.contain,
-              height: 48,
-            ),
-            const SizedBox(
-              width: 10,
-            ),
-            Text(Provider.of<Store>(context).AppName)
-          ],
-        )),
+              children: [
+                Image.asset(
+                  "assets/logo.png",
+                  fit: BoxFit.contain,
+                  height: 32,
+                ),
+                const SizedBox(
+                  width: 10,
+                ),
+                Text(Provider.of<Store>(context).AppName)
+              ],
+            )),
         body: Padding(
             padding: const EdgeInsets.all(10),
             child: Column(
@@ -103,6 +104,7 @@ class _WebLoginPageState extends State<WebLoginPage> {
                           _pageController.runJavascript("setLoginData('','','admin')");
                         },
                         child: const Text("Beni Unut")),
+                    const Spacer(),
                     TextButton(
                         onPressed: () {
                           launchUrl(Uri.parse(s.WebUrl));

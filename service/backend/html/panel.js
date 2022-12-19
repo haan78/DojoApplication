@@ -1,31 +1,3 @@
-function loadlogin() {
-    document.querySelector("input[name=username]").value = getCookie("ankarakendo-login-user") || "";
-    document.querySelector("input[name=password]").value = getCookie("ankarakendo-login-pass") || "";
-}
-
-function setCookie(cname, cvalue, exdays) {
-    const d = new Date();
-    d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
-    let expires = "expires=" + d.toUTCString();
-    document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/;SameSite=None; Secure";
-}
-
-function getCookie(cname) {
-    let name = cname + "=";
-    let decodedCookie = decodeURIComponent(document.cookie);
-    let ca = decodedCookie.split(';');
-    for (let i = 0; i < ca.length; i++) {
-        let c = ca[i];
-        while (c.charAt(0) == ' ') {
-            c = c.substring(1);
-        }
-        if (c.indexOf(name) == 0) {
-            return c.substring(name.length, c.length);
-        }
-    }
-    return "";
-}
-
 function raise(err, level) {
     var div = document.createElement("div");
     div.className = "AlertError";
@@ -44,12 +16,6 @@ function callback(data) {
     } else if (window.parent) {
         window.parent.postMessage(data,"*");
     }
-}
-
-function removelogincookie() {
-    setCookie("ankarakendo-login-user", "", -1);
-    setCookie("ankarakendo-login-pass", "", -1);
-    window.location.reload();
 }
 
 function resetformsubmit(btn) {
@@ -189,8 +155,6 @@ function loginformsubmit(btn) {
         //console.log(raw.body);
         raw.json().then(response => {
             if (response.success) {
-                setCookie("ankarakendo-login-user", user, 7);
-                setCookie("ankarakendo-login-pass", pass, 7);
                 response.data.password = pass;
                 callback(response.data);
             } else {                
@@ -204,36 +168,3 @@ function loginformsubmit(btn) {
         raise(err, 2);
     });
 }
-
-function uploadComp() {
-    var ucl = document.querySelectorAll("[data-comp=upload]");
-    ucl.forEach((elm, ind) => {
-        elm.innerHTML = "";
-        var img = document.createElement("img");
-        img.src = "./assets/kendoka.jpg";
-        img.style.width = "150px";
-        img.style.height = "200px";
-        img.style.cursor = "pointer";
-        var name = elm.getAttribute("data-name") || "file";
-        var input = document.createElement("input");
-        input.type = "file";
-        input.name = name;
-        input.style.display = "none";
-        input.setAttribute("accept", "image/png, image/jpeg");
-        img.onclick = () => {
-            input.click();
-        };
-        input.onchange = (evt) => {
-            const [file] = evt.target.files;
-            if (file) {
-                img.src = URL.createObjectURL(file);
-            }
-        };
-        elm.append(img);
-        elm.append(input);
-    });
-}
-
-window.addEventListener("load", () => {
-    uploadComp();
-});
