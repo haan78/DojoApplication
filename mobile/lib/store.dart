@@ -43,6 +43,7 @@ Future<Store> LoadStore() async {
 
   s.ApiUser = await storage.read(key: "ApiUser") ?? "";
   s.ApiPassword = await storage.read(key: "ApiPassword") ?? "";
+  s.ApiToken = await storage.read(key: "ApiToken") ?? "";
   return s;
 }
 
@@ -55,4 +56,7 @@ Future<void> writeSettings(Store s) async {
   const storage = FlutterSecureStorage();
   await storage.write(key: "ApiUser", value: s.ApiUser);
   await storage.write(key: "ApiPassword", value: s.ApiPassword);
+  if (s.ApiToken.isNotEmpty) {
+    await storage.write(key: "ApiToken", value: s.ApiToken);
+  }
 }

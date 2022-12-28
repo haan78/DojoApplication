@@ -132,6 +132,14 @@ namespace Minmi {
             return $this->pathParams;
         }
 
+        public function param(string $name) {
+            if ( isset($this->pathParams[$name]) ) {
+                return $this->pathParams[$name];
+            } else {
+                throw new MinmiExeption("There is no params like $name",400);
+            }
+        }
+
         public function agent(): string
         {
             return $_SERVER['HTTP_USER_AGENT'] ?? "";
@@ -143,7 +151,7 @@ namespace Minmi {
         }
 
         public function json()
-        {
+        {            
             $PD = file_get_contents("php://input");
             if (!empty($PD)) { //Json has been sent
                 $jd = json_decode($PD);

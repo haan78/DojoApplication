@@ -53,10 +53,50 @@ class UyeBilgi {
   List<UyeYoklama> yoklamalar = [];
 }
 
+class UyeListDetay {
+  int uye_id = 0;
+  String ad = "";
+  int dosya_id = 0;
+  String seviye = "";
+  int odenmemis_aidat_syisi = 0;
+  double odenmemis_aidat_borcu = 0;
+  DateTime son_keiko = DateTime.now();
+  int son3Ay = 0;
+  String image_type = "";
+  Uint8List? image;
+}
+
 Future<Uint8List> uyeResim(Api api, {BoxFit fit = BoxFit.fill}) async {
   dynamic r = await api.call("/member/foto");
   String b64s = r["content"];
   return base64Decode(b64s);
+}
+
+Future<List<UyeListDetay>> uye_listele(Api api, {required String durumlar, required int tahakkuk_id}) async {
+  dynamic r = await api.call("/admin/uyeler", data: {"durumlar": durumlar, "tahakkuk_id": tahakkuk_id});
+
+  List<UyeListDetay> l = [];
+  for (final urd in r) {
+    UyeListDetay uld = UyeListDetay();
+    uld.ad = urd["ad"];
+    uld.dosya_id = int.parse(urd["dosya_id"].toString());
+    uld.odenmemis_aidat_borcu = double.parse(urd["odenmemis_aidat_borcu"].toString());
+    uld.odenmemis_aidat_syisi = int.parse(urd["odenmemis_aidat_syisi"].toString());
+    uld.seviye = urd["seviye"];
+    uld.son_keiko = DateTime.parse(urd["son_keiko"].toString());
+    uld.son3Ay = int.parse(urd["son3Ay"].toString());
+    uld.uye_id = int.parse(urd["uye_id"].toString());
+    uld.image_type = urd["image_type"];
+    String? image = urd["image"];
+    if (image != null && image.isNotEmpty) {
+      uld.image = base64Decode(urd["image"]);
+    } else {
+      uld.image = null;
+    }
+
+    l.add(uld);
+  }
+  return l;
 }
 
 Future<UyeBilgi> uyeBilgi(Api api, {int uye_id = 0}) async {

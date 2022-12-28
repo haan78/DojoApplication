@@ -87,6 +87,61 @@ function uye(int $uye_id) {
     return $p->procedure("uye_bilgi")->in($uye_id)->call()->result("queries");
 }
 
+function uye_listele(string $durumlar, int $tahakkuk_id) : array {
+    $err = "";
+    $list = [];
+    
+    $sql = "SELECT u.uye_id,u.ad,u.dosya_id,u.seviye
+    ,SUM(IF(ut.uye_tahakkuk_id is NULL,0,1)) as odenmemis_aidat_syisi,
+    SUM( COALESCE(ut.borc,0) ) as odenmemis_aidat_borcu,
+    (SELECT uy.tarih FROM uye_yoklama uy WHERE uy.uye_id = u.uye_id ORDER BY uy.tarih DESC LIMIT 1 ) AS son_keiko,
+    (SELECT count(*) FROM  uye_yoklama uy WHERE uy.uye_id  = u.uye_id AND uy.tarih >= DATE_ADD(CURRENT_DATE,INTERVAL -3 MONTH)) as son3Ay,
+    d.icerik as image , d.file_type as image_type
+    FROM uye u
+    LEFT JOIN uye_tahakkuk ut ON ut.uye_id = u.uye_id and ut.muhasebe_id  is null
+    LEFT JOIN dosya d ON d.dosya_id  = u.dosya_id
+    WHERE FIND_IN_SET(u.durum,?) and u.tahakkuk_id = ?
+    GROUP BY u.uye_id,u.ad,u.cinsiyet,u.dosya_id,u.durum,u.ekfno,u.email,u.seviye";
+    
+    $mysqli = mysqlilink();
+    $stmt = mysqli_prepare($mysqli, $sql);
+    if ($stmt) {
+        //var_dump([$durumlar,$tahakkuk_id]);
+        if (mysqli_stmt_bind_param($stmt, "si", $durumlar,$tahakkuk_id)) {
+            if (mysqli_stmt_execute($stmt)) {
+                mysqli_stmt_bind_result($stmt, $uye_id,$ad,$dosya_id,$seviye,$odenmemis_aidat_syisi,$odenmemis_aidat_borcu,$son_keiko,$son3Ay,$image,$image_type);
+                while (mysqli_stmt_fetch($stmt)) {
+                    array_push($list,(object)[
+                        "uye_id"=> $uye_id,
+                        "ad" => $ad,                    
+                        "dosya_id" => $dosya_id,                
+                        "seviye" => $seviye,
+                        "odenmemis_aidat_syisi" => $odenmemis_aidat_syisi,
+                        "odenmemis_aidat_borcu" => $odenmemis_aidat_borcu,
+                        "son_keiko" => $son_keiko,
+                        "son3Ay" => intval($son3Ay),
+                        "image" => $image,
+                        "image_type" => $image_type
+                    ]);
+                }
+            } else {
+                $err = mysqli_stmt_error($stmt);
+            }
+            //var_dump($list);
+        } else {
+            $err = mysqli_stmt_error($stmt);
+        }
+        mysqli_stmt_close($stmt);
+    } else {
+        $err = mysqli_error($mysqli);
+    }    
+    mysqli_close($mysqli);
+    if ($err) {
+        throw new Exception($err);
+    }
+    return $list;
+}
+
 function download(int $dosya_id) {
     $err = $icerik = $file_type = "";
     $sql = "SELECT icerik,file_type FROM dosya WHERE dosya_id = ?";

@@ -131,6 +131,11 @@ $router->add("admin/uye/#uye_id", function (Request $req) {
     return uye($req->params()["uye_id"]);
 });
 
+$router->add("/admin/uyeler",function(Request $req){
+    $jdata = $req->json("durumlar");    
+    return uye_listele($jdata->durumlar,$jdata->tahakkuk_id);
+});
+
 $router->add("admin/uyeseviyeekle", function (Request $req) {
     $jdata = $req->json();
     if (!seviye_ekle($jdata->uye_id, $jdata->seviye, $jdata->tarih, $jdata->aciklama, $err)) {
