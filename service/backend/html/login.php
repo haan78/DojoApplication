@@ -9,7 +9,7 @@
         </div>
         <div class="item">
             <label style="width: 100%">
-                <span>Parola333</span>
+                <span>Parola</span>
                 <input name="password" type="password" placeholder="Parola" autocomplete="off" />
             </label>
         </div>

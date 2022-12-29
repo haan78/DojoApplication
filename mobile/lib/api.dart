@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
+import 'package:intl/intl.dart';
 
 class ApiResponse {
   bool success = true;
@@ -88,4 +89,13 @@ class Api {
       throw ApiException(ex.toString(), status, code: code);
     }
   }
+}
+
+bool isEmail(String value) {
+  return RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+").hasMatch(value);
+}
+
+String dateFormater(DateTime value, String format) {
+  DateFormat df = DateFormat(format);
+  return df.format(value);
 }

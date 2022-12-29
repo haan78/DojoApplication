@@ -46,6 +46,8 @@ class UyeBilgi {
   int dosya_id = 0;
   String ekfno = "";
   String tahkkuk = "";
+  int tahakkuk_id = 0;
+  String email = "";
   int eksik_tahakkuk = 0;
   int son3Ay = 0;
   List<UyeSeviye> seviyeler = [];
@@ -66,14 +68,24 @@ class UyeListDetay {
   Uint8List? image;
 }
 
+class Tahakkuk {
+  int tahakkuk_id = 0;
+  String tanim = "";
+  double tutar = 0;
+}
+
+class Sabitler {
+  List<Tahakkuk> tatakkuklar = [];
+}
+
 Future<Uint8List> uyeResim(Api api, {BoxFit fit = BoxFit.fill}) async {
   dynamic r = await api.call("/member/foto");
   String b64s = r["content"];
   return base64Decode(b64s);
 }
 
-Future<List<UyeListDetay>> uye_listele(Api api, {required String durumlar, required int tahakkuk_id}) async {
-  dynamic r = await api.call("/admin/uyeler", data: {"durumlar": durumlar, "tahakkuk_id": tahakkuk_id});
+Future<List<UyeListDetay>> uye_listele(Api api, {required String durumlar}) async {
+  dynamic r = await api.call("/admin/uyeler", data: {"durumlar": durumlar});
 
   List<UyeListDetay> l = [];
   for (final urd in r) {
@@ -83,7 +95,7 @@ Future<List<UyeListDetay>> uye_listele(Api api, {required String durumlar, requi
     uld.odenmemis_aidat_borcu = double.parse(urd["odenmemis_aidat_borcu"].toString());
     uld.odenmemis_aidat_syisi = int.parse(urd["odenmemis_aidat_syisi"].toString());
     uld.seviye = urd["seviye"];
-    uld.son_keiko = DateTime.parse(urd["son_keiko"].toString());
+    uld.son_keiko = urd["son_keiko"] == null ? DateTime.now() : DateTime.parse(urd["son_keiko"].toString());
     uld.son3Ay = int.parse(urd["son3Ay"].toString());
     uld.uye_id = int.parse(urd["uye_id"].toString());
     uld.image_type = urd["image_type"];
@@ -102,8 +114,9 @@ Future<List<UyeListDetay>> uye_listele(Api api, {required String durumlar, requi
 Future<UyeBilgi> uyeBilgi(Api api, {int uye_id = 0}) async {
   UyeBilgi ub = UyeBilgi();
 
-  dynamic r = await api.call(uye_id == 0 ? "/member/bilgi" : "/admin/uye/$uye_id");
+  dynamic r = await api.call("/admin/uye/$uye_id");
   ub.ad = r[0][0]["ad"];
+  ub.email = r[0][0]["email"];
   ub.cinsiyet = r[0][0]["cinsiyet"];
   ub.dogum_tarih = (r[0][0]["dogum_tarih"] == null ? DateTime.now() : DateTime.parse(r[0][0]["dogum_tarih"]));
   ub.dosya_id = r[0][0]["dosya_id"] == null ? 0 : int.parse(r[0][0]["dosya_id"]);
@@ -114,6 +127,7 @@ Future<UyeBilgi> uyeBilgi(Api api, {int uye_id = 0}) async {
   ub.file_type = r[0][0]["file_type"] ?? "";
   ub.image = r[0][0]["img64"] == null ? null : base64Decode(r[0][0]["img64"]);
   ub.tahkkuk = r[0][0]["tahakkuk"] ?? "";
+  ub.tahakkuk_id = int.parse(r[0][0]["tahakkuk_id"]);
   for (final s in r[1]) {
     UyeSeviye us = UyeSeviye();
     us.aciklama = s["aciklama"] ?? "";
@@ -159,4 +173,19 @@ Future<UyeBilgi> uyeBilgi(Api api, {int uye_id = 0}) async {
 Future<void> parolaDegistir(Api api, {required String oldpass, required String newpass}) async {
   //String json = jsonEncode({oldpass,newpass});
   await api.call("/member/password", data: {"oldpass": oldpass, "newpass": newpass});
+}
+
+Future<Sabitler> sabitGetir(Api api) async {
+  dynamic r = await api.call("/admin/sabitler");
+  List<Tahakkuk> tlist = [];
+  for (final t in r["tahakkuklar"]) {
+    Tahakkuk tahakkuk = Tahakkuk();
+    tahakkuk.tahakkuk_id = int.parse(t["tahakkuk_id"]);
+    tahakkuk.tanim = t["tanim"];
+    tahakkuk.tutar = double.parse(t["tutar"]);
+    tlist.add(tahakkuk);
+  }
+  Sabitler s = Sabitler();
+  s.tatakkuklar = tlist;
+  return s;
 }

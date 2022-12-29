@@ -1,3 +1,4 @@
+import 'package:dojo_mobile/page/kendoka.dart';
 import 'package:dojo_mobile/page/widget/app_drawer.dart';
 import 'package:intl/intl.dart';
 
@@ -11,7 +12,8 @@ enum MenuAction { load, filter, sort }
 
 enum FilterAction { debt, last, name }
 
-List<UyeListDetay> ListData = [];
+List<UyeListDetay> listData = [];
+final _araKey = GlobalKey<FormState>();
 
 class FirstPage extends StatefulWidget {
   const FirstPage({super.key});
@@ -27,7 +29,7 @@ class _AdminPageState extends State<FirstPage> {
   bool _reload = true;
   FilterAction _filterAction = FilterAction.name;
   int tahakkuk_id = 1;
-  TextEditingController ara = TextEditingController();
+  bool activemembers = true;
 
   String search = "";
 
@@ -63,13 +65,23 @@ class _AdminPageState extends State<FirstPage> {
                 return [
                   PopupMenuItem(
                       child: TextButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            setState(() {
+                              activemembers = true;
+                              _reload = true;
+                            });
+                          },
                           child: Row(
                             children: const [Icon(Icons.group), Text("Aktif Üyeler")],
                           ))),
                   PopupMenuItem(
                       child: TextButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            setState(() {
+                              activemembers = false;
+                              _reload = true;
+                            });
+                          },
                           child: Row(
                             children: const [Icon(Icons.person_off), Text("Pasif Üyeler")],
                           )))
@@ -77,7 +89,11 @@ class _AdminPageState extends State<FirstPage> {
               },
               child: const Icon(Icons.filter_list),
             ),
-            IconButton(onPressed: () {}, icon: const Icon(Icons.person_add))
+            IconButton(
+                onPressed: () {
+                  kendokaGetir(context, 0);
+                },
+                icon: const Icon(Icons.person_add))
           ],
         ),
         body: Column(
@@ -88,7 +104,7 @@ class _AdminPageState extends State<FirstPage> {
                 children: [
                   Expanded(
                       child: TextField(
-                    controller: ara,
+                    key: _araKey,
                     decoration: const InputDecoration(labelText: "Ara", prefixIcon: Icon(Icons.search)),
                     onChanged: (value) {
                       setState(() {
@@ -143,7 +159,7 @@ class _AdminPageState extends State<FirstPage> {
             ),
             Expanded(
                 child: FutureBuilder<List<UyeListDetay>>(
-                    future: uyeler(search, _filterAction, store, _reload, tahakkuk_id),
+                    future: uyeler(activemembers, search, _filterAction, store, _reload, tahakkuk_id),
                     builder: (BuildContext context, AsyncSnapshot<List<UyeListDetay>> snapshot) {
                       if (snapshot.connectionState == ConnectionState.done) {
                         if (!snapshot.hasError && snapshot.data != null) {
@@ -164,15 +180,18 @@ class _AdminPageState extends State<FirstPage> {
                                           )
                                         : const Icon(Icons.accessibility_outlined),
                                     title: Text("${data[index].ad} / ${data[index].seviye}"),
-                                    subtitle: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        children: [Text(info, style: const TextStyle(fontSize: 12)), Text(info2, style: const TextStyle(fontSize: 12))]),
+                                    subtitle: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                                      Text(info, style: TextStyle(fontSize: 12, color: renkver2(data[index].son_keiko))),
+                                      Text(info2, style: TextStyle(fontSize: 12, color: renkver(data[index].odenmemis_aidat_syisi)))
+                                    ]),
                                     tileColor: const Color.fromARGB(255, 208, 224, 233),
                                     dense: true,
                                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
                                     trailing: IconButton(
                                       icon: const Icon(Icons.arrow_forward),
-                                      onPressed: () {},
+                                      onPressed: () {
+                                        kendokaGetir(context, data[index].uye_id);
+                                      },
                                     ),
                                   ));
                             },
@@ -191,15 +210,15 @@ class _AdminPageState extends State<FirstPage> {
   }
 }
 
-Future<List<UyeListDetay>> uyeler(String search, FilterAction fa, Store store, bool reload, int tahakkukId) async {
+Future<List<UyeListDetay>> uyeler(bool active, String search, FilterAction fa, Store store, bool reload, int tahakkukId) async {
   List<UyeListDetay> data = [];
   if (reload) {
     Api api = Api(url: store.ApiUrl, authorization: store.ApiToken);
-    ListData = await uye_listele(api, durumlar: "active,admin,super-admin", tahakkuk_id: tahakkukId);
+    listData = await uye_listele(api, durumlar: active ? "active,admin,super-admin" : "passive");
   }
 
   if (search.isNotEmpty) {
-    data = ListData.where((element) {
+    data = listData.where((element) {
       if (element.ad.toLowerCase().startsWith(search.toLowerCase()) || element.seviye.startsWith(search.toUpperCase())) {
         return true;
       } else {
@@ -207,7 +226,7 @@ Future<List<UyeListDetay>> uyeler(String search, FilterAction fa, Store store, b
       }
     }).toList();
   } else {
-    data = ListData;
+    data = listData;
   }
 
   if (fa == FilterAction.debt) {
@@ -225,4 +244,30 @@ Future<List<UyeListDetay>> uyeler(String search, FilterAction fa, Store store, b
   }
 
   return Future<List<UyeListDetay>>(() => data);
+}
+
+Color renkver(int val) {
+  if (val < 3) {
+    return Colors.green;
+  } else if (val < 5) {
+    return Colors.orange;
+  } else {
+    return Colors.red;
+  }
+}
+
+Color renkver2(DateTime val) {
+  DateTime n = DateTime.now();
+  int m = n.difference(val).inDays ~/ 30;
+  if (m < 1) {
+    return Colors.green;
+  } else if (m < 2) {
+    return Colors.orange;
+  } else {
+    return Colors.red;
+  }
+}
+
+void kendokaGetir(BuildContext context, int uye_id) {
+  Navigator.push(context, MaterialPageRoute(builder: (context) => Kendoka(uye_id)));
 }

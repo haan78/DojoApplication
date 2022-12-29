@@ -132,8 +132,8 @@ $router->add("admin/uye/#uye_id", function (Request $req) {
 });
 
 $router->add("/admin/uyeler",function(Request $req){
-    $jdata = $req->json("durumlar");    
-    return uye_listele($jdata->durumlar,$jdata->tahakkuk_id);
+    $jdata = $req->json();    
+    return uye_listele($jdata->durumlar);
 });
 
 $router->add("admin/uyeseviyeekle", function (Request $req) {
@@ -175,6 +175,10 @@ $router->add("admin/upload", function () {
     } else {
         throw new Exception("No Upload file");
     }
+});
+
+$router->add("admin/sabitler",function(){
+    return sabitler();
 });
 
 $router->add("/member/password", function (Request $req) {

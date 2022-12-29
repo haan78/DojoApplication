@@ -87,7 +87,7 @@ function uye(int $uye_id) {
     return $p->procedure("uye_bilgi")->in($uye_id)->call()->result("queries");
 }
 
-function uye_listele(string $durumlar, int $tahakkuk_id) : array {
+function uye_listele(string $durumlar) : array {
     $err = "";
     $list = [];
     
@@ -100,14 +100,14 @@ function uye_listele(string $durumlar, int $tahakkuk_id) : array {
     FROM uye u
     LEFT JOIN uye_tahakkuk ut ON ut.uye_id = u.uye_id and ut.muhasebe_id  is null
     LEFT JOIN dosya d ON d.dosya_id  = u.dosya_id
-    WHERE FIND_IN_SET(u.durum,?) and u.tahakkuk_id = ?
+    WHERE FIND_IN_SET(u.durum,?)
     GROUP BY u.uye_id,u.ad,u.cinsiyet,u.dosya_id,u.durum,u.ekfno,u.email,u.seviye";
     
     $mysqli = mysqlilink();
     $stmt = mysqli_prepare($mysqli, $sql);
     if ($stmt) {
         //var_dump([$durumlar,$tahakkuk_id]);
-        if (mysqli_stmt_bind_param($stmt, "si", $durumlar,$tahakkuk_id)) {
+        if (mysqli_stmt_bind_param($stmt, "s", $durumlar)) {
             if (mysqli_stmt_execute($stmt)) {
                 mysqli_stmt_bind_result($stmt, $uye_id,$ad,$dosya_id,$seviye,$odenmemis_aidat_syisi,$odenmemis_aidat_borcu,$son_keiko,$son3Ay,$image,$image_type);
                 while (mysqli_stmt_fetch($stmt)) {
@@ -140,6 +140,27 @@ function uye_listele(string $durumlar, int $tahakkuk_id) : array {
         throw new Exception($err);
     }
     return $list;
+}
+
+function sabitler() {
+    $err = "";
+    $resultarr = [];
+    $mysqli = mysqlilink();
+    $result_tahakkuk = mysqli_query($mysqli,"SELECT tahakkuk_id,tanim,tutar FROM tahakkuk");
+    if($result_tahakkuk) {
+        $arr = [];
+        while( $row = mysqli_fetch_assoc($result_tahakkuk) ) {
+            array_push($arr,$row);
+        }
+        $resultarr["tahakkuklar"] = $arr;
+    } else {
+        $err = mysqli_error($mysqli);
+    }
+    if ($err) {
+        throw new Exception($err);
+    } else {
+        return $resultarr;
+    }
 }
 
 function download(int $dosya_id) {
