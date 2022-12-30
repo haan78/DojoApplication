@@ -167,8 +167,9 @@ class _AdminPageState extends State<FirstPage> {
                           return ListView.builder(
                             itemCount: data.length,
                             itemBuilder: (context, index) {
-                              String info = "Son Keiko: ${DateFormat.yMd().format(data[index].son_keiko)} / Son3Ay: ${data[index].son3Ay.toString()}";
-                              String info2 = "Aidat Borcu ${data[index].odenmemis_aidat_syisi}";
+                              String info1 = "Aidat Borcu ${data[index].odenmemis_aidat_syisi}";
+                              String info2 = "Son Keiko: ${DateFormat.yMd().format(data[index].son_keiko)}";
+                              String info3 = "Son3Ay: ${data[index].son3Ay.toString()}";
                               return Padding(
                                   padding: const EdgeInsets.all(3),
                                   child: ListTile(
@@ -181,8 +182,12 @@ class _AdminPageState extends State<FirstPage> {
                                         : const Icon(Icons.accessibility_outlined),
                                     title: Text("${data[index].ad} / ${data[index].seviye}"),
                                     subtitle: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                                      Text(info, style: TextStyle(fontSize: 12, color: renkver2(data[index].son_keiko))),
-                                      Text(info2, style: TextStyle(fontSize: 12, color: renkver(data[index].odenmemis_aidat_syisi)))
+                                      Text(info1, style: TextStyle(fontSize: 12, color: renkver(data[index].odenmemis_aidat_syisi))),
+                                      Row(children: [
+                                        Text(info2, style: TextStyle(fontSize: 12, color: renkver2(data[index].son_keiko))),
+                                        const SizedBox(width: 10),
+                                        Text(info3, style: TextStyle(fontSize: 12, color: renkver3(data[index].son3Ay)))
+                                      ])
                                     ]),
                                     tileColor: const Color.fromARGB(255, 208, 224, 233),
                                     dense: true,
@@ -262,6 +267,16 @@ Color renkver2(DateTime val) {
   if (m < 1) {
     return Colors.green;
   } else if (m < 2) {
+    return Colors.orange;
+  } else {
+    return Colors.red;
+  }
+}
+
+Color renkver3(int val) {
+  if (val > 15) {
+    return Colors.green;
+  } else if (val > 10) {
     return Colors.orange;
   } else {
     return Colors.red;

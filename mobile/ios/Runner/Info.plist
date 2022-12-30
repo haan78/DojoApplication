@@ -47,5 +47,11 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>NSCameraUsageDescription</key>
+	<string>This app uses the camera for member record</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>This app requires location permision</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>This app uses the library for upload member image</string>
 </dict>
 </plist>

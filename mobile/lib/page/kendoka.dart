@@ -1,8 +1,10 @@
-// ignore_for_file: no_logic_in_create_state, non_constant_identifier_names
+// ignore_for_file: no_logic_in_create_state, non_constant_identifier_names, no_leading_underscores_for_local_identifiers
 
 import 'package:dojo_mobile/page/widget/alert.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import 'package:image_picker/image_picker.dart';
 
 import '../api.dart';
 import '../service.dart';
@@ -25,6 +27,8 @@ class Kendoka extends StatefulWidget {
 class _Kendoka extends State<Kendoka> {
   final int uye_id;
   bool _reload = true;
+
+  final ImagePicker _imgpicker = ImagePicker();
 
   _Kendoka(this.uye_id);
 
@@ -61,6 +65,7 @@ class _Kendoka extends State<Kendoka> {
           }
           if (snapshot.connectionState == ConnectionState.done) {
             UyeBilgi ub = snapshot.data!;
+            Image _buttonImage = Image.memory(ub.image!, fit: BoxFit.fill);
             List<DropdownMenuItem<int>> ddTahakkular = [];
             for (final t in formSabitler.tatakkuklar) {
               ddTahakkular.add(DropdownMenuItem(value: t.tahakkuk_id, child: Text(t.tanim)));
@@ -70,39 +75,65 @@ class _Kendoka extends State<Kendoka> {
               child: Form(
                   key: _formKey,
                   child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
                     children: [
-                      Row(crossAxisAlignment: CrossAxisAlignment.end, children: [
-                        Expanded(
-                            child: TextFormField(
-                          decoration: const InputDecoration(labelText: "Ad"),
-                          controller: TextEditingController(text: ub.ad),
-                          validator: (value) {
-                            if (value != null && value.isNotEmpty) {
-                              return null;
-                            } else {
-                              return "Geçerli bir isim girin";
+                      TextButton(
+                          style: TextButton.styleFrom(padding: const EdgeInsets.all(0), fixedSize: const Size(170, 250)),
+                          onPressed: () async {
+                            XFile? xfile = await _imgpicker.pickImage(source: ImageSource.camera, maxHeight: 800, maxWidth: 600);
+                            if (xfile != null) {
+                              formUyeBilgi.image = await xfile.readAsBytes();
+
+                              setState(() {
+                                _reload = false;
+                              });
                             }
                           },
-                        )),
-                        const SizedBox(
-                          width: 10,
-                        ),
-                        DropdownButton(
-                            value: ub.cinsiyet.isEmpty ? "" : ub.cinsiyet,
-                            items: const [
-                              DropdownMenuItem(value: "", child: Text("[Çinsiyet]")),
-                              DropdownMenuItem(value: "ERKEK", child: Text("Erkek")),
-                              DropdownMenuItem(value: "KADIN", child: Text("Kadın"))
-                            ],
-                            onChanged: (value) {
-                              if (value != null) {
-                                formUyeBilgi.cinsiyet = value;
-                                setState(() {
-                                  _reload = false;
-                                });
-                              }
-                            })
+                          child: _buttonImage),
+                      const SizedBox(height: 15),
+                      Row(crossAxisAlignment: CrossAxisAlignment.end, children: [
+                        Expanded(
+                            flex: 2,
+                            child: TextFormField(
+                              decoration: const InputDecoration(labelText: "Ad"),
+                              controller: TextEditingController(text: ub.ad),
+                              validator: (value) {
+                                if (value != null && value.isNotEmpty) {
+                                  return null;
+                                } else {
+                                  return "Geçerli bir isim girin";
+                                }
+                              },
+                              onChanged: (value) {
+                                formUyeBilgi.ad = value;
+                              },
+                            )),
+                        const SizedBox(width: 10),
+                        Expanded(
+                            flex: 1,
+                            child: SizedBox(
+                                //height: 60,
+                                child: DropdownButtonFormField(
+                                    decoration: const InputDecoration(labelText: "Cinsiyet"),
+                                    value: ub.cinsiyet.isEmpty ? "" : ub.cinsiyet,
+                                    validator: (value) {
+                                      if (value == null || value == "") {
+                                        return "Cinsiyet seçimi gerekli";
+                                      } else {
+                                        return null;
+                                      }
+                                    },
+                                    items: const [DropdownMenuItem(value: "ERKEK", child: Text("Erkek")), DropdownMenuItem(value: "KADIN", child: Text("Kadın"))],
+                                    onChanged: (value) {
+                                      if (value != null) {
+                                        formUyeBilgi.cinsiyet = value;
+                                        setState(() {
+                                          _reload = false;
+                                        });
+                                      }
+                                    }))),
                       ]),
+                      const SizedBox(height: 15),
                       Row(crossAxisAlignment: CrossAxisAlignment.end, children: [
                         Expanded(
                             child: TextFormField(
@@ -131,8 +162,12 @@ class _Kendoka extends State<Kendoka> {
                               children: [const Text("Doğum Tarihi"), Text(dateFormater(ub.dogum_tarih, "dd.MM.yyyy"))],
                             ))
                       ]),
+                      const SizedBox(height: 15),
                       Row(crossAxisAlignment: CrossAxisAlignment.end, children: [
-                        DropdownButton(
+                        Expanded(
+                            child: SizedBox(
+                                child: DropdownButtonFormField(
+                          decoration: const InputDecoration(labelText: "Durum"),
                           value: ub.durum,
                           items: const [
                             DropdownMenuItem(value: "active", child: Text("Aktif")),
@@ -157,21 +192,36 @@ class _Kendoka extends State<Kendoka> {
                               });
                             }
                           },
-                        ),
+                        ))),
                         const SizedBox(width: 10),
-                        DropdownButton(
-                            value: ub.tahakkuk_id,
-                            items: ddTahakkular,
-                            onChanged: ((value) {
-                              if (value != null) {
-                                formUyeBilgi.tahakkuk_id = value;
-                                setState(() {
-                                  _reload = false;
-                                });
-                              }
-                            })),
-                        const Spacer()
+                        Expanded(
+                            child: SizedBox(
+                                child: DropdownButtonFormField(
+                                    decoration: const InputDecoration(labelText: "Üyelik Tipi"),
+                                    value: ub.tahakkuk_id,
+                                    items: ddTahakkular,
+                                    onChanged: ((value) {
+                                      if (value != null) {
+                                        formUyeBilgi.tahakkuk_id = value;
+                                        setState(() {
+                                          _reload = false;
+                                        });
+                                      }
+                                    }))))
                       ]),
+                      const SizedBox(height: 15),
+                      Row(children: [
+                        Expanded(
+                            child: SizedBox(
+                                child: TextFormField(
+                          decoration: const InputDecoration(labelText: "EKF no"),
+                          controller: TextEditingController(text: ub.ekfno),
+                          onChanged: (value) {
+                            formUyeBilgi.ekfno = value;
+                          },
+                        ))),
+                      ]),
+                      const SizedBox(height: 15),
                       ElevatedButton(
                           onPressed: () {
                             if (_formKey.currentState!.validate()) {
@@ -201,6 +251,10 @@ Future<UyeBilgi> yueBilgiGetir(Store store, int uye_id, bool reload) async {
       formUyeBilgi = await uyeBilgi(api, uye_id: uye_id);
     } else {
       formUyeBilgi = UyeBilgi();
+      formUyeBilgi.cinsiyet = "ERKEK";
+      formUyeBilgi.durum = "active";
+      formUyeBilgi.tahakkuk_id = 1;
+      formUyeBilgi.image = (await rootBundle.load("assets/kendoka.jpg")).buffer.asUint8List();
     }
   }
 
