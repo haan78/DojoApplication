@@ -105,6 +105,13 @@ class _WebLoginPageState extends State<WebLoginPage> {
                         },
                         child: const Text("Beni Unut")),
                     const Spacer(),
+                    IconButton(
+                      onPressed: () {
+                        _pageController.reload();
+                      },
+                      icon: const Icon(Icons.refresh),
+                    ),
+                    const Spacer(),
                     TextButton(
                         onPressed: () {
                           launchUrl(Uri.parse(s.WebUrl));

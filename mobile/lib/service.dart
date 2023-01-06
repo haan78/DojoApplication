@@ -189,3 +189,13 @@ Future<Sabitler> sabitGetir(Api api) async {
   s.tatakkuklar = tlist;
   return s;
 }
+
+typedef UpdateParentData = void Function(UyeBilgi ub, bool reload);
+
+Color tileColorByIndex(int index) {
+  return index % 2 == 1 ? const Color.fromARGB(255, 208, 224, 233) : const Color.fromARGB(255, 229, 233, 208);
+}
+
+String trAy(int index) {
+  return ["Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran", "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"][index % 12];
+}

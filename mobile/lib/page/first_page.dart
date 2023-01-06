@@ -189,7 +189,7 @@ class _AdminPageState extends State<FirstPage> {
                                         Text(info3, style: TextStyle(fontSize: 12, color: renkver3(data[index].son3Ay)))
                                       ])
                                     ]),
-                                    tileColor: const Color.fromARGB(255, 208, 224, 233),
+                                    tileColor: tileColorByIndex(index),
                                     dense: true,
                                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
                                     trailing: IconButton(
