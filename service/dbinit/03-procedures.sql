@@ -62,8 +62,8 @@ BEGIN
     WHERE us.`uye_id` = p_uye_id
     ORDER BY s.`deger` DESC;
     
-    SELECT ut.`uye_tahakkuk_id`,ut.`yil`,ut.`ay`,ut.`tahakkuk_tarih`,ut.`borc`,t.tanim , m.`tutar` as odeme_tutar,m.`tarih` as odeme_tarih, m.muhasebe_id,
-     y.tanim as yoklama, ut.yoklama_id,
+    SELECT ut.`uye_tahakkuk_id`,ut.`yil`,ut.`ay`,ut.`tahakkuk_tarih`,ut.`borc`,t.tanim , m.`tutar` as odeme_tutar,m.`tarih` as odeme_tarih, 
+    m.muhasebe_id, m.aciklama,m.kasa,y.tanim as yoklama, ut.yoklama_id,
      (SELECT 
      	GROUP_CONCAT(DISTINCT uy.tarih ORDER BY uy.tarih ASC SEPARATOR ',') 
      		FROM uye_yoklama uy
@@ -286,34 +286,6 @@ BEGIN
     end if;    
     COMMIT;
     SET p_muhasebe_id = _mid;
-END ;;
-
-CREATE  PROCEDURE `uye_odeme`(
-        IN `p_uye_tahakkuk_id` BIGINT,
-        IN `p_tarih` DATE,
-        IN `p_tutar` DECIMAL(14,2),
-        IN `p_dosya_id` BIGINT,
-        IN `p_aciklama` VARCHAR(255),
-        IN `p_kasa` VARCHAR(20)
-    )
-BEGIN
-	DECLARE _uid bigint DEFAULT null;
-    DECLARE _mid BIGINT DEFAULT null;
-    DECLARE _t varchar(255) default null;
-    SELECT ut.`uye_id`,t.`tanmim` into _uid, _t
-    	FROM `uye_tahakkuk` ut 
-        INNER JOIN `tahakkuk` t ON t.`tahakkuk_id` = ut.`tahakkuk_id`
-        	WHERE ut.`uye_tahakkuk_id` = p_uye_tahakkuk_id;
-	START TRANSACTION;
-	
-    insert into `muhasebe` ( uye_id,`aciklama`, `dosya_id`, `kasa`, `tanim`, `tarih`, `tutar` )
-    	VALUES (_uid,p_aciklama, p_dosya_id, p_kasa, _t, p_tarih, p_tutar);
-    
-    set _mid = LAST_INSERT_ID();
-        
-    update `uye_tahakkuk` ut set ut.`muhasebe_id` = _mid where ut.`uye_tahakkuk_id` = p_uye_tahakkuk_id;
-    
-    COMMIT;
 END ;;
 
 CREATE  PROCEDURE `uye_onkayit`(

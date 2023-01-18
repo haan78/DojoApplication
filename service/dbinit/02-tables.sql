@@ -50,7 +50,7 @@ CREATE TABLE tahakkuk (
   degisme timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (tahakkuk_id)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb3 COLLATE=utf8_turkish_ci;
-INSERT INTO tahakkuk (tahakkuk_id,tanim,tutar) VALUES (1,'Tam Aidat',250.00),(2,'Ögrenci Aidat',200.00);
+INSERT INTO tahakkuk (tahakkuk_id,tanim,tutar) VALUES (1,'Tam Aidat',250.00),(2,'Öğrenci Aidat',200.00);
 
 CREATE TABLE uye (
   uye_id bigint NOT NULL AUTO_INCREMENT,

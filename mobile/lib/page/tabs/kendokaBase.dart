@@ -5,6 +5,7 @@ import 'package:image_picker/image_picker.dart';
 
 import '../../api.dart';
 import '../../store.dart';
+import '../appwindow.dart';
 import '../widget/alert.dart';
 
 final _formKey = GlobalKey<FormState>();
@@ -27,6 +28,8 @@ class KendokaBase extends StatelessWidget {
     for (final t in sabitler.tatakkuklar) {
       ddTahakkular.add(DropdownMenuItem(value: t.tahakkuk_id, child: Text(t.tanim)));
     }
+
+    int yil = DateTime.now().year;
 
     return Form(
         key: _formKey,
@@ -102,7 +105,7 @@ class KendokaBase extends StatelessWidget {
               TextButton(
                   onPressed: () async {
                     DateTime? dt =
-                        await showDatePicker(context: context, initialDate: bilgi.dogum_tarih, firstDate: DateTime(1950, 1, 1), lastDate: DateTime(2012, 1, 1));
+                        await showDatePicker(context: context, initialDate: bilgi.dogum_tarih, firstDate: DateTime(yil - 70, 1, 1), lastDate: DateTime(yil - 10, 1, 1));
                     if (dt != null) {
                       bilgi.dogum_tarih = dt;
                       updateParentData(bilgi, false);

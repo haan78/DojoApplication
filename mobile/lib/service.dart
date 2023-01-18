@@ -3,6 +3,8 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:flutter/material.dart';
+
 import 'api.dart';
 import 'package:flutter/cupertino.dart';
 
@@ -27,6 +29,7 @@ class UyeTahakkuk {
   String tahsilatci = "";
   String yoklama = "";
   int yoklama_id = 0;
+  String aciklama = "";
 }
 
 class UyeYoklama {
@@ -37,6 +40,7 @@ class UyeYoklama {
 }
 
 class UyeBilgi {
+  int uye_id = 0;
   String ad = "";
   String cinsiyet = "";
   String file_type = "";
@@ -115,6 +119,7 @@ Future<UyeBilgi> uyeBilgi(Api api, {int uye_id = 0}) async {
   UyeBilgi ub = UyeBilgi();
 
   dynamic r = await api.call("/admin/uye/$uye_id");
+  ub.uye_id = uye_id;
   ub.ad = r[0][0]["ad"];
   ub.email = r[0][0]["email"];
   ub.cinsiyet = r[0][0]["cinsiyet"];
@@ -144,7 +149,7 @@ Future<UyeBilgi> uyeBilgi(Api api, {int uye_id = 0}) async {
     ut.borc = double.parse(t["borc"] ?? "0");
     ut.kasa = t["kasa"] ?? "";
     ut.muhasebe_id = int.parse(t["muhasebe_id"] ?? "0");
-    ut.odenen = double.parse(t["odenen"] ?? "0");
+    ut.odenen = double.parse(t["odeme_tutar"] ?? "0");
     ut.odenme_tarih = t["odenme_tarih"] == null ? null : DateTime.parse(t["odenme_tarih"]);
     ut.tahakkuk_tarih = DateTime.parse(t["tahakkuk_tarih"]);
     ut.tahsilatci = t["tahsilatci"] ?? "";
@@ -153,6 +158,7 @@ Future<UyeBilgi> uyeBilgi(Api api, {int uye_id = 0}) async {
     ut.yil = int.parse(t["yil"] ?? "0");
     ut.yoklama = t["yoklama"] ?? "";
     ut.yoklama_id = int.parse(t["yoklama_id"] ?? "0");
+    ut.aciklama = t["aciklama"] ?? "";
 
     ub.tahakuklar.add(ut);
     ub.eksik_tahakkuk += t["muhasebe_id"] == null ? 1 : 0;
@@ -191,11 +197,3 @@ Future<Sabitler> sabitGetir(Api api) async {
 }
 
 typedef UpdateParentData = void Function(UyeBilgi ub, bool reload);
-
-Color tileColorByIndex(int index) {
-  return index % 2 == 1 ? const Color.fromARGB(255, 208, 224, 233) : const Color.fromARGB(255, 229, 233, 208);
-}
-
-String trAy(int index) {
-  return ["Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran", "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"][index % 12];
-}

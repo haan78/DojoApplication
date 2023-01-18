@@ -45,7 +45,13 @@ class _Kendoka extends State<Kendoka> {
         updateParentData: updateData,
       );
     } else if (_bottomNavIndex == 1) {
-      return KendokaAidat(sabitler: formSabitler, bilgi: bilgi, store: store, updateParentData: updateData);
+      return KendokaAidat(
+        sabitler: formSabitler,
+        bilgi: bilgi,
+        store: store,
+        updateParentData: updateData,
+        uyeAd: bilgi.ad,
+      );
     } else {
       return const Text("Yapım aşamasında");
     }

@@ -90,12 +90,3 @@ class Api {
     }
   }
 }
-
-bool isEmail(String value) {
-  return RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+").hasMatch(value);
-}
-
-String dateFormater(DateTime value, String format) {
-  DateFormat df = DateFormat(format);
-  return df.format(value);
-}

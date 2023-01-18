@@ -8,6 +8,8 @@ import '../store.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import 'appwindow.dart';
+
 enum MenuAction { load, filter, sort }
 
 enum FilterAction { debt, last, name }
