@@ -41,6 +41,7 @@ class _WebLoginPageState extends State<WebLoginPage> {
           s.UserStatus = data["durum"];
           s.UserName = data["ad"];
           s.ApiToken = "Bearer ${data["token"]}";
+          print(s.ApiToken);
           s.ApiUser = data["email"];
           s.ApiPassword = data["password"];
           await writeSettings(s);

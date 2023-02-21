@@ -3,6 +3,11 @@ import 'package:intl/intl.dart';
 
 const Color colorGood = Color.fromARGB(255, 19, 94, 9);
 const Color colorBad = Color.fromARGB(255, 173, 5, 5);
+const Color colorWarn = Color.fromARGB(255, 204, 191, 11);
+
+ButtonStyle goodBtnStyle = ButtonStyle(backgroundColor: MaterialStateProperty.resolveWith((states) => colorGood));
+ButtonStyle badBtnStyle = ButtonStyle(backgroundColor: MaterialStateProperty.resolveWith((states) => colorBad));
+ButtonStyle warnBtnStyle = ButtonStyle(backgroundColor: MaterialStateProperty.resolveWith((states) => colorWarn));
 
 enum AppWindow { harcamalar, uyeler, yoklamalar, ayarlar }
 
@@ -19,7 +24,8 @@ yesNoDialog(BuildContext context, {required String text, String title = "Onay", 
                   Navigator.pop(context);
                   onYes();
                 },
-                style: ButtonStyle(backgroundColor: MaterialStateProperty.resolveWith((states) => colorGood)),
+                //style: ButtonStyle(backgroundColor: MaterialStateProperty.resolveWith((states) => colorGood)),
+                style: goodBtnStyle,
                 child: const Text("EVET")),
             ElevatedButton(
                 onPressed: () {
@@ -28,7 +34,8 @@ yesNoDialog(BuildContext context, {required String text, String title = "Onay", 
                     onNo();
                   }
                 },
-                style: ButtonStyle(backgroundColor: MaterialStateProperty.resolveWith((states) => colorBad)),
+                //style: ButtonStyle(backgroundColor: MaterialStateProperty.resolveWith((states) => colorBad)),
+                style: badBtnStyle,
                 child: const Text("HAYIR"))
           ],
         );
@@ -67,3 +74,26 @@ String dateFormater(DateTime value, String format) {
   DateFormat df = DateFormat(format);
   return df.format(value);
 }
+
+List<DropdownMenuItem> Seviyeler = [
+  const DropdownMenuItem(value: "", child: Text("")),
+  DropdownMenuItem(value: "7 KYU", child: Text("7 KYU", style: TextStyle(color: Colors.pink.shade200))),
+  DropdownMenuItem(value: "6 KYU", child: Text("6 KYU", style: TextStyle(color: Colors.pink.shade200))),
+  DropdownMenuItem(value: "5 KYU", child: Text("5 KYU", style: TextStyle(color: Colors.pink.shade200))),
+  DropdownMenuItem(value: "4 KYU", child: Text("4 KYU", style: TextStyle(color: Colors.pink.shade200))),
+  DropdownMenuItem(value: "3 KYU", child: Text("3 KYU", style: TextStyle(color: Colors.pink.shade400))),
+  DropdownMenuItem(value: "2 KYU", child: Text("2 KYU", style: TextStyle(color: Colors.pink.shade400))),
+  DropdownMenuItem(value: "1 KYU", child: Text("1 KYU", style: TextStyle(color: Colors.pink.shade600))),
+  DropdownMenuItem(value: "1 DAN", child: Text("1 DAN", style: TextStyle(color: Colors.pink.shade600))),
+  DropdownMenuItem(value: "2 DAN", child: Text("2 DAN", style: TextStyle(color: Colors.pink.shade600))),
+  DropdownMenuItem(value: "3 DAN", child: Text("3 DAN", style: TextStyle(color: Colors.red.shade400))),
+  DropdownMenuItem(value: "4 DAN", child: Text("4 DAN", style: TextStyle(color: Colors.red.shade600))),
+  DropdownMenuItem(value: "5 DAN", child: Text("5 DAN", style: TextStyle(color: Colors.red.shade600))),
+  DropdownMenuItem(value: "6 DAN", child: Text("6 DAN", style: TextStyle(color: Colors.red.shade900))),
+  DropdownMenuItem(value: "7 DAN", child: Text("7 DAN", style: TextStyle(color: Colors.brown.shade800)))
+];
+
+const Dikey = SizedBox(height: 10);
+const Dikey2 = SizedBox(height: 20);
+const Yatay = SizedBox(width: 10);
+const Yatay2 = SizedBox(width: 20);

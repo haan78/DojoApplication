@@ -471,7 +471,7 @@ while ($doc = $uyeit->current()) {
       ]);
     }
 
-    $uye["seviye"] = $seviyeler[0]["seviye"];
+    //$uye["seviye"] = $seviyeler[0]["seviye"];
     $uye["parola"] = randomPassword();
 
     $yoklamalar = [];
@@ -552,7 +552,7 @@ while ($doc = $uyeit->current()) {
     echo insert("uye_yoklama",$yoklamalar);
     echo insert("muhasebe",$muhasebe);
     echo insert("uye_tahakkuk", $aidatlar);
-    echo insert("dosya",[["tablo"=>"UYE","tablo_id"=>$id,"file_type"=>$type,"icerik"=>$foto ]]);
+    echo insert("dosya",[["dosya_id"=>$id,"file_type"=>$type,"icerik"=>$foto ]]);
 
     array_push($emaillist, $uye["email"]);
     $id++;

@@ -47,6 +47,7 @@ class _Peyment extends State<Payment> {
           onPressed: loading
               ? null
               : () {
+                  //Kayıt buraya
                   setState(() {
                     loading = true;
                   });
@@ -60,6 +61,7 @@ class _Peyment extends State<Payment> {
             onPressed: loading
                 ? null
                 : () {
+                    //Silme Buraya
                     yesNoDialog(context, text: "Bu ödeme kaydını silmek istediğinizden emin misiniz?", onYes: (() {
                       setState(() {
                         loading = true;

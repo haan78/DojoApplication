@@ -27,7 +27,7 @@ services:
             MYSQL_ROOT_PASSWORD: 12345
             MYSQL_DATABASE: dojo
         ports:
-            - 3306:3306
+            - 3307:3306
         volumes:
             - ./dbinit:/docker-entrypoint-initdb.d
             - my8vol:/data/db

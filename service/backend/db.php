@@ -91,7 +91,7 @@ function uye_listele(string $durumlar) : array {
     $err = "";
     $list = [];
     
-    $sql = "SELECT u.uye_id,u.ad,u.dosya_id,u.seviye
+    $sql = "SELECT u.uye_id,u.ad,u.dosya_id,(SELECT seviye FROM uye_seviye WHERE uye_id = u.uye_id ORDER BY tarih DESC LIMIT 1) as seviye
     ,SUM(IF(ut.uye_tahakkuk_id is NULL,0,1)) as odenmemis_aidat_syisi,
     SUM( COALESCE(ut.borc,0) ) as odenmemis_aidat_borcu,
     (SELECT uy.tarih FROM uye_yoklama uy WHERE uy.uye_id = u.uye_id ORDER BY uy.tarih DESC LIMIT 1 ) AS son_keiko,
@@ -287,7 +287,7 @@ function seviye_ekle($uye_id,string $seviye, string $tarih, string $aciklama,&$e
 function seviye_sil($uye_id,string $seviye,&$err) : bool {
     $err = "";
     $mysqli = mysqlilink();
-    $sql = "DELETE FROM uye_seviye WHERE uye_id = ? AND seviye = ?";
+    $sql = "DELETE FROM uye_seviye WHERE uye_id = ? AND seviye = ?";    
     $stmt = mysqli_prepare($mysqli, $sql);
     if ($stmt) {
         if (mysqli_stmt_bind_param($stmt, "is", $uye_id,$seviye)) {
@@ -303,4 +303,11 @@ function seviye_sil($uye_id,string $seviye,&$err) : bool {
     }
     mysqli_close($mysqli);
     return !$err;
+}
+
+function uye_eke($uye_id,$ad,$tahakkuk_id,$email,$cinsiyet,$dogum,$ekfno,$durum,$dosya) {
+    $p = new \MySqlTool\MySqlToolCall(mysqlilink());
+    $dosya_id=0;
+    return $p->procedure("uye_bilgi")->out("uye_id",$uye_id)->out("parola")->in($tahakkuk_id)
+    ->in($ad)->in($email)->in($dosya_id)->in($cinsiyet)->in($dogum)->in($ekfno)->in($durum)->call()->result("outs");
 }

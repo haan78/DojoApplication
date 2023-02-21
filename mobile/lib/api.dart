@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
-import 'package:intl/intl.dart';
 
 class ApiResponse {
   bool success = true;

@@ -70,7 +70,6 @@ class KendokaAidat extends StatelessWidget {
                           trailing: IconButton(
                             icon: const Icon(Icons.arrow_forward),
                             onPressed: () {
-                              UyeTahakkuk ut = bilgi.tahakuklar[index];
                               Navigator.push(context, MaterialPageRoute(builder: (context) {
                                 return Payment(context, bilgi: UyeTahakkukBilgi(uyeTahakkuk: bilgi.tahakuklar[index], store: store, uyeAd: uyeAd, uyeId: bilgi.uye_id));
                               }));

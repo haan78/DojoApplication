@@ -3,7 +3,6 @@ import 'package:dojo_mobile/service.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
-import '../../api.dart';
 import '../../store.dart';
 import '../appwindow.dart';
 import '../widget/alert.dart';

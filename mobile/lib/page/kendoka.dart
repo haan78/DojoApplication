@@ -2,6 +2,7 @@
 
 import 'package:dojo_mobile/page/tabs/kendokaAidat.dart';
 import 'package:dojo_mobile/page/tabs/kendokaBase.dart';
+import 'package:dojo_mobile/page/tabs/kendoka_seviye.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -52,8 +53,10 @@ class _Kendoka extends State<Kendoka> {
         updateParentData: updateData,
         uyeAd: bilgi.ad,
       );
+    } else if (_bottomNavIndex == 2) {
+      return KendokaSeviye(sabitler: sabitler, bilgi: bilgi, store: store, updateParentData: updateParentData, uyeAd: bilgi.ad);
     } else {
-      return const Text("Yapım aşamasında");
+      return const Text("Yapıp aşamasında");
     }
   }
 
@@ -129,7 +132,8 @@ class _Kendoka extends State<Kendoka> {
           items: const [
             BottomNavigationBarItem(label: "Genel", icon: Icon(Icons.person)),
             BottomNavigationBarItem(label: "Aidatlar", icon: Icon(Icons.payments)),
-            BottomNavigationBarItem(label: "Sinavlar", icon: Icon(Icons.card_membership))
+            BottomNavigationBarItem(label: "Sinavlar", icon: Icon(Icons.card_membership)),
+            BottomNavigationBarItem(label: "Keikolar", icon: Icon(Icons.checklist))
           ]),
     );
   }

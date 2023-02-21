@@ -136,26 +136,32 @@ $router->add("/admin/uyeler",function(Request $req){
     return uye_listele($jdata->durumlar);
 });
 
-$router->add("admin/uyeseviyeekle", function (Request $req) {
-    $jdata = $req->json();
-    if (!seviye_ekle($jdata->uye_id, $jdata->seviye, $jdata->tarih, $jdata->aciklama, $err)) {
-        throw new Exception($err);
-    }
+$router->add("/admin/uye/kayit/#uye_id",function(Request $req){
+    $jdata = $req->json();    
+    
 });
 
-$router->add("admin/uyeseviyesil/#uye_id/@seviye", function (Request $req) {
+$router->add("/admin/uye/seviye/ekle/#uye_id", function (Request $req) {
     $uye_id = $req->params()["uye_id"];
-    $seviye = $req->params()["seviye"];
-    if (!seviye_sil($uye_id, $seviye, $err)) {
+    $jdata = $req->json();
+    if (!seviye_ekle($uye_id, $jdata->seviye, $jdata->tarih, $jdata->aciklama, $err)) {
         throw new Exception($err);
     }
 });
 
-$router->add("admin/download/#dosya_id", function (Request $req) {
+$router->add("/admin/uye/seviye/sil/#uye_id", function (Request $req) {
+    $uye_id = $req->params()["uye_id"];
+    $jdata = $req->json();
+    if (!seviye_sil($uye_id, $jdata->seviye, $err)) {
+        throw new Exception($err);
+    }
+});
+
+$router->add("/admin/download/#dosya_id", function (Request $req) {
     return download(intval($req->params()["dosya_id"]));
 });
 
-$router->add("admin/upload", function () {
+$router->add("/admin/upload", function () {
     if (!empty($_FILES)) {
         $f = $_FILES[array_key_first($_FILES)];
         if ($f["error"] == UPLOAD_ERR_OK) {

@@ -3,6 +3,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:dojo_mobile/page/appwindow.dart';
 import 'package:flutter/material.dart';
 
 import 'api.dart';
@@ -194,6 +195,14 @@ Future<Sabitler> sabitGetir(Api api) async {
   Sabitler s = Sabitler();
   s.tatakkuklar = tlist;
   return s;
+}
+
+Future<void> uyeSeviyeEkle(Api api, {required int uye_id, required UyeSeviye us}) async {
+  await api.call("/admin/uye/seviye/ekle/$uye_id", data: {"seviye": us.seviye, "tarih": dateFormater(us.tarih, "yyyy-MM-dd"), "aciklama": us.aciklama});
+}
+
+Future<void> uyeSeviyeSil(Api api, {required int uye_id, required UyeSeviye us}) async {
+  await api.call("/admin/uye/seviye/sil/$uye_id", data: {"seviye": us.seviye});
 }
 
 typedef UpdateParentData = void Function(UyeBilgi ub, bool reload);
