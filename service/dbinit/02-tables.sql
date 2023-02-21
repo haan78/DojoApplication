@@ -4,8 +4,6 @@ SET NAMES utf8mb4;
 
 CREATE TABLE dosya (
   dosya_id bigint NOT NULL AUTO_INCREMENT,
-  tablo enum('UYE','MUHASEBE') CHARACTER SET utf8 COLLATE utf8_turkish_ci DEFAULT NULL,
-  tablo_id bigint DEFAULT NULL,
   icerik longblob NOT NULL,
   file_type varchar(20) CHARACTER SET utf8 COLLATE utf8_turkish_ci NOT NULL,
   olusma timestamp NULL DEFAULT CURRENT_TIMESTAMP,
@@ -62,7 +60,6 @@ CREATE TABLE uye (
   dogum_tarih date NOT NULL,
   ekfno varchar(20) CHARACTER SET utf8 COLLATE utf8_turkish_ci DEFAULT NULL,
   durum enum('active','passive','admin','super-admin','pre-registration','registered') CHARACTER SET utf8 COLLATE utf8_turkish_ci NOT NULL,
-  seviye char(6) CHARACTER SET utf8 COLLATE utf8_turkish_ci DEFAULT NULL,
   parola varchar(255) CHARACTER SET utf8 COLLATE utf8_turkish_ci DEFAULT NULL,
   olusma timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   degisme timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
