@@ -285,6 +285,6 @@ Color renkver3(int val) {
   }
 }
 
-void kendokaGetir(BuildContext context, int uye_id) {
-  Navigator.push(context, MaterialPageRoute(builder: (context) => Kendoka(uye_id)));
+void kendokaGetir(BuildContext context, int uyeId) {
+  Navigator.push(context, MaterialPageRoute(builder: (context) => Kendoka(uyeId)));
 }

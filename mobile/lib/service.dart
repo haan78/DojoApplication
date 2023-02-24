@@ -103,7 +103,7 @@ Future<List<UyeListDetay>> uye_listele(Api api, {required String durumlar}) asyn
     uld.son_keiko = urd["son_keiko"] == null ? DateTime.now() : DateTime.parse(urd["son_keiko"].toString());
     uld.son3Ay = int.parse(urd["son3Ay"].toString());
     uld.uye_id = int.parse(urd["uye_id"].toString());
-    uld.image_type = urd["image_type"];
+    uld.image_type = urd["image_type"] ?? "";
     String? image = urd["image"];
     if (image != null && image.isNotEmpty) {
       uld.image = base64Decode(urd["image"]);
@@ -203,6 +203,29 @@ Future<void> uyeSeviyeEkle(Api api, {required int uye_id, required UyeSeviye us}
 
 Future<void> uyeSeviyeSil(Api api, {required int uye_id, required UyeSeviye us}) async {
   await api.call("/admin/uye/seviye/sil/$uye_id", data: {"seviye": us.seviye});
+}
+
+Future<void> epostaTest(Api api, {required int uye_id}) async {
+  await api.call("/admin/uye/epostatest/$uye_id");
+}
+
+Future<int> uyeKayit(Api api, {required UyeBilgi ub}) async {
+  dynamic response = await api.call("/admin/uye/kayit/${ub.uye_id}", data: {
+    "ad": ub.ad,
+    "tahakkuk_id": ub.tahakkuk_id,
+    "email": ub.email,
+    "cinsiyet": ub.cinsiyet,
+    "dogum": dateFormater(ub.dogum_tarih, "yyyy-MM-dd"),
+    "ekfno": ub.ekfno,
+    "durum": ub.durum,
+    "dosya": base64.encode(ub.image!),
+    "file_type": ub.file_type
+  });
+  final int uye_id = response["uye_id"];
+  if (ub.durum == "registerd") {
+    await epostaTest(api, uye_id: uye_id);
+  }
+  return uye_id;
 }
 
 typedef UpdateParentData = void Function(UyeBilgi ub, bool reload);

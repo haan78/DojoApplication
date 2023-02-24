@@ -47,32 +47,31 @@ namespace Minmi {
 
     class Request
     {
-        private ?array $pathArray = null;
         private array $pathParams = [];
         private $_local = null;
 
         public function __match(string $uri,bool $startwith = false): bool
         {
             $params = [];
-            $pia = $this->path();
-            $ta = array_values(array_filter(explode("/", $uri)));
-            $matched = true;
+            $url = $_SERVER["PATH_INFO"] ?? "";
+            $pia = $this->path($url);
+            $ta = $this->path($uri);
+            $unmatched = 0;
             $urlp = "";
             if ($startwith || count($pia) == count($ta)) {
                 for ($i = 0; $i < count($pia); $i++) {
-                    if (isset($ta[$i])) {
-                        //echo $ta[$i];
+                    if (isset($ta[$i]) && isset($pia[$i])) {                        
                         if (preg_match("/\s*\@(\w+)\s*/", $ta[$i], $m)) {
                             $params[$m[1]] = trim($pia[$i]);
                         } elseif (preg_match("/\s*\#(\w+)\s*/", $ta[$i], $m) && preg_match("/^(\d+)$/", $pia[$i])) {
                             $params[$m[1]] = intval($pia[$i]);
                         } elseif ($ta[$i] != $pia[$i]) {
-                            $matched = false;
+                            $unmatched = 1;
                             break;
                         }
                     } else {
                         if (!$startwith) {
-                            $matched = false;
+                            $unmatched = 2;
                         }
                         //var_dump($ta);
                         //echo "burda => $startwith";
@@ -84,10 +83,10 @@ namespace Minmi {
                     }
                 }
             } else {
-                $matched = false;
+                $unmatched = 3;
             }
             $this->pathParams = $params;
-            return $matched;
+            return $unmatched == 0;
         }
 
         public function getUriPattern():string {
@@ -127,8 +126,7 @@ namespace Minmi {
             return $this->_local;
         }
 
-        public function params(): array
-        {
+        public function params(): array {
             return $this->pathParams;
         }
 
@@ -166,12 +164,10 @@ namespace Minmi {
             }
         }
 
-        public function path(): array
-        {
-            if (is_null($this->pathArray)) {
-                $this->pathArray = array_values(array_filter(explode("/", ($_SERVER["PATH_INFO"] ?? ""))));
-            }
-            return $this->pathArray;
+        public function path($uri): array {
+            return array_values(array_filter(explode("/", $uri),function (string $elm) { 
+                return trim($elm) != "";
+            }));
         }
 
         public function query(): object
@@ -233,7 +229,7 @@ namespace Minmi {
                         $response->status = 200;                        
                         $response->result = call_user_func_array($fnc, [$request,$response]);                        
                         break;
-                    }                  
+                    }
                 }
 
                 if (!$matched) {

@@ -1,7 +1,7 @@
 // ignore_for_file: no_logic_in_create_state, non_constant_identifier_names, no_leading_underscores_for_local_identifiers
 
 import 'package:dojo_mobile/page/tabs/kendokaAidat.dart';
-import 'package:dojo_mobile/page/tabs/kendokaBase.dart';
+import 'package:dojo_mobile/page/tabs/kendoka_base.dart';
 import 'package:dojo_mobile/page/tabs/kendoka_seviye.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -43,7 +43,6 @@ class _Kendoka extends State<Kendoka> {
         sabitler: formSabitler,
         bilgi: bilgi,
         store: store,
-        updateParentData: updateData,
       );
     } else if (_bottomNavIndex == 1) {
       return KendokaAidat(
@@ -54,7 +53,7 @@ class _Kendoka extends State<Kendoka> {
         uyeAd: bilgi.ad,
       );
     } else if (_bottomNavIndex == 2) {
-      return KendokaSeviye(sabitler: sabitler, bilgi: bilgi, store: store, updateParentData: updateParentData, uyeAd: bilgi.ad);
+      return KendokaSeviye(sabitler: sabitler, bilgi: bilgi, store: store, uyeAd: bilgi.ad);
     } else {
       return const Text("Yapıp aşamasında");
     }
@@ -63,6 +62,9 @@ class _Kendoka extends State<Kendoka> {
   @override
   void initState() {
     super.initState();
+    if (uye_id == 0) {
+      _bottomNavIndex = 0;
+    }
   }
 
   @override
@@ -118,23 +120,25 @@ class _Kendoka extends State<Kendoka> {
           }
         },
       ),
-      bottomNavigationBar: BottomNavigationBar(
-          currentIndex: _bottomNavIndex,
-          onTap: (int index) {
-            if (mounted) {
-              setState(() {
-                _bottomNavIndex = index;
-                _reload = false;
-              });
-            }
-          },
-          type: BottomNavigationBarType.fixed,
-          items: const [
-            BottomNavigationBarItem(label: "Genel", icon: Icon(Icons.person)),
-            BottomNavigationBarItem(label: "Aidatlar", icon: Icon(Icons.payments)),
-            BottomNavigationBarItem(label: "Sinavlar", icon: Icon(Icons.card_membership)),
-            BottomNavigationBarItem(label: "Keikolar", icon: Icon(Icons.checklist))
-          ]),
+      bottomNavigationBar: uye_id > 0
+          ? BottomNavigationBar(
+              currentIndex: _bottomNavIndex,
+              onTap: (int index) {
+                if (mounted) {
+                  setState(() {
+                    _bottomNavIndex = index;
+                    _reload = false;
+                  });
+                }
+              },
+              type: BottomNavigationBarType.fixed,
+              items: const [
+                  BottomNavigationBarItem(label: "Genel", icon: Icon(Icons.person)),
+                  BottomNavigationBarItem(label: "Aidatlar", icon: Icon(Icons.payments)),
+                  BottomNavigationBarItem(label: "Sinavlar", icon: Icon(Icons.card_membership)),
+                  BottomNavigationBarItem(label: "Keikolar", icon: Icon(Icons.checklist))
+                ])
+          : null,
     );
   }
 }
@@ -148,9 +152,10 @@ Future<UyeBilgi> yueBilgiGetir(Store store, int uye_id, bool reload) async {
     } else {
       formUyeBilgi = UyeBilgi();
       formUyeBilgi.cinsiyet = "ERKEK";
-      formUyeBilgi.durum = "active";
+      formUyeBilgi.durum = "registered";
       formUyeBilgi.tahakkuk_id = 1;
       formUyeBilgi.image = (await rootBundle.load("assets/kendoka.jpg")).buffer.asUint8List();
+      formUyeBilgi.file_type = "image/jpeg";
     }
   }
 

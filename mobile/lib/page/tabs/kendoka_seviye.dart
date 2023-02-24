@@ -9,16 +9,15 @@ import '../widget/alert.dart';
 class KendokaSeviye extends StatefulWidget {
   final UyeBilgi bilgi;
   final Store store;
-  final UpdateParentData updateParentData;
   final Sabitler sabitler;
   final String uyeAd;
 
-  const KendokaSeviye({super.key, required this.sabitler, required this.bilgi, required this.store, required this.updateParentData, required this.uyeAd});
+  const KendokaSeviye({super.key, required this.sabitler, required this.bilgi, required this.store, required this.uyeAd});
 
   @override
   State<StatefulWidget> createState() {
     // ignore: no_logic_in_create_state
-    return _KendokaSeviye(sabitler: sabitler, bilgi: bilgi, store: store, updateParentData: updateParentData, uyeAd: uyeAd);
+    return _KendokaSeviye(sabitler: sabitler, bilgi: bilgi, store: store, uyeAd: uyeAd);
   }
 }
 
@@ -27,12 +26,11 @@ int yil = DateTime.now().year;
 class _KendokaSeviye extends State<KendokaSeviye> {
   final UyeBilgi bilgi;
   final Store store;
-  final UpdateParentData updateParentData;
   final Sabitler sabitler;
   final String uyeAd;
   UyeSeviye seviye = UyeSeviye();
   bool loading = false;
-  _KendokaSeviye({required this.sabitler, required this.bilgi, required this.store, required this.updateParentData, required this.uyeAd});
+  _KendokaSeviye({required this.sabitler, required this.bilgi, required this.store, required this.uyeAd});
 
   @override
   Widget build(BuildContext context) {
@@ -133,6 +131,9 @@ class _KendokaSeviye extends State<KendokaSeviye> {
                       onPressed: loading
                           ? null
                           : () async {
+                              if (seviye.seviye.isEmpty) {
+                                return;
+                              }
                               yesNoDialog(context, text: "Bu kaydı silmek istediğinizden emin misiniz?", onYes: (() async {
                                 setState(() {
                                   loading = true;

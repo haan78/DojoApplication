@@ -36,7 +36,7 @@ function tokenPars(string &$token) {
 }
 
 $router = new DefaultJsonRouter("", function (Request $req, Response $res) {
-
+    return;
     $urlpattern = $req->getUriPattern();
     $token = $req->getBearerToken();
 
@@ -127,7 +127,7 @@ $router->add("/token", function (Request $request) {
     }
 });
 
-$router->add("admin/uye/#uye_id", function (Request $req) {
+$router->add("/admin/uye/#uye_id", function (Request $req) {
     return uye($req->params()["uye_id"]);
 });
 
@@ -136,10 +136,24 @@ $router->add("/admin/uyeler",function(Request $req){
     return uye_listele($jdata->durumlar);
 });
 
-$router->add("/admin/uye/kayit/#uye_id",function(Request $req){
-    $jdata = $req->json();    
-    
+$router->add("/admin/uye/kayit/#uye_id",function(Request $req) {
+    $jdata = $req->json(); 
+    $uye_id = $req->params()["uye_id"];
+    uye_eke($uye_id,$jdata->ad,$jdata->tahakkuk_id,$jdata->email,$jdata->cinsiyet,$jdata->dogum,$jdata->ekfno,$jdata->durum,$jdata->dosya,$jdata->file_type);
 });
+
+$router->add("/admin/uye/epostatest/#uye_id",function(Request $req) {
+    $uye_id = intval($req->params("uye_id"));
+    if (uye_eposta_onkayit($uye_id,$ad,$email,$code,$err)) {
+        sendinblue($email, 1, (object)[
+            "AD" => $ad,
+            "URL" => $_ENV["SERVICE_ROOT"] . "/backend/index.php?m=activate&code=$code"
+        ]);
+    } else {
+        throw new Exception($err);
+    }
+});
+
 
 $router->add("/admin/uye/seviye/ekle/#uye_id", function (Request $req) {
     $uye_id = $req->params()["uye_id"];
@@ -150,7 +164,7 @@ $router->add("/admin/uye/seviye/ekle/#uye_id", function (Request $req) {
 });
 
 $router->add("/admin/uye/seviye/sil/#uye_id", function (Request $req) {
-    $uye_id = $req->params()["uye_id"];
+    $uye_id = $req->param("uye_id");
     $jdata = $req->json();
     if (!seviye_sil($uye_id, $jdata->seviye, $err)) {
         throw new Exception($err);

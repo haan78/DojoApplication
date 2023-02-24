@@ -101,7 +101,7 @@ function uye_listele(string $durumlar) : array {
     LEFT JOIN uye_tahakkuk ut ON ut.uye_id = u.uye_id and ut.muhasebe_id  is null
     LEFT JOIN dosya d ON d.dosya_id  = u.dosya_id
     WHERE FIND_IN_SET(u.durum,?)
-    GROUP BY u.uye_id,u.ad,u.cinsiyet,u.dosya_id,u.durum,u.ekfno,u.email,u.seviye";
+    GROUP BY u.uye_id,u.ad,u.cinsiyet,u.dosya_id,u.durum,u.ekfno,u.email,seviye";
     
     $mysqli = mysqlilink();
     $stmt = mysqli_prepare($mysqli, $sql);
@@ -305,9 +305,72 @@ function seviye_sil($uye_id,string $seviye,&$err) : bool {
     return !$err;
 }
 
-function uye_eke($uye_id,$ad,$tahakkuk_id,$email,$cinsiyet,$dogum,$ekfno,$durum,$dosya) {
+function uye_eke($uye_id,$ad,$tahakkuk_id,$email,$cinsiyet,$dogum,$ekfno,$durum,$dosya,$file_type) {
     $p = new \MySqlTool\MySqlToolCall(mysqlilink());
-    $dosya_id=0;
-    return $p->procedure("uye_bilgi")->out("uye_id",$uye_id)->out("parola")->in($tahakkuk_id)
-    ->in($ad)->in($email)->in($dosya_id)->in($cinsiyet)->in($dogum)->in($ekfno)->in($durum)->call()->result("outs");
+    $outs = $p->procedure("uye_ekle")->out("uye_id",$uye_id)->out("parola")->in($tahakkuk_id)
+    ->in($ad)->in($email)->in($dosya)->in($file_type)->in($cinsiyet)->in($dogum)->in($ekfno)->in($durum)->call()->result("outs");
+    return $outs["uye_id"];
+}
+
+function uye_eposta_onkayit(int $uye_id,&$ad,&$email,&$code,&$err) {
+    $err = "";
+    $mysqli = mysqlilink();
+    $sql = "SELECT ad,email FROM uye WHERE uye_id = ?";
+    $stmt = mysqli_prepare($mysqli, $sql);
+    if ($stmt) {
+        if (mysqli_stmt_bind_param($stmt, "i", $uye_id)) {
+            if (mysqli_stmt_execute($stmt)) {
+                mysqli_stmt_bind_result($stmt,$ad,$email);
+                if (mysqli_stmt_fetch($stmt)) {
+                    $code = uniqid(date('ymdHis'));
+                    $sqlins = "INSERT INTO uye_kimlik_degisim (uye_id,anahtar,email) VALUES ($uye_id,\'$code\',\'$email\') ON DUPLICATE KEY UPDATE anahtar = VALUES(anahtar), email = values(email)";
+                    if ( !mysqli_execute_query($mysqli,$sqlins) ) {
+                        $err = mysqli_error($mysqli);
+                    }
+                } else {
+                    $err = "Üye bulunamadı";
+                }
+            } else {
+                $err = mysqli_stmt_error($stmt);    
+            }
+        } else {
+            $err = mysqli_stmt_error($stmt);
+        }
+        mysqli_stmt_close($stmt);
+    } else {
+        $err = mysqli_error($mysqli);
+    }
+    mysqli_close($mysqli);
+    return !$err;
+}
+
+function uye_eposta_onay(string $code,&$err) : bool {
+    $err = "";
+    $mysqli = mysqlilink();
+    $sql = "SELECT uye_id FROM uye_kimlik_degisim WHERE anahtar = ? AND TIME_TO_SEC(TIMEDIFF(NOW(), COALESCE(olusma,degisme))) <= 86400";
+    $stmt = mysqli_prepare($mysqli, $sql);
+    if ($stmt) {
+        if (mysqli_stmt_bind_param($stmt, "s", $code)) {
+            if (mysqli_stmt_execute($stmt)) {
+                mysqli_stmt_bind_result($stmt,$uye_id);
+                if (mysqli_stmt_fetch($stmt)) {
+                    $sqlupdate = "UPDATE uye SET durum = 'active' WHERE durum = 'registered' AND uye_id = $uye_id";
+                    if ( !mysqli_execute_query($mysqli,$sqlupdate) ) {
+                        $err = mysqli_error($mysqli);
+                    }
+                } else {
+                    $err = "Kayit bulunamadi";
+                }
+            } else {
+                $err = mysqli_stmt_error($stmt);    
+            }
+        } else {
+            $err = mysqli_stmt_error($stmt);
+        }    
+        mysqli_stmt_close($stmt);
+    } else {
+        $err = mysqli_error($mysqli);
+    }
+    mysqli_close($mysqli);
+    return !$err;
 }

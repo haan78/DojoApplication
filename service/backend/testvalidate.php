@@ -10,6 +10,6 @@ ini_set('display_startup_errors', TRUE);
 
 
 $t = time();
-validate("haan78@gmail.com","123456","admin");
+var_dump(validate("haan78@gmail.com","gru%60","admin"));
 $t = $t - time();
 echo "Sure $t";
