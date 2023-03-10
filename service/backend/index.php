@@ -4,12 +4,15 @@ $dotenv->load();
 
 $HCAPTCHA_SITEKEY = $_ENV["HCAPTCHA_SITEKEY"];
 
-$err = "";
+
 $module = trim($_GET["m"] ?? "login");
 if ( $module == "activate" ) {
     require_once "./db.php";
     $code = $_GET["code"] ?? "";
-    uye_eposta_onay($code,$err);
+    $err = "";
+    if (!uye_eposta_onay($code,$err)) {
+        $GLOBALS["err"] = $err;
+    }
 } elseif ( !in_array($module,["login","email","reset"])) {
     $module = "login";
 }

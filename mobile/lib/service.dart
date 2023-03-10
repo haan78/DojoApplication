@@ -221,8 +221,8 @@ Future<int> uyeKayit(Api api, {required UyeBilgi ub}) async {
     "dosya": base64.encode(ub.image!),
     "file_type": ub.file_type
   });
-  final int uye_id = response["uye_id"];
-  if (ub.durum == "registerd") {
+  final int uye_id = int.parse(response as String);
+  if (ub.durum == "registered") {
     await epostaTest(api, uye_id: uye_id);
   }
   return uye_id;

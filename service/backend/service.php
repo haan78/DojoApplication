@@ -139,11 +139,12 @@ $router->add("/admin/uyeler",function(Request $req){
 $router->add("/admin/uye/kayit/#uye_id",function(Request $req) {
     $jdata = $req->json(); 
     $uye_id = $req->params()["uye_id"];
-    uye_eke($uye_id,$jdata->ad,$jdata->tahakkuk_id,$jdata->email,$jdata->cinsiyet,$jdata->dogum,$jdata->ekfno,$jdata->durum,$jdata->dosya,$jdata->file_type);
+    return uye_eke($uye_id,$jdata->ad,$jdata->tahakkuk_id,$jdata->email,$jdata->cinsiyet,$jdata->dogum,$jdata->ekfno,$jdata->durum,$jdata->dosya,$jdata->file_type);
 });
 
 $router->add("/admin/uye/epostatest/#uye_id",function(Request $req) {
-    $uye_id = intval($req->params("uye_id"));
+    $uye_id = intval($req->param("uye_id"));
+    $ad = $email = $code = $err = "";
     if (uye_eposta_onkayit($uye_id,$ad,$email,$code,$err)) {
         sendinblue($email, 1, (object)[
             "AD" => $ad,

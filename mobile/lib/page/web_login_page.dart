@@ -1,11 +1,11 @@
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:webview_flutter/webview_flutter.dart';
 import 'first_page.dart';
 import '../store.dart';
-import 'package:webview_flutter/webview_flutter.dart';
+
 import 'package:url_launcher/url_launcher.dart';
 
 class WebLoginPage extends StatefulWidget {
@@ -28,27 +28,35 @@ class _WebLoginPageState extends State<WebLoginPage> {
   void initState() {
     first = true;
     super.initState();
-    if (Platform.isAndroid) WebView.platform = AndroidWebView();
+    Store s = Provider.of<Store>(context, listen: false);
+    _pageController = wconn(s);
+    //if (Platform.isAndroid) WebView.platform = AndroidWebView();
   }
 
-  JavascriptChannel getMessage(BuildContext context) {
-    Store s = Provider.of<Store>(context, listen: false);
-    return JavascriptChannel(
-        name: "MobileApp",
-        onMessageReceived: (JavascriptMessage message) async {
-          final Map<String, dynamic> data = jsonDecode(message.message);
-          s.id = data["uye_id"];
-          s.UserStatus = data["durum"];
-          s.UserName = data["ad"];
-          s.ApiToken = "Bearer ${data["token"]}";
-          print(s.ApiToken);
-          s.ApiUser = data["email"];
-          s.ApiPassword = data["password"];
-          await writeSettings(s);
-          if (mounted) {
-            Navigator.push(context, MaterialPageRoute(builder: (context) => const FirstPage()));
-          }
-        });
+  WebViewController wconn(Store s) {
+    WebViewController c = WebViewController();
+    c.setJavaScriptMode(JavaScriptMode.unrestricted);
+    c.setBackgroundColor(const Color(0x00000000));
+    c.loadRequest(Uri.parse(s.LoginUrl));
+    c.setNavigationDelegate(NavigationDelegate(
+      onPageFinished: (url) {
+        c.runJavaScript(("setLoginData('${s.ApiUser}','${s.ApiPassword}','admin')"));
+      },
+    ));
+    c.addJavaScriptChannel("MobileApp", onMessageReceived: (JavaScriptMessage message) async {
+      final Map<String, dynamic> data = jsonDecode(message.message);
+      s.id = data["uye_id"];
+      s.UserStatus = data["durum"];
+      s.UserName = data["ad"];
+      s.ApiToken = "Bearer ${data["token"]}";
+      s.ApiUser = data["email"];
+      s.ApiPassword = data["password"];
+      await writeSettings(s);
+      if (mounted) {
+        Navigator.push(context, MaterialPageRoute(builder: (context) => const FirstPage()));
+      }
+    });
+    return c;
   }
 
   @override
@@ -82,18 +90,7 @@ class _WebLoginPageState extends State<WebLoginPage> {
               children: [
                 AspectRatio(
                   aspectRatio: 1,
-                  child: WebView(
-                    initialUrl: s.LoginUrl,
-                    javascriptMode: JavascriptMode.unrestricted,
-                    javascriptChannels: <JavascriptChannel>{getMessage(context)},
-                    onWebViewCreated: (WebViewController controller) {
-                      _pageController = controller;
-                    },
-                    onPageFinished: (url) async {
-                      _pageController.runJavascript("setLoginData('${s.ApiUser}','${s.ApiPassword}','admin')");
-                      //_pageController.runJavascriptReturningResult(javaScriptString)
-                    },
-                  ),
+                  child: WebViewWidget(controller: _pageController),
                 ),
                 const SizedBox(height: 10),
                 Row(
@@ -102,7 +99,7 @@ class _WebLoginPageState extends State<WebLoginPage> {
                     TextButton(
                         onPressed: () async {
                           await forgetSettings();
-                          _pageController.runJavascript("setLoginData('','','admin')");
+                          _pageController.runJavaScript("setLoginData('','','admin')");
                         },
                         child: const Text("Beni Unut")),
                     const Spacer(),

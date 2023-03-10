@@ -1,13 +1,14 @@
-import 'dart:developer';
-
 import 'package:dojo_mobile/service.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:camera/camera.dart';
 
 import '../../api.dart';
 import '../../store.dart';
 import '../appwindow.dart';
+import '../first_page.dart';
 import '../widget/alert.dart';
+import 'dart:io';
 
 final _formKey = GlobalKey<FormState>();
 // ignore: camel_case_types
@@ -34,14 +35,17 @@ class KendokaBase extends StatefulWidget {
 }
 
 class _KendokaBase extends State<KendokaBase> {
-  final ImagePicker _imgpicker = ImagePicker();
+  final tbas = DateTime(DateTime.now().year - 70, 1, 1);
+  final tbit = DateTime(DateTime.now().year - 10, 1, 1);
   bool loading = false;
+  bool resimsecildi = true;
+  bool tarihsecildi = true;
   late Api api;
   late Image buttonImage;
   late TextEditingController emailEdit;
   late TextEditingController ekfnoEdit;
-  int yil = DateTime.now().year;
   TextEditingController adEdit = TextEditingController();
+  CameraController? camera;
 
   @override
   void initState() {
@@ -51,6 +55,29 @@ class _KendokaBase extends State<KendokaBase> {
     ekfnoEdit = TextEditingController(text: widget.bilgi.ekfno);
     emailEdit = TextEditingController(text: widget.bilgi.email);
     buttonImage = Image.memory(widget.bilgi.image!, fit: BoxFit.fill);
+    if (widget.bilgi.uye_id == 0) {
+      resimsecildi = false;
+      tarihsecildi = false;
+    } else {
+      resimsecildi = true;
+      tarihsecildi = true;
+    }
+    setCamera();
+  }
+
+  void setCamera() async {
+    List<CameraDescription> list = await availableCameras();
+    if (list.isNotEmpty) {
+      print(list[0].name);
+      camera = CameraController(list[0], ResolutionPreset.medium);
+      camera!.initialize().then((_) {
+        if (mounted) {
+          setState(() {});
+        }
+      });
+    } else {
+      camera = null;
+    }
   }
 
   @override
@@ -63,13 +90,24 @@ class _KendokaBase extends State<KendokaBase> {
             TextButton(
                 style: TextButton.styleFrom(padding: const EdgeInsets.all(0), fixedSize: const Size(170, 250)),
                 onPressed: () async {
-                  XFile? xfile = await _imgpicker.pickImage(source: ImageSource.camera, maxHeight: 800, maxWidth: 600);
+                  XFile? xfile;
+                  try {
+                    //xfile = await camera!.takePicture();
+                    final imgpicker = ImagePicker();
+                    xfile = await imgpicker.pickImage(source: ImageSource.camera, imageQuality: 30);
+                  } catch (err) {
+                    errorAlert(context, err.toString());
+                  }
+
                   if (xfile != null) {
                     //formUyeBilgi.image = await xfile.readAsBytes();
                     final bytes = await xfile.readAsBytes();
+                    final mime = xfile.mimeType ?? "image/jpeg";
                     setState(() {
                       widget.bilgi.image = bytes;
-                      widget.bilgi.file_type = xfile.mimeType ?? "";
+                      widget.bilgi.file_type = mime;
+                      buttonImage = Image.memory(widget.bilgi.image!, fit: BoxFit.fill);
+                      resimsecildi = true;
                     });
                   }
                 },
@@ -139,17 +177,21 @@ class _KendokaBase extends State<KendokaBase> {
               )),
               TextButton(
                   onPressed: () async {
-                    DateTime t = widget.bilgi.dogum_tarih;
-                    if (widget.bilgi.uye_id == 0) {
-                      t = DateTime(yil - 10, 1, 1);
+                    DateTime? dt;
+                    if (tarihsecildi) {
+                      dt = await showDatePicker(context: context, initialDate: widget.bilgi.dogum_tarih, firstDate: tbas, lastDate: tbit);
+                    } else {
+                      dt = await showDatePicker(context: context, initialDate: tbit, firstDate: tbas, lastDate: tbit);
                     }
-                    DateTime? dt = await showDatePicker(context: context, initialDate: t, firstDate: DateTime(yil - 70, 1, 1), lastDate: DateTime(yil - 10, 1, 1));
                     if (dt != null) {
-                      widget.bilgi.dogum_tarih = dt;
+                      setState(() {
+                        widget.bilgi.dogum_tarih = dt!;
+                        tarihsecildi = true;
+                      });
                     }
                   },
                   child: Column(
-                    children: [const Text("Doğum Tarihi"), Text(dateFormater(widget.bilgi.dogum_tarih, "dd.MM.yyyy"))],
+                    children: [const Text("Doğum Tarihi"), Text(tarihsecildi ? dateFormater(widget.bilgi.dogum_tarih, "dd.MM.yyyy") : "[Seçiniz]")],
                   ))
             ]),
             const SizedBox(height: 15),
@@ -160,19 +202,23 @@ class _KendokaBase extends State<KendokaBase> {
                           ? DropdownButtonFormField(
                               decoration: const InputDecoration(labelText: "Durum"),
                               value: widget.bilgi.durum,
-                              items: widget.bilgi.uye_id > 0
-                                  ? const [
-                                      DropdownMenuItem(value: "active", child: Text("Aktif")),
-                                      DropdownMenuItem(value: "passive", child: Text("Pasif")),
-                                      DropdownMenuItem(
-                                        value: "admin",
-                                        child: Text("Admin"),
-                                      ),
-                                      DropdownMenuItem(value: "super-admin", child: Text("Süper-Admin"))
-                                    ]
-                                  : const [DropdownMenuItem(value: "registered", child: Text("Yeni Kayıt"))],
+                              items: [
+                                DropdownMenuItem(value: "active", enabled: (widget.bilgi.durum != "registered"), child: const Text("Aktif")),
+                                DropdownMenuItem(value: "passive", enabled: (widget.bilgi.durum != "registered"), child: const Text("Pasif")),
+                                DropdownMenuItem(
+                                  value: "admin",
+                                  enabled: (widget.bilgi.durum != "registered"),
+                                  child: const Text("Admin"),
+                                ),
+                                DropdownMenuItem(value: "super-admin", enabled: (widget.bilgi.durum != "registered"), child: const Text("Süper-Admin")),
+                                DropdownMenuItem(
+                                  value: "registered",
+                                  enabled: (widget.bilgi.durum == "registered"),
+                                  child: const Text("Yeni Kayıt"),
+                                )
+                              ],
                               onChanged: (value) {
-                                if (value != null) {
+                                if (value != null && widget.bilgi.durum != "registered") {
                                   const adlist = ["admin", "super-admin"];
                                   if (widget.store.UserStatus != "super-admin" && (adlist.contains(value) || adlist.contains(widget.bilgi.durum))) {
                                     errorAlert(context, "Sadece Süper-Admin böyle bir değişikliği yapabilir");
@@ -218,16 +264,29 @@ class _KendokaBase extends State<KendokaBase> {
             ElevatedButton(
                 onPressed: loading
                     ? null
-                    : () {
+                    : () async {
+                        if (!resimsecildi) {
+                          errorAlert(context, "Lütfen üyenin fotoğrafını yükleyin");
+                          return;
+                        }
+
+                        if (!tarihsecildi) {
+                          errorAlert(context, "Lütfen üyenin doğum tarihini seçin");
+                          return;
+                        }
+
                         if (_formKey.currentState!.validate()) {
                           setState(() {
                             loading = true;
                           });
 
-                          uyeKayit(api, ub: widget.bilgi);
+                          widget.bilgi.uye_id = await uyeKayit(api, ub: widget.bilgi);
                           setState(() {
                             loading = false;
                           });
+                          if (widget.bilgi.durum == "registered" && context.mounted) {
+                            Navigator.pop(context);
+                          }
                         }
                       },
                 child: const Text("Kaydet"))

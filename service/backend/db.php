@@ -312,36 +312,31 @@ function uye_eke($uye_id,$ad,$tahakkuk_id,$email,$cinsiyet,$dogum,$ekfno,$durum,
     return $outs["uye_id"];
 }
 
-function uye_eposta_onkayit(int $uye_id,&$ad,&$email,&$code,&$err) {
+function uye_eposta_onkayit(int $uye_id,string &$ad,string &$email,string &$code,string &$err):bool {
     $err = "";
     $mysqli = mysqlilink();
-    $sql = "SELECT ad,email FROM uye WHERE uye_id = ?";
-    $stmt = mysqli_prepare($mysqli, $sql);
-    if ($stmt) {
-        if (mysqli_stmt_bind_param($stmt, "i", $uye_id)) {
-            if (mysqli_stmt_execute($stmt)) {
-                mysqli_stmt_bind_result($stmt,$ad,$email);
-                if (mysqli_stmt_fetch($stmt)) {
-                    $code = uniqid(date('ymdHis'));
-                    $sqlins = "INSERT INTO uye_kimlik_degisim (uye_id,anahtar,email) VALUES ($uye_id,\'$code\',\'$email\') ON DUPLICATE KEY UPDATE anahtar = VALUES(anahtar), email = values(email)";
-                    if ( !mysqli_execute_query($mysqli,$sqlins) ) {
-                        $err = mysqli_error($mysqli);
-                    }
-                } else {
-                    $err = "Üye bulunamadı";
-                }
-            } else {
-                $err = mysqli_stmt_error($stmt);    
+    $sql = "SELECT ad,email FROM uye WHERE uye_id = $uye_id";
+    $result = mysqli_query($mysqli,$sql);
+    if ($result) {
+        $row = mysqli_fetch_assoc($result);
+        if ($row) {
+            $code = uniqid(date('ymdHis'));
+            $email = $row["email"];
+            $ad = $row["ad"];
+            $sql = "INSERT INTO uye_kimlik_degisim (uye_id,anahtar,email) VALUES ($uye_id,'$code','$email') ON DUPLICATE KEY UPDATE anahtar = VALUES(anahtar), email = values(email)";
+            if ( !mysqli_query($mysqli,$sql) ) {
+                echo $sql.PHP_EOL;
+                $err = mysqli_error($mysqli);
+                
             }
         } else {
-            $err = mysqli_stmt_error($stmt);
+            $err = mysqli_error($mysqli);
         }
-        mysqli_stmt_close($stmt);
     } else {
         $err = mysqli_error($mysqli);
     }
     mysqli_close($mysqli);
-    return !$err;
+    return empty($err);
 }
 
 function uye_eposta_onay(string $code,&$err) : bool {
@@ -354,10 +349,12 @@ function uye_eposta_onay(string $code,&$err) : bool {
             if (mysqli_stmt_execute($stmt)) {
                 mysqli_stmt_bind_result($stmt,$uye_id);
                 if (mysqli_stmt_fetch($stmt)) {
+                    $mysqli2 = mysqlilink();
                     $sqlupdate = "UPDATE uye SET durum = 'active' WHERE durum = 'registered' AND uye_id = $uye_id";
-                    if ( !mysqli_execute_query($mysqli,$sqlupdate) ) {
+                    if ( !mysqli_query($mysqli2,$sqlupdate) ) {
                         $err = mysqli_error($mysqli);
                     }
+                    mysqli_close($mysqli2);
                 } else {
                     $err = "Kayit bulunamadi";
                 }
@@ -372,5 +369,5 @@ function uye_eposta_onay(string $code,&$err) : bool {
         $err = mysqli_error($mysqli);
     }
     mysqli_close($mysqli);
-    return !$err;
+    return empty($err);
 }
