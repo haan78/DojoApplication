@@ -221,7 +221,7 @@ Future<List<UyeListDetay>> uyeler(bool active, String search, FilterAction fa, S
   List<UyeListDetay> data = [];
   if (reload) {
     Api api = Api(url: store.ApiUrl, authorization: store.ApiToken);
-    listData = await uye_listele(api, durumlar: active ? "active,admin,super-admin" : "passive");
+    listData = await uye_listele(api, durumlar: active ? "active,admin,super-admin" : "passive,registered");
   }
 
   if (search.isNotEmpty) {
