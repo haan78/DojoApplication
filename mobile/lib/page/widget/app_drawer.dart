@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 
-import '../web_login_page.dart';
 import '../appwindow.dart';
+import '../first_page.dart';
+import '../web_login_page.dart';
+import '../yoklama_page.dart';
 
-app_drawer(String appName, BuildContext context, GlobalKey<ScaffoldState> scaffoldKey, void Function(AppWindow aw) callback) {
+app_drawer(BuildContext context) {
   return Drawer(
       child: Column(
     children: [
@@ -22,14 +24,15 @@ app_drawer(String appName, BuildContext context, GlobalKey<ScaffoldState> scaffo
                 const SizedBox(
                   width: 5,
                 ),
-                Text(appName, style: TextStyle(color: Colors.yellow.shade700, fontWeight: FontWeight.bold, fontSize: 30))
+                Text(AppTitleText, style: TextStyle(color: Colors.yellow.shade700, fontWeight: FontWeight.bold, fontSize: 30))
               ],
             ),
           )),
       TextButton(
           onPressed: () {
-            scaffoldKey.currentState?.openEndDrawer();
-            callback(AppWindow.uyeler);
+            //scaffoldKey.currentState?.openEndDrawer();
+            Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => const FirstPage()));
+            //Navigator.push(context, MaterialPageRoute(builder: (context) => const FirstPage()));
           },
           child: const ListTile(
               leading: Icon(
@@ -40,9 +43,10 @@ app_drawer(String appName, BuildContext context, GlobalKey<ScaffoldState> scaffo
               title: Text("Üyeler"))),
       TextButton(
           onPressed: () {
-            scaffoldKey.currentState?.openEndDrawer();
-
-            callback(AppWindow.yoklamalar);
+            //scaffoldKey.currentState?.openEndDrawer();
+            //Navigator.push(context, MaterialPageRoute(builder: (context) => const YoklamaPage()));
+            Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => const YoklamaPage()));
+            //callback(AppWindow.yoklamalar);
           },
           child: const ListTile(
               leading: Icon(
@@ -53,8 +57,8 @@ app_drawer(String appName, BuildContext context, GlobalKey<ScaffoldState> scaffo
               title: Text("Yoklamalar"))),
       TextButton(
           onPressed: () {
-            scaffoldKey.currentState?.openEndDrawer();
-            callback(AppWindow.harcamalar);
+            //scaffoldKey.currentState?.openEndDrawer();
+            //callback(AppWindow.harcamalar);
           },
           child: const ListTile(
               leading: Icon(
@@ -65,8 +69,8 @@ app_drawer(String appName, BuildContext context, GlobalKey<ScaffoldState> scaffo
               title: Text("Harcamalar"))),
       TextButton(
           onPressed: () {
-            scaffoldKey.currentState?.openEndDrawer();
-            callback(AppWindow.ayarlar);
+            //scaffoldKey.currentState?.openEndDrawer();
+            //callback(AppWindow.ayarlar);
           },
           child: const ListTile(
               leading: Icon(
@@ -77,7 +81,7 @@ app_drawer(String appName, BuildContext context, GlobalKey<ScaffoldState> scaffo
               title: Text("Ayarlar"))),
       TextButton(
           onPressed: () {
-            scaffoldKey.currentState?.openEndDrawer();
+            //scaffoldKey.currentState?.openEndDrawer();
             Navigator.push(context, MaterialPageRoute(builder: (context) => const WebLoginPage()));
           },
           child: const ListTile(

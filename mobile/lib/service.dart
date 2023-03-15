@@ -79,8 +79,14 @@ class Tahakkuk {
   double tutar = 0;
 }
 
+class Yoklama {
+  int yoklama_id = 0;
+  String tanim = "";
+}
+
 class Sabitler {
-  List<Tahakkuk> tatakkuklar = [];
+  List<Tahakkuk> tahakkuklar = [];
+  List<Yoklama> yoklamalar = [];
 }
 
 Future<Uint8List> uyeResim(Api api, {BoxFit fit = BoxFit.fill}) async {
@@ -184,17 +190,21 @@ Future<void> parolaDegistir(Api api, {required String oldpass, required String n
 
 Future<Sabitler> sabitGetir(Api api) async {
   dynamic r = await api.call("/admin/sabitler");
-  List<Tahakkuk> tlist = [];
+  Sabitler sabitler = Sabitler();
   for (final t in r["tahakkuklar"]) {
     Tahakkuk tahakkuk = Tahakkuk();
     tahakkuk.tahakkuk_id = int.parse(t["tahakkuk_id"]);
     tahakkuk.tanim = t["tanim"];
     tahakkuk.tutar = double.parse(t["tutar"]);
-    tlist.add(tahakkuk);
+    sabitler.tahakkuklar.add(tahakkuk);
   }
-  Sabitler s = Sabitler();
-  s.tatakkuklar = tlist;
-  return s;
+  for (final y in r["yoklamalar"]) {
+    Yoklama yoklama = Yoklama();
+    yoklama.yoklama_id = int.parse(y["yoklama_id"]);
+    yoklama.tanim = y["tanim"];
+    sabitler.yoklamalar.add(yoklama);
+  }
+  return sabitler;
 }
 
 Future<void> uyeSeviyeEkle(Api api, {required int uye_id, required UyeSeviye us}) async {

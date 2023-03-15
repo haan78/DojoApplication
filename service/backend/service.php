@@ -173,9 +173,10 @@ $router->add("/admin/uye/seviye/sil/#uye_id", function (Request $req) {
 });
 
 $router->add("/admin/uye/yoklama/#yoklama_id/#uye_id/@tarih", function (Request $req) {
-    $yoklama_id = $req->param("uye_id");
+    $yoklama_id = $req->param("yoklama_id");
     $uye_id = $req->param("uye_id");
     $tarih = $req->param("tarih");
+    //var_dump([$yoklama_id,$uye_id,$tarih]);
     return uye_yoklama($yoklama_id,$uye_id,$tarih);
 
 });

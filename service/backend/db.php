@@ -19,6 +19,14 @@ function mysqlilink(): mysqli {
     }
 }
 
+function resultToArray(mysqli_result $result): array {
+    $arr = [];
+    while($row=mysqli_fetch_assoc($result)) {
+        array_push($arr,$row);
+    }
+    return $arr;
+}
+
 function create_identity(int $uye_id, string $username,&$ad,&$code) : void {    
     $p = new \MySqlTool\MySqlToolCall(mysqlilink());
     $outs = $p->procedure("uye_kimlik_olustur")->
@@ -143,24 +151,26 @@ function uye_listele(string $durumlar) : array {
 }
 
 function sabitler() {
-    $err = "";
-    $resultarr = [];
     $mysqli = mysqlilink();
-    $result_tahakkuk = mysqli_query($mysqli,"SELECT tahakkuk_id,tanim,tutar FROM tahakkuk");
-    if($result_tahakkuk) {
-        $arr = [];
-        while( $row = mysqli_fetch_assoc($result_tahakkuk) ) {
-            array_push($arr,$row);
-        }
-        $resultarr["tahakkuklar"] = $arr;
-    } else {
-        $err = mysqli_error($mysqli);
-    }
-    if ($err) {
-        throw new Exception($err);
-    } else {
-        return $resultarr;
-    }
+    mysqli_multi_query($mysqli,
+        "SELECT tahakkuk_id,tanim,tutar FROM tahakkuk;
+        SELECT yoklama_id,tanim FROM yoklama"
+    );
+
+    $result_tahakkuklar = mysqli_store_result($mysqli);
+    mysqli_next_result($mysqli);
+    $result_yoklamalar = mysqli_store_result($mysqli);
+
+    $data = [
+        "tahakkuklar"=>resultToArray($result_tahakkuklar),
+        "yoklamalar" =>resultToArray($result_yoklamalar)
+    ];
+    mysqli_free_result($result_tahakkuklar);
+    mysqli_free_result($result_yoklamalar);
+    mysqli_close($mysqli);
+    
+
+    return $data;
 }
 
 function download(int $dosya_id) {

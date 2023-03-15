@@ -1,8 +1,10 @@
 import 'dart:convert';
 
+import 'package:dojo_mobile/api.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:webview_flutter/webview_flutter.dart';
+import '../service.dart';
 import 'first_page.dart';
 import '../store.dart';
 
@@ -51,6 +53,8 @@ class _WebLoginPageState extends State<WebLoginPage> {
       s.ApiToken = "Bearer ${data["token"]}";
       s.ApiUser = data["email"];
       s.ApiPassword = data["password"];
+      final api = Api(url: s.ApiUrl, authorization: s.ApiToken);
+      s.sabitler = await sabitGetir(api);
       await writeSettings(s);
       if (mounted) {
         Navigator.push(context, MaterialPageRoute(builder: (context) => const FirstPage()));

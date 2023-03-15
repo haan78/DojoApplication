@@ -1,4 +1,5 @@
 // ignore_for_file: non_constant_identifier_names
+import 'package:dojo_mobile/service.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'dart:convert';
 
@@ -14,6 +15,8 @@ class Store {
   String UserName = "";
   String LoginUrl = "";
   String WebUrl = "";
+  Sabitler sabitler = Sabitler();
+
   int id = 0;
   void copy(Store s) {
     AppName = s.AppName;

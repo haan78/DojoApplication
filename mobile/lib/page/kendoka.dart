@@ -148,7 +148,7 @@ class _Kendoka extends State<Kendoka> {
 Future<UyeBilgi> yueBilgiGetir(Store store, int uye_id, bool reload) async {
   if (reload) {
     Api api = Api(url: store.ApiUrl, authorization: store.ApiToken);
-    formSabitler = await sabitGetir(api);
+    formSabitler = store.sabitler;
     if (uye_id > 0) {
       formUyeBilgi = await uyeBilgi(api, uye_id: uye_id);
     } else {

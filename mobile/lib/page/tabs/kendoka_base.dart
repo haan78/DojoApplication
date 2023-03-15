@@ -18,7 +18,7 @@ class KendokaBase extends StatefulWidget {
 
   final List<DropdownMenuItem<int>> ddTahakkular = [];
   KendokaBase({super.key, required this.sabitler, required this.bilgi, required this.store}) {
-    for (final t in sabitler.tatakkuklar) {
+    for (final t in sabitler.tahakkuklar) {
       ddTahakkular.add(DropdownMenuItem(value: t.tahakkuk_id, child: Text(t.tanim)));
     }
     if (bilgi.uye_id == 0) {

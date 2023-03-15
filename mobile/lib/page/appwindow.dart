@@ -5,11 +5,14 @@ const Color colorGood = Color.fromARGB(255, 19, 94, 9);
 const Color colorBad = Color.fromARGB(255, 173, 5, 5);
 const Color colorWarn = Color.fromARGB(255, 204, 191, 11);
 
+const AppTitleText = "Ankara Kendo";
+const AppPading = EdgeInsets.all(3);
+
 ButtonStyle goodBtnStyle = ButtonStyle(backgroundColor: MaterialStateProperty.resolveWith((states) => colorGood));
 ButtonStyle badBtnStyle = ButtonStyle(backgroundColor: MaterialStateProperty.resolveWith((states) => colorBad));
 ButtonStyle warnBtnStyle = ButtonStyle(backgroundColor: MaterialStateProperty.resolveWith((states) => colorWarn));
 
-enum AppWindow { harcamalar, uyeler, yoklamalar, ayarlar }
+enum AppWindow { harcamalar, uyeler, yoklamalar, ayarlar, raporlar }
 
 yesNoDialog(BuildContext context, {required String text, String title = "Onay", required Function() onYes, Function()? onNo}) {
   showDialog(
@@ -97,3 +100,18 @@ const Dikey = SizedBox(height: 10);
 const Dikey2 = SizedBox(height: 20);
 const Yatay = SizedBox(width: 10);
 const Yatay2 = SizedBox(width: 20);
+
+// ignore: unnecessary_const
+final AppTitle = Row(
+  children: [
+    Image.asset(
+      "assets/logo.png",
+      fit: BoxFit.contain,
+      height: 32,
+    ),
+    const SizedBox(
+      width: 10,
+    ),
+    const Text(AppTitleText)
+  ],
+);

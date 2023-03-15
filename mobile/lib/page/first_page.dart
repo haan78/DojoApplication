@@ -43,24 +43,12 @@ class _AdminPageState extends State<FirstPage> {
   @override
   Widget build(BuildContext context) {
     store = Provider.of<Store>(context);
-    final scaffoldKey = GlobalKey<ScaffoldState>();
+    //GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
+
     return Scaffold(
-        key: scaffoldKey,
-        drawer: app_drawer(store.AppName, context, scaffoldKey, (aw) {}),
+        drawer: app_drawer(context),
         appBar: AppBar(
-          title: Row(
-            children: [
-              Image.asset(
-                "assets/logo.png",
-                fit: BoxFit.contain,
-                height: 32,
-              ),
-              const SizedBox(
-                width: 10,
-              ),
-              Text(store.AppName)
-            ],
-          ),
+          title: AppTitle,
           actions: [
             PopupMenuButton(
               itemBuilder: (BuildContext context) {

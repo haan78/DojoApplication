@@ -1,3 +1,4 @@
+import 'package:dojo_mobile/page/appwindow.dart';
 import 'package:flutter/material.dart';
 
 enum MessageType { error, info, success }
@@ -12,13 +13,11 @@ class MessagePage extends StatelessWidget {
   Widget build(BuildContext context) {
     TextStyle ts;
     if (type == MessageType.error) {
-      ts = const TextStyle(color: Colors.red, backgroundColor: Colors.black);
+      ts = const TextStyle(color: colorBad, backgroundColor: Colors.white);
     } else if (type == MessageType.info) {
-      ts = const TextStyle(color: Colors.yellow, backgroundColor: Colors.brown);
+      ts = const TextStyle(color: colorWarn, backgroundColor: Colors.white);
     } else {
-      ts = const TextStyle(
-          color: Color.fromARGB(255, 5, 54, 7),
-          backgroundColor: Color.fromARGB(255, 171, 179, 177));
+      ts = const TextStyle(color: colorGood, backgroundColor: Colors.white);
     }
     return MaterialApp(home: Builder(builder: (BuildContext context) {
       return Scaffold(
