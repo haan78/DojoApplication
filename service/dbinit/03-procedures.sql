@@ -145,6 +145,47 @@ BEGIN
   RETURN @returnStr;
 END;;
 
+CREATE PROCEDURE `dojo`.`uye_yoklama`(in p_yoklama_id bigint, in p_uye_id bigint, in p_tarih date )
+BEGIN
+	declare c int(11) DEFAULT  0;
+	declare cay int(11) DEFAULT  0;
+	declare tah bigint default 0;
+	declare b decimal(14,2) default 0;
+
+	
+	SELECT count(1) into c from uye_yoklama uy where uy.yoklama_id = p_yoklama_id and uy.uye_id = p_uye_id and uy.tarih = p_tarih;
+	SELECT count(1) into cay from uye_yoklama uy
+		where uy.yoklama_id = p_yoklama_id and uy.uye_id = p_uye_id 
+			and year(uy.tarih) = year(p_tarih) and MONTH(uy.tarih) = MONTH(p_tarih);	
+
+	START TRANSACTION; 
+
+	if coalesce(c,0) = 0 then
+		INSERT into uye_yoklama ( yoklama_id, uye_id, tarih ) values ( p_yoklama_id,p_uye_id,p_tarih );
+		if cay = 0 then
+			SELECT u.tahakkuk_id,t.tutar into tah,b from uye u inner join tahakkuk t on t.tahakkuk_id  = u.tahakkuk_id
+				WHERE u.uye_id = p_uye_id;
+			insert into uye_tahakkuk ( uye_id,tahakkuk_id,borc,tahakkuk_tarih,yil,ay,yoklama_id )
+				values (p_uye_id,tah,b,p_tarih,month(p_tarih),year(p_tarhi));
+		end if;
+		SELECT 1 as result;
+	else
+		DELETE  from uye_yoklama WHERE yoklama_id = p_yoklama_id and uye_id = p_uye_id and tarih = p_tarih;
+		if cay = 1  then
+			DELETE FROM uye_tahakkuk 
+				WHERE uye_id = p_uye_id 
+					AND yoklama_id = p_yoklama_id 
+					AND ay = MONTH(uy.tarih) 
+					AND yil = MONTH(p_tarih)
+					AND muhasebe_id IS NULL;
+		end if;
+		SELECT -1 as result;
+	end if;
+	
+	COMMIT;
+	
+END
+
 
 DELIMITER ;
 
