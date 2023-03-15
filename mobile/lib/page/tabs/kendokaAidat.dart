@@ -19,7 +19,6 @@ class KendokaAidat extends StatelessWidget {
       children: [
         Row(
           children: [
-            Text(uyeAd),
             Expanded(
                 child: ElevatedButton(
                     onPressed: () {

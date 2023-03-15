@@ -228,4 +228,10 @@ Future<int> uyeKayit(Api api, {required UyeBilgi ub}) async {
   return uye_id;
 }
 
+Future<int> uyeYoklama(Api api, {required int yoklama_id, required int uye_id, required DateTime tarih}) async {
+  dynamic response = await api.call("/admin/uye/yoklama/$yoklama_id/$uye_id/${dateFormater(tarih, "yyyy-MM-dd")}");
+  final int result = int.parse(response[0][0]["result"] as String);
+  return result;
+}
+
 typedef UpdateParentData = void Function(UyeBilgi ub, bool reload);

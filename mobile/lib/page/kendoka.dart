@@ -1,8 +1,10 @@
 // ignore_for_file: no_logic_in_create_state, non_constant_identifier_names, no_leading_underscores_for_local_identifiers
 
+import 'package:dojo_mobile/page/message_page.dart';
 import 'package:dojo_mobile/page/tabs/kendokaAidat.dart';
 import 'package:dojo_mobile/page/tabs/kendoka_base.dart';
 import 'package:dojo_mobile/page/tabs/kendoka_seviye.dart';
+import 'package:dojo_mobile/page/tabs/kendoka_yoklama.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -55,7 +57,7 @@ class _Kendoka extends State<Kendoka> {
     } else if (_bottomNavIndex == 2) {
       return KendokaSeviye(sabitler: sabitler, bilgi: bilgi, store: store, uyeAd: bilgi.ad);
     } else {
-      return const Text("Yapıp aşamasında");
+      return KendokaYoklama(sabitler: sabitler, bilgi: bilgi, store: store);
     }
   }
 
@@ -71,74 +73,74 @@ class _Kendoka extends State<Kendoka> {
   Widget build(BuildContext context) {
     Store store = Provider.of<Store>(context);
     final scaffoldKey = GlobalKey<ScaffoldState>();
-    return Scaffold(
-      key: scaffoldKey,
-      appBar: AppBar(
-        title: Row(
-          children: [
-            Image.asset(
-              "assets/logo.png",
-              fit: BoxFit.contain,
-              height: 32,
+    return FutureBuilder<UyeBilgi>(
+      future: yueBilgiGetir(store, uye_id, _reload),
+      builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          return Text(snapshot.error.toString());
+        }
+        if (snapshot.connectionState == ConnectionState.done) {
+          UyeBilgi ub = snapshot.data!;
+          return Scaffold(
+            key: scaffoldKey,
+            appBar: AppBar(
+              title: Row(
+                children: [
+                  Image.asset(
+                    "assets/logo.png",
+                    fit: BoxFit.contain,
+                    height: 32,
+                  ),
+                  const SizedBox(
+                    width: 10,
+                  ),
+                  Text(ub.ad)
+                ],
+              ),
+              actions: [
+                IconButton(
+                    onPressed: () {
+                      setState(() {
+                        _reload = true;
+                      });
+                    },
+                    icon: const Icon(Icons.refresh))
+              ],
             ),
-            const SizedBox(
-              width: 10,
-            ),
-            Text(store.AppName)
-          ],
-        ),
-        actions: [
-          IconButton(
-              onPressed: () {
-                setState(() {
-                  _reload = true;
-                });
-              },
-              icon: const Icon(Icons.refresh))
-        ],
-      ),
-      body: FutureBuilder<UyeBilgi>(
-        future: yueBilgiGetir(store, uye_id, _reload),
-        builder: (context, snapshot) {
-          if (snapshot.hasError) {
-            return Text(snapshot.error.toString());
-          }
-          if (snapshot.connectionState == ConnectionState.done) {
-            UyeBilgi ub = snapshot.data!;
-            return Padding(
+            body: Padding(
                 padding: const EdgeInsets.all(10),
                 child: getWigget(
                   sabitler: formSabitler,
                   bilgi: ub,
                   store: store,
                   updateParentData: updateData,
-                ));
-          } else if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Text("Loading...");
-          } else {
-            return const Text("Service Error");
-          }
-        },
-      ),
-      bottomNavigationBar: uye_id > 0
-          ? BottomNavigationBar(
-              currentIndex: _bottomNavIndex,
-              onTap: (int index) {
-                if (mounted) {
-                  setState(() {
-                    _bottomNavIndex = index;
-                    _reload = false;
-                  });
-                }
-              },
-              type: BottomNavigationBarType.fixed,
-              items: const [
-                  BottomNavigationBarItem(label: "Genel", icon: Icon(Icons.person)),
-                  BottomNavigationBarItem(label: "Aidatlar", icon: Icon(Icons.payments)),
-                  BottomNavigationBarItem(label: "Sinavlar", icon: Icon(Icons.card_membership)),
-                  BottomNavigationBarItem(label: "Keikolar", icon: Icon(Icons.checklist))
-                ])
-          : null,
+                )),
+            bottomNavigationBar: uye_id > 0
+                ? BottomNavigationBar(
+                    currentIndex: _bottomNavIndex,
+                    onTap: (int index) {
+                      if (mounted) {
+                        setState(() {
+                          _bottomNavIndex = index;
+                          _reload = false;
+                        });
+                      }
+                    },
+                    type: BottomNavigationBarType.fixed,
+                    items: const [
+                        BottomNavigationBarItem(label: "Genel", icon: Icon(Icons.person)),
+                        BottomNavigationBarItem(label: "Aidatlar", icon: Icon(Icons.payments)),
+                        BottomNavigationBarItem(label: "Sinavlar", icon: Icon(Icons.card_membership)),
+                        BottomNavigationBarItem(label: "Keikolar", icon: Icon(Icons.checklist))
+                      ])
+                : null,
+          );
+        } else if (snapshot.connectionState == ConnectionState.waiting) {
+          return const MessagePage("Loading...", MessageType.info);
+        } else {
+          return const MessagePage("Error", MessageType.error);
+        }
+      },
     );
   }
 }
@@ -151,6 +153,7 @@ Future<UyeBilgi> yueBilgiGetir(Store store, int uye_id, bool reload) async {
       formUyeBilgi = await uyeBilgi(api, uye_id: uye_id);
     } else {
       formUyeBilgi = UyeBilgi();
+      formUyeBilgi.ad = "Yeni Üye";
       formUyeBilgi.cinsiyet = "ERKEK";
       formUyeBilgi.durum = "registered";
       formUyeBilgi.tahakkuk_id = 1;

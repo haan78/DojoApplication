@@ -6,9 +6,7 @@ import 'package:camera/camera.dart';
 import '../../api.dart';
 import '../../store.dart';
 import '../appwindow.dart';
-import '../first_page.dart';
 import '../widget/alert.dart';
-import 'dart:io';
 
 final _formKey = GlobalKey<FormState>();
 // ignore: camel_case_types

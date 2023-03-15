@@ -172,6 +172,14 @@ $router->add("/admin/uye/seviye/sil/#uye_id", function (Request $req) {
     }
 });
 
+$router->add("/admin/uye/yoklama/#yoklama_id/#uye_id/@tarih", function (Request $req) {
+    $yoklama_id = $req->param("uye_id");
+    $uye_id = $req->param("uye_id");
+    $tarih = $req->param("tarih");
+    return uye_yoklama($yoklama_id,$uye_id,$tarih);
+
+});
+
 $router->add("/admin/download/#dosya_id", function (Request $req) {
     return download(intval($req->params()["dosya_id"]));
 });

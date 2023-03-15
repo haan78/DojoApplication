@@ -371,3 +371,8 @@ function uye_eposta_onay(string $code,&$err) : bool {
     mysqli_close($mysqli);
     return empty($err);
 }
+
+function uye_yoklama(int $yoklama_id, int $uye_id, string $tarih) {
+    $p = new \MySqlTool\MySqlToolCall(mysqlilink());
+    return $p->procedure("uye_yoklama")->in($yoklama_id)->in($uye_id)->in($tarih)->call()->result("queries");
+}
