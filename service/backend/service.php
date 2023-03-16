@@ -181,6 +181,18 @@ $router->add("/admin/uye/yoklama/#yoklama_id/#uye_id/@tarih", function (Request 
 
 });
 
+$router->add("/admin/yoklamalar", function (Request $req) {    
+    return yoklamalar();
+});
+
+$router->add("/admin/uye/yoklama/liste/#yoklama_id/@tarih", function (Request $req) {
+    $yoklama_id = $req->param("yoklama_id");
+    $tarih = $req->param("tarih");
+    return yoklamaliste($yoklama_id,$tarih);
+});
+
+
+
 $router->add("/admin/download/#dosya_id", function (Request $req) {
     return download(intval($req->params()["dosya_id"]));
 });

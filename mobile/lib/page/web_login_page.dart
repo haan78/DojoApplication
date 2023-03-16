@@ -57,7 +57,7 @@ class _WebLoginPageState extends State<WebLoginPage> {
       s.sabitler = await sabitGetir(api);
       await writeSettings(s);
       if (mounted) {
-        Navigator.push(context, MaterialPageRoute(builder: (context) => const FirstPage()));
+        Navigator.push(context, MaterialPageRoute(builder: (context) => FirstPage(store: s)));
       }
     });
     return c;

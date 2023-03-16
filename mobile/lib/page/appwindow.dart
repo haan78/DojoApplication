@@ -78,6 +78,17 @@ String dateFormater(DateTime value, String format) {
   return df.format(value);
 }
 
+String trKisaDate(DateTime tarih) {
+  const hafta = ["Pzt", "Sal", "Çar", "Per", "Cum", "Cmt", "Paz"];
+  const aylar = ["Oca", "Şub", "Mar", "Nis", "May", "Haz", "Tem", "Ağu", "Eyl", "Eki", "Kas", "Ara"];
+
+  final gun = tarih.day.toString().padLeft(2, "0");
+  final hg = hafta[tarih.weekday - 1];
+  final ay = aylar[tarih.month - 1];
+  final yil = (tarih.year - 2000).toString().padLeft(2, "0");
+  return "$gun $ay $yil ($hg)";
+}
+
 List<DropdownMenuItem> Seviyeler = [
   const DropdownMenuItem(value: "", child: Text("")),
   DropdownMenuItem(value: "7 KYU", child: Text("7 KYU", style: TextStyle(color: Colors.pink.shade200))),

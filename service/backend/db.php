@@ -386,3 +386,63 @@ function uye_yoklama(int $yoklama_id, int $uye_id, string $tarih) {
     $p = new \MySqlTool\MySqlToolCall(mysqlilink());
     return $p->procedure("uye_yoklama")->in($yoklama_id)->in($uye_id)->in($tarih)->call()->result("queries");
 }
+
+function yoklamalar() {
+    $sql = "SELECT uy.tarih,uy.yoklama_id,y.tanim,COUNT(1) AS sayi  FROM  uye_yoklama uy 
+	INNER JOIN yoklama y ON y.yoklama_id = uy.yoklama_id
+	WHERE uy.tarih >= DATE_ADD(CURRENT_DATE(), INTERVAL -10 YEAR)
+	GROUP BY uy.tarih,uy.yoklama_id,y.tanim ORDER BY uy.tarih DESC";
+    $mysqli = mysqlilink();
+    $result = mysqli_query($mysqli,$sql);
+    $arr = [];
+    if ( $result ) {
+        $arr = resultToArray($result);
+        mysqli_free_result($result);
+        mysqli_close($mysqli);
+    } else {
+        $err = mysqli_error($mysqli);
+        mysqli_close($mysqli);
+        throw new Exception($err);
+    }
+    
+    return $arr;
+}
+
+function yoklamaliste(int $yoklama_id, string $tarih) {
+    $sql = "SELECT u.uye_id,u.ad,d.icerik,d.file_type,IF(uy.yoklama_id IS NOT NULL,'EVET','HAYIR') as katilim FROM uye u 
+    LEFT JOIN dosya d ON u.dosya_id = d.dosya_id
+    LEFT JOIN uye_yoklama uy ON uy.uye_id = u.uye_id and uy.yoklama_id = ? AND uy.tarih = ? 
+    WHERE (u.durum NOT IN ('passive','registered') OR uy.yoklama_id IS NOT NULL) ORDER BY u.ad ASC";
+    $err = "";
+    $mysqli = mysqlilink();
+    $stmt = mysqli_prepare($mysqli, $sql);
+    $list = [];
+    if ($stmt) {
+        if (mysqli_stmt_bind_param($stmt, "is", $yoklama_id,$tarih)) {
+            if (mysqli_stmt_execute($stmt)) {
+                mysqli_stmt_bind_result($stmt,$uye_id,$ad,$icerik,$file_type,$katilim);
+                while ( mysqli_stmt_fetch($stmt) ) {
+                    array_push($list,[
+                        "uye_id" => $uye_id,
+                        "ad" => $ad,
+                        "image" => $icerik,
+                        "file_type" => $file_type,
+                        "katilim" => $katilim
+                    ]);
+                }
+            } else {
+                $err = mysqli_stmt_error($stmt);    
+            }
+        } else {
+            $err = mysqli_stmt_error($stmt);
+        }
+        mysqli_stmt_close($stmt);
+    } else {
+        $err = mysqli_error($mysqli);
+    }    
+    mysqli_close($mysqli);
+    if (!empty($err)) {
+        throw new Exception($err);
+    }
+    return $list;
+}

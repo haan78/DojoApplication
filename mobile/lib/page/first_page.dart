@@ -6,7 +6,6 @@ import '../api.dart';
 import '../service.dart';
 import '../store.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 import 'appwindow.dart';
 
@@ -18,7 +17,8 @@ List<UyeListDetay> listData = [];
 final _araKey = GlobalKey<FormState>();
 
 class FirstPage extends StatefulWidget {
-  const FirstPage({super.key});
+  final Store store;
+  const FirstPage({super.key, required this.store});
 
   @override
   State<FirstPage> createState() {
@@ -27,7 +27,6 @@ class FirstPage extends StatefulWidget {
 }
 
 class _AdminPageState extends State<FirstPage> {
-  late Store store;
   bool _reload = true;
   FilterAction _filterAction = FilterAction.name;
   int tahakkuk_id = 1;
@@ -42,7 +41,7 @@ class _AdminPageState extends State<FirstPage> {
 
   @override
   Widget build(BuildContext context) {
-    store = Provider.of<Store>(context);
+    final store = widget.store;
     //GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
 
     return Scaffold(
@@ -161,7 +160,7 @@ class _AdminPageState extends State<FirstPage> {
                               String info2 = "Son Keiko: ${DateFormat.yMd().format(data[index].son_keiko)}";
                               String info3 = "Son3Ay: ${data[index].son3Ay.toString()}";
                               return Padding(
-                                  padding: const EdgeInsets.all(3),
+                                  padding: AppPading,
                                   child: ListTile(
                                     visualDensity: const VisualDensity(vertical: 4),
                                     leading: data[index].image != null

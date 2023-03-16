@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
+import '../../store.dart';
 import '../appwindow.dart';
 import '../first_page.dart';
 import '../web_login_page.dart';
 import '../yoklama_page.dart';
 
 app_drawer(BuildContext context) {
+  final store = Provider.of<Store>(context);
   return Drawer(
       child: Column(
     children: [
@@ -31,7 +34,10 @@ app_drawer(BuildContext context) {
       TextButton(
           onPressed: () {
             //scaffoldKey.currentState?.openEndDrawer();
-            Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => const FirstPage()));
+            Navigator.of(context).pushReplacement(MaterialPageRoute(
+                builder: (context) => FirstPage(
+                      store: store,
+                    )));
             //Navigator.push(context, MaterialPageRoute(builder: (context) => const FirstPage()));
           },
           child: const ListTile(
@@ -45,7 +51,7 @@ app_drawer(BuildContext context) {
           onPressed: () {
             //scaffoldKey.currentState?.openEndDrawer();
             //Navigator.push(context, MaterialPageRoute(builder: (context) => const YoklamaPage()));
-            Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => const YoklamaPage()));
+            Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => YoklamaPage(store: store)));
             //callback(AppWindow.yoklamalar);
           },
           child: const ListTile(

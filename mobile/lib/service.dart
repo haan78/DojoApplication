@@ -89,6 +89,13 @@ class Sabitler {
   List<Yoklama> yoklamalar = [];
 }
 
+class Keiko {
+  DateTime tarih = DateTime.now();
+  int sayi = 0;
+  int yoklama_id = 0;
+  String tanim = "";
+}
+
 Future<Uint8List> uyeResim(Api api, {BoxFit fit = BoxFit.fill}) async {
   dynamic r = await api.call("/member/foto");
   String b64s = r["content"];
@@ -242,6 +249,20 @@ Future<int> uyeYoklama(Api api, {required int yoklama_id, required int uye_id, r
   dynamic response = await api.call("/admin/uye/yoklama/$yoklama_id/$uye_id/${dateFormater(tarih, "yyyy-MM-dd")}");
   final int result = int.parse(response[0][0]["result"] as String);
   return result;
+}
+
+Future<List<Keiko>> yoklamalar(Api api) async {
+  List<Keiko> l = [];
+  dynamic response = await api.call("/admin/yoklamalar");
+  for (final k in response) {
+    Keiko keiok = Keiko();
+    keiok.yoklama_id = int.parse(k["yoklama_id"]);
+    keiok.tanim = k["tanim"];
+    keiok.sayi = int.parse(k["sayi"]);
+    keiok.tarih = DateTime.parse(k["tarih"]!);
+    l.add(keiok);
+  }
+  return l;
 }
 
 typedef UpdateParentData = void Function(UyeBilgi ub, bool reload);
