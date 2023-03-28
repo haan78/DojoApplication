@@ -1,3 +1,4 @@
+##SET GLOBAL log_bin_trust_function_creators = 1;
 USE dojo;
 
 DELIMITER ;;
@@ -131,6 +132,7 @@ END;;
 CREATE FUNCTION `dojo`.`parola_uret`(
         `length` TINYINT
     ) RETURNS varchar(100) CHARSET utf8mb3 COLLATE utf8_turkish_ci
+	READS SQL DATA DETERMINISTIC 
 BEGIN
   SET @returnStr = '';
  
@@ -145,7 +147,7 @@ BEGIN
   RETURN @returnStr;
 END;;
 
-CREATE PROCEDURE `dojo`.`uye_yoklama`(in p_yoklama_id bigint, in p_uye_id bigint, in p_tarih date )
+CREATE PROCEDURE `dojo`.`uye_yoklama_eklesil`(in p_yoklama_id bigint, in p_uye_id bigint, in p_tarih date )
 BEGIN
 	declare c int(11) DEFAULT  0;
 	declare cay int(11) DEFAULT  0;
@@ -166,7 +168,7 @@ BEGIN
 			SELECT u.tahakkuk_id,t.tutar into tah,b from uye u inner join tahakkuk t on t.tahakkuk_id  = u.tahakkuk_id
 				WHERE u.uye_id = p_uye_id;
 			insert into uye_tahakkuk ( uye_id,tahakkuk_id,borc,tahakkuk_tarih,yil,ay,yoklama_id )
-				values (p_uye_id,tah,b,p_tarih,month(p_tarih),year(p_tarhi));
+				values (p_uye_id,tah,b,p_tarih,year(p_tarih),month(p_tarih),p_yoklama_id);
 		end if;
 		SELECT 1 as result;
 	else
@@ -184,7 +186,7 @@ BEGIN
 	
 	COMMIT;
 	
-END
+END;;
 
 
 DELIMITER ;

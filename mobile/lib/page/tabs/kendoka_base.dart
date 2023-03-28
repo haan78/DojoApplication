@@ -66,7 +66,6 @@ class _KendokaBase extends State<KendokaBase> {
   void setCamera() async {
     List<CameraDescription> list = await availableCameras();
     if (list.isNotEmpty) {
-      print(list[0].name);
       camera = CameraController(list[0], ResolutionPreset.medium);
       camera!.initialize().then((_) {
         if (mounted) {

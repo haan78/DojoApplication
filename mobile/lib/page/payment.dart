@@ -2,8 +2,6 @@ import 'package:dojo_mobile/page/appwindow.dart';
 import 'package:flutter/material.dart';
 import 'package:extended_masked_text/extended_masked_text.dart';
 import 'package:flutter/services.dart';
-
-import '../api.dart';
 import '../service.dart';
 import '../store.dart';
 
@@ -88,20 +86,7 @@ class _Peyment extends State<Payment> {
     //print([bilgi.uyeTahakkuk.tanim, bilgi.uyeTahakkuk.uye_tahakkuk_id]);
     int yil = DateTime.now().year;
     return Scaffold(
-        appBar: AppBar(
-            title: Row(
-          children: [
-            Image.asset(
-              "assets/logo.png",
-              fit: BoxFit.contain,
-              height: 32,
-            ),
-            const SizedBox(
-              width: 10,
-            ),
-            Text(bilgi.uyeAd)
-          ],
-        )),
+        appBar: AppBar(title: appTitle(text: bilgi.uyeAd)),
         body: Padding(
             padding: const EdgeInsets.all(10),
             child: Column(children: [

@@ -1,10 +1,10 @@
 // ignore_for_file: non_constant_identifier_names
 
 import 'dart:convert';
-import 'dart:typed_data';
 
 import 'package:dojo_mobile/page/appwindow.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import 'api.dart';
 import 'package:flutter/cupertino.dart';
@@ -94,6 +94,19 @@ class Keiko {
   int sayi = 0;
   int yoklama_id = 0;
   String tanim = "";
+}
+
+class KeikoListe {
+  List<KeikoKendoka> list = [];
+  int katilanSayisi = 0;
+}
+
+class KeikoKendoka {
+  String ad = "";
+  int uye_id = 0;
+  bool katilim = false;
+  String file_type = "";
+  Uint8List? image;
 }
 
 Future<Uint8List> uyeResim(Api api, {BoxFit fit = BoxFit.fill}) async {
@@ -263,6 +276,34 @@ Future<List<Keiko>> yoklamalar(Api api) async {
     l.add(keiok);
   }
   return l;
+}
+
+Future<KeikoListe> yoklamaliste(Api api, {required int yoklama_id, required DateTime tarih}) async {
+  List<KeikoKendoka> l = [];
+  dynamic response = await api.call("/admin/uye/yoklama/liste/$yoklama_id/${dateFormater(tarih, "yyyy-MM-dd")}");
+  int katilim = 0;
+  for (final kk in response) {
+    KeikoKendoka kendoka = KeikoKendoka();
+    kendoka.ad = kk["ad"];
+    if (kk["image"] != null && kk["file_type"] != null) {
+      kendoka.file_type = kk["file_type"];
+      kendoka.image = base64Decode(kk["image"]);
+    } else {
+      kendoka.image = (await rootBundle.load("assets/kendoka.jpg")).buffer.asUint8List();
+      kendoka.file_type = "image/jpeg";
+    }
+
+    kendoka.uye_id = kk["uye_id"];
+    kendoka.katilim = kk["katilim"] == 1 ? true : false;
+    l.add(kendoka);
+    if (kendoka.katilim) {
+      katilim++;
+    }
+  }
+  KeikoListe kl = KeikoListe();
+  kl.list = l;
+  kl.katilanSayisi = katilim;
+  return kl;
 }
 
 typedef UpdateParentData = void Function(UyeBilgi ub, bool reload);

@@ -177,7 +177,7 @@ $router->add("/admin/uye/yoklama/#yoklama_id/#uye_id/@tarih", function (Request 
     $uye_id = $req->param("uye_id");
     $tarih = $req->param("tarih");
     //var_dump([$yoklama_id,$uye_id,$tarih]);
-    return uye_yoklama($yoklama_id,$uye_id,$tarih);
+    return uye_yoklama_eklesil($yoklama_id,$uye_id,$tarih);
 
 });
 

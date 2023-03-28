@@ -1,4 +1,5 @@
 import 'package:dojo_mobile/page/widget/app_drawer.dart';
+import 'package:dojo_mobile/page/yoklama_gun.dart';
 import 'package:flutter/material.dart';
 
 import '../api.dart';
@@ -47,42 +48,25 @@ class _YoklamaPage extends State<YoklamaPage> {
     return Scaffold(
         drawer: app_drawer(context),
         appBar: AppBar(
-          title: AppTitle,
-          actions: [IconButton(onPressed: () {}, icon: const Icon(Icons.add))],
+          title: appTitle(),
+          actions: [
+            IconButton(
+                onPressed: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) {
+                    return YoklamaGun(
+                      context,
+                      keiko: Keiko(),
+                      store: store,
+                    );
+                  }));
+                },
+                icon: const Icon(Icons.add))
+          ],
         ),
         body: Padding(
             padding: AppPading,
             child: Column(
               children: [
-                Row(
-                  children: [
-                    store.sabitler.yoklamalar.length == 1
-                        ? Text(store.sabitler.yoklamalar[0].tanim)
-                        : DropdownButtonFormField(
-                            items: yoklamaitmes(store.sabitler.yoklamalar),
-                            onChanged: (value) {
-                              if (value != null) {
-                                setState(() {
-                                  selectedYoklamaId = value;
-                                });
-                              }
-                            },
-                          ),
-                    const SizedBox(width: 10),
-                    ElevatedButton(
-                        onPressed: () async {
-                          final dt = await showDatePicker(context: context, initialDate: tarih, firstDate: tbas, lastDate: tbit);
-                          if (dt != null) {
-                            setState(() {
-                              tarih = dt;
-                            });
-                          }
-                        },
-                        child: Text(dateFormater(tarih, "dd.MM.yyyy"))),
-                    const SizedBox(width: 10),
-                    ElevatedButton(onPressed: () {}, child: const Text("Yeni Yoklama Oluştur"))
-                  ],
-                ),
                 Expanded(
                   child: FutureBuilder<List<Keiko>>(
                     future: yoklamalar(api),
@@ -106,7 +90,17 @@ class _YoklamaPage extends State<YoklamaPage> {
                                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
                                     trailing: IconButton(
                                       icon: const Icon(Icons.arrow_forward),
-                                      onPressed: () {},
+                                      onPressed: () {
+                                        Navigator.push(context, MaterialPageRoute(builder: (context) {
+                                          return YoklamaGun(
+                                            context,
+                                            keiko: data[index],
+                                            store: store,
+                                          );
+                                        })).then((value) {
+                                          setState(() {});
+                                        });
+                                      },
                                     )));
                           },
                         );

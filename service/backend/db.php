@@ -382,9 +382,9 @@ function uye_eposta_onay(string $code,&$err) : bool {
     return empty($err);
 }
 
-function uye_yoklama(int $yoklama_id, int $uye_id, string $tarih) {
+function uye_yoklama_eklesil(int $yoklama_id, int $uye_id, string $tarih) {
     $p = new \MySqlTool\MySqlToolCall(mysqlilink());
-    return $p->procedure("uye_yoklama")->in($yoklama_id)->in($uye_id)->in($tarih)->call()->result("queries");
+    return $p->procedure("uye_yoklama_eklesil")->in($yoklama_id)->in($uye_id)->in($tarih)->call()->result("queries");
 }
 
 function yoklamalar() {
@@ -409,7 +409,7 @@ function yoklamalar() {
 }
 
 function yoklamaliste(int $yoklama_id, string $tarih) {
-    $sql = "SELECT u.uye_id,u.ad,d.icerik,d.file_type,IF(uy.yoklama_id IS NOT NULL,'EVET','HAYIR') as katilim FROM uye u 
+    $sql = "SELECT u.uye_id,u.ad,d.icerik,d.file_type,IF(uy.yoklama_id IS NOT NULL,1,0) as katilim FROM uye u 
     LEFT JOIN dosya d ON u.dosya_id = d.dosya_id
     LEFT JOIN uye_yoklama uy ON uy.uye_id = u.uye_id and uy.yoklama_id = ? AND uy.tarih = ? 
     WHERE (u.durum NOT IN ('passive','registered') OR uy.yoklama_id IS NOT NULL) ORDER BY u.ad ASC";
@@ -418,6 +418,7 @@ function yoklamaliste(int $yoklama_id, string $tarih) {
     $stmt = mysqli_prepare($mysqli, $sql);
     $list = [];
     if ($stmt) {
+        //echo "$yoklama_id,$tarih";
         if (mysqli_stmt_bind_param($stmt, "is", $yoklama_id,$tarih)) {
             if (mysqli_stmt_execute($stmt)) {
                 mysqli_stmt_bind_result($stmt,$uye_id,$ad,$icerik,$file_type,$katilim);

@@ -126,3 +126,19 @@ final AppTitle = Row(
     const Text(AppTitleText)
   ],
 );
+
+Row appTitle({String text = AppTitleText}) {
+  return Row(
+    children: [
+      Image.asset(
+        "assets/logo.png",
+        fit: BoxFit.contain,
+        height: 32,
+      ),
+      const SizedBox(
+        width: 10,
+      ),
+      Text(text)
+    ],
+  );
+}
