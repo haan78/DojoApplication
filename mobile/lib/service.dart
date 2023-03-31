@@ -31,6 +31,16 @@ class UyeTahakkuk {
   String yoklama = "";
   int yoklama_id = 0;
   String aciklama = "";
+  List<DateTime> keikolar = [];
+}
+
+class MuhasebeDiger {
+  int muhasebe_id = 0;
+  String tanim = "";
+  String aciklama = "";
+  String kasa = "";
+  DateTime tarih = DateTime.now();
+  double tutar = 0;
 }
 
 class UyeYoklama {
@@ -53,10 +63,9 @@ class UyeBilgi {
   String tahkkuk = "";
   int tahakkuk_id = 0;
   String email = "";
-  int eksik_tahakkuk = 0;
   int son3Ay = 0;
   List<UyeSeviye> seviyeler = [];
-  List<UyeTahakkuk> tahakuklar = [];
+  List<UyeTahakkuk> tahakkuklar = [];
   List<UyeYoklama> yoklamalar = [];
 }
 
@@ -169,29 +178,8 @@ Future<UyeBilgi> uyeBilgi(Api api, {int uye_id = 0}) async {
     ub.seviyeler.add(us);
   }
 
-  ub.eksik_tahakkuk = 0;
-  for (final t in r[2]) {
-    UyeTahakkuk ut = UyeTahakkuk();
-    ut.ay = int.parse(t["ay"] ?? "0");
-    ut.borc = double.parse(t["borc"] ?? "0");
-    ut.kasa = t["kasa"] ?? "";
-    ut.muhasebe_id = int.parse(t["muhasebe_id"] ?? "0");
-    ut.odenen = double.parse(t["odeme_tutar"] ?? "0");
-    ut.odenme_tarih = t["odenme_tarih"] == null ? null : DateTime.parse(t["odenme_tarih"]);
-    ut.tahakkuk_tarih = DateTime.parse(t["tahakkuk_tarih"]);
-    ut.tahsilatci = t["tahsilatci"] ?? "";
-    ut.tanim = t["tanim"] ?? "--";
-    ut.uye_tahakkuk_id = int.parse(t["uye_tahakkuk_id"]);
-    ut.yil = int.parse(t["yil"] ?? "0");
-    ut.yoklama = t["yoklama"] ?? "";
-    ut.yoklama_id = int.parse(t["yoklama_id"] ?? "0");
-    ut.aciklama = t["aciklama"] ?? "";
-
-    ub.tahakuklar.add(ut);
-    ub.eksik_tahakkuk += t["muhasebe_id"] == null ? 1 : 0;
-  }
-
-  for (final y in r[3]) {
+  for (final y in r[2]) {
+    //3
     UyeYoklama uy = UyeYoklama();
     DateTime dt = DateTime.parse(y["tarih"]!);
     uy.tanim = y["tanim"] ?? "";
@@ -304,6 +292,86 @@ Future<KeikoListe> yoklamaliste(Api api, {required int yoklama_id, required Date
   kl.list = l;
   kl.katilanSayisi = katilim;
   return kl;
+}
+
+Future<List<UyeTahakkuk>> uyetahakkuklist(Api api, {required int uye_id}) async {
+  List<UyeTahakkuk> l = [];
+  dynamic response = await api.call("/admin/uye/tahakkuk/list/$uye_id");
+  for (final raw in response) {
+    UyeTahakkuk ut = UyeTahakkuk();
+    ut.ay = int.parse(raw["ay"] ?? "0");
+    ut.borc = double.parse(raw["borc"] ?? "0");
+    ut.kasa = raw["kasa"] ?? "";
+    ut.muhasebe_id = int.parse(raw["muhasebe_id"] ?? "0");
+    ut.odenen = double.parse(raw["odeme_tutar"] ?? "0");
+    ut.odenme_tarih = raw["odenme_tarih"] == null ? null : DateTime.parse(raw["odenme_tarih"]);
+    ut.tahakkuk_tarih = DateTime.parse(raw["tahakkuk_tarih"]);
+    ut.tahsilatci = raw["tahsilatci"] ?? "";
+    ut.tanim = raw["tanim"] ?? "--";
+    ut.uye_tahakkuk_id = int.parse(raw["uye_tahakkuk_id"]);
+    ut.yil = int.parse(raw["yil"] ?? "0");
+    ut.yoklama = raw["yoklama"] ?? "";
+    ut.yoklama_id = int.parse(raw["yoklama_id"] ?? "0");
+    ut.aciklama = raw["aciklama"] ?? "";
+    if (raw["keikolar"] != null) {
+      String keikolar = raw["keikolar"] as String;
+      final keikolarlist = keikolar.split(",");
+      for (final keikot in keikolarlist) {
+        ut.keikolar.add(DateTime.parse(keikot.trim()));
+      }
+    }
+
+    l.add(ut);
+  }
+  return l;
+}
+
+Future<int> odemeal(Api api, UyeTahakkuk ut, int uye_id) async {
+  final result = await api.call("/admin/muhasebe/odemeal", data: {
+    "uye_tahakkuk_id": ut.uye_tahakkuk_id,
+    "uye_id": uye_id,
+    "tutar": ut.odenen,
+    "tarih": dateFormater(ut.odenme_tarih!, "yyyy-MM-dd"),
+    "kasa": ut.kasa,
+    "tanim": ut.tanim,
+    "aciklama": ut.aciklama.replaceAll(RegExp(r'[^\x20-\x7E]'), ''),
+    "muhasebe_id": ut.muhasebe_id
+  });
+  return result as int;
+}
+
+Future<void> odemesil(Api api, int muhasebei_id) async {
+  await api.call("/admin/muhasebe/odemesil/$muhasebei_id");
+}
+
+Future<List<MuhasebeDiger>> uyedigerodemelist(Api api, int uye_id) async {
+  List<MuhasebeDiger> l = [];
+  final result = await api.call("/admin/uye/muhasebe/digerlist/$uye_id");
+  for (final mdr in result) {
+    final md = MuhasebeDiger();
+    md.aciklama = mdr["aciklama"];
+    md.kasa = mdr["kasa"];
+    md.tanim = mdr["tanim"];
+    md.tarih = DateTime.parse(mdr["tarih"]);
+    md.tutar = double.parse(mdr["tutar"] ?? "0");
+    l.add(md);
+  }
+  return l;
+}
+
+Future<List<MuhasebeDiger>> uyeharcamalist(Api api, int uye_id) async {
+  List<MuhasebeDiger> l = [];
+  final result = await api.call("/admin/uye/muhasebe/harcamalist/$uye_id");
+  for (final mdr in result) {
+    final md = MuhasebeDiger();
+    md.aciklama = mdr["aciklama"] ?? "";
+    md.kasa = mdr["kasa"] ?? "";
+    md.tanim = mdr["tanim"];
+    md.tarih = DateTime.parse(mdr["tarih"]);
+    md.tutar = -1 * double.parse(mdr["tutar"] ?? "0");
+    l.add(md);
+  }
+  return l;
 }
 
 typedef UpdateParentData = void Function(UyeBilgi ub, bool reload);

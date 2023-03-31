@@ -53,7 +53,8 @@ String trAy(int index) {
   return ["Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran", "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"][index % 12];
 }
 
-const List<DropdownMenuItem> Aylar = [
+const aylarText = ["Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran", "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"];
+List<DropdownMenuItem<int>> aylar = const [
   DropdownMenuItem(value: 1, child: Text("Ocak")),
   DropdownMenuItem(value: 2, child: Text("Şubat")),
   DropdownMenuItem(value: 3, child: Text("Mart")),
@@ -141,4 +142,33 @@ Row appTitle({String text = AppTitleText}) {
       Text(text)
     ],
   );
+}
+
+class FBuilder<T> extends StatelessWidget {
+  final Future<T> future;
+  final Widget Function(String message)? errorfnc;
+  final Widget Function(T data) builder;
+
+  const FBuilder({super.key, required this.future, required this.builder, this.errorfnc});
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<T>(
+        future: future,
+        builder: (context, AsyncSnapshot<T> snapshot) {
+          if (snapshot.connectionState == ConnectionState.done) {
+            return builder(snapshot.data as T);
+          } else if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: Text("Lütfen Bekleyin"));
+          } else if (snapshot.hasError) {
+            if (errorfnc != null) {
+              return Center(child: errorfnc!(snapshot.error.toString()));
+            } else {
+              return const Center(child: Text("Hata Oluştu"));
+            }
+          } else {
+            return const Center(child: Text("Bilinmeyen Durum"));
+          }
+        });
+  }
 }

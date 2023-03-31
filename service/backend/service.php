@@ -181,6 +181,44 @@ $router->add("/admin/uye/yoklama/#yoklama_id/#uye_id/@tarih", function (Request 
 
 });
 
+$router->add("/admin/uye/tahakkuk/list/#uye_id",function(Request $req){
+    $uye_id = $req->param("uye_id");
+    return uyetahakkuklist($uye_id);
+});
+
+$router->add("/admin/uye/muhasebe/digerlist/#uye_id",function(Request $req) {
+    $uye_id = $req->param("uye_id");
+    return uyedigerodemelist($uye_id);
+});
+$router->add("/admin/uye/muhasebe/harcamalist/#uye_id",function(Request $req) {
+    $uye_id = $req->param("uye_id");
+    return uyeharcamalist($uye_id);
+});
+
+
+$router->add("/admin/muhasebe/odemeal",function(Request $req){
+    $jdata = $req->json();
+    $uye_tahakkuk_id = $jdata->uye_tahakkuk_id ?? 0;
+    $uye_id = $jdata->uye_id ?? 0;
+    $tutar = $jdata->tutar ?? 0;
+    $tarih = $jdata->tarih ?? "";
+    $kasa = $jdata->kasa ?? "";
+    $tanim = $jdata->tanim ?? "";
+    $aciklama = $jdata->aciklama ?? "";
+    $muhasebe_id = $jdata->muhasebe_id ?? 0;
+    $tahsilatci = $req->local()->ad ?? "";    
+    if ($muhasebe_id > 0) {
+        return uyeodemeduzelt($muhasebe_id,$tarih,$tutar,$kasa,$aciklama,$tahsilatci);
+    } else {
+        return uyeodemeal($uye_id,$uye_tahakkuk_id,$tarih,$tutar,$kasa,$tanim,$aciklama,$tahsilatci);
+    }    
+});
+
+$router->add("/admin/muhasebe/odemesil/#muhasebe_id",function(Request $req){
+    $muhasebe_id = $req->param("muhasebe_id");
+    return uyeodemesil($muhasebe_id);
+});
+
 $router->add("/admin/yoklamalar", function (Request $req) {    
     return yoklamalar();
 });

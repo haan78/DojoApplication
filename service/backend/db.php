@@ -447,3 +447,167 @@ function yoklamaliste(int $yoklama_id, string $tarih) {
     }
     return $list;
 }
+
+function uyetahakkuklist(int $uye_id) {
+    $sql = "SELECT ut.`uye_tahakkuk_id`,ut.`yil`,ut.`ay`,ut.`tahakkuk_tarih`,ut.`borc`,t.tanim , 
+    m.`tutar` as odeme_tutar,m.`tarih` as odeme_tarih, m.muhasebe_id, m.aciklama,m.kasa,
+     y.tanim as yoklama, ut.yoklama_id,
+     (SELECT 
+     	GROUP_CONCAT(DISTINCT uy.tarih ORDER BY uy.tarih ASC SEPARATOR ',') 
+     		FROM uye_yoklama uy
+     			WHERE uy.uye_id = ut.uye_id AND MONTH(uy.tarih) = ut.ay AND YEAR(uy.tarih) = ut.yil AND uy.yoklama_id = ut.yoklama_id ) as keikolar
+    FROM `uye_tahakkuk` ut 
+    LEFT JOIN `tahakkuk` t ON t.`tahakkuk_id` = ut.`tahakkuk_id`
+    LEFT JOIN `muhasebe` m ON m.`muhasebe_id` = ut.`muhasebe_id`
+    LEFT JOIN yoklama y on y.yoklama_id = ut.yoklama_id 
+	    WHERE ut.`uye_id` = $uye_id ORDER BY tahakkuk_tarih DESC";
+    $err = "";
+    $mysqli = mysqlilink();
+    $result = mysqli_query($mysqli,$sql);
+    if ($result) {
+        $arr = resultToArray($result);
+        mysqli_free_result($result);
+        mysqli_close($mysqli);
+        return $arr;
+    } else {
+        $err = mysqli_error($mysqli);
+        mysqli_close($mysqli);
+        throw new Exception($err);
+    }
+}
+
+function uyedigerodemelist(int $uye_id) {
+    $sql = "SELECT m.muhasebe_id, m.tarih, m.kasa, m.tanim, m.aciklama, m.tutar 
+            FROM muhasebe m LEFT JOIN uye_tahakkuk ut ON ut.muhasebe_id = m.muhasebe_id
+            WHERE m.uye_id = $uye_id AND ut.uye_tahakkuk_id  IS NULL AND m.tutar >= 0 ORDER BY m.tarih DESC";
+    $err = "";
+    $mysqli = mysqlilink();
+    $result = mysqli_query($mysqli,$sql);
+    if ($result) {
+        $arr = resultToArray($result);
+        mysqli_free_result($result);
+        mysqli_close($mysqli);
+        return $arr;
+    } else {
+        $err = mysqli_error($mysqli);
+        mysqli_close($mysqli);
+        throw new Exception($err);
+    }
+}
+
+function uyeharcamalist(int $uye_id) {
+    $sql = "SELECT m.muhasebe_id, m.tarih, m.kasa, m.tanim, m.aciklama, m.tutar 
+            FROM muhasebe m LEFT JOIN uye_tahakkuk ut ON ut.muhasebe_id = m.muhasebe_id
+            WHERE m.uye_id = $uye_id AND ut.uye_tahakkuk_id  IS NULL AND m.tutar < 0 ORDER BY m.tarih DESC";
+    $err = "";
+    $mysqli = mysqlilink();
+    $result = mysqli_query($mysqli,$sql);
+    if ($result) {
+        $arr = resultToArray($result);
+        mysqli_free_result($result);
+        mysqli_close($mysqli);
+        return $arr;
+    } else {
+        $err = mysqli_error($mysqli);
+        mysqli_close($mysqli);
+        throw new Exception($err);
+    }
+}
+
+function uyeodemeal(int $uye_id, int $uye_tahakkuk_id,string $tarih, float $tutar, string $kasa, string $tanim, string $aciklama, string $tahsilatci ) {
+    $sql1 = "INSERT INTO muhasebe (uye_id,tarih,tutar,kasa,aciklama,tanim,tahsilatci) VALUES(?,?,?,?,?,?,?)";
+    $sql2 = "UPDATE uye_tahakkuk SET muhasebe_id = ? WHERE uye_tahakkuk_id = ?";
+    $muhasebe_id = 0;
+    $err = "";
+    $mysqli = mysqlilink();
+    mysqli_begin_transaction($mysqli);
+    $stmt1 = mysqli_prepare($mysqli, $sql1);
+    if ( $stmt1 ) {
+        if ( mysqli_stmt_bind_param($stmt1, "isdssss", $uye_id,$tarih,$tutar,$kasa,$aciklama,$tanim,$tahsilatci) ) {
+            if ( mysqli_stmt_execute($stmt1) ) {
+                $muhasebe_id = mysqli_stmt_insert_id($stmt1);
+                if ( $uye_tahakkuk_id > 0 ) {
+                    $stmt2 = mysqli_prepare($mysqli, $sql2);
+                    if (mysqli_stmt_bind_param($stmt2,"ii",$muhasebe_id,$uye_tahakkuk_id) ) {
+                        if ( mysqli_stmt_execute($stmt2) ) {
+                            mysqli_commit($mysqli);
+                        } else {
+                            $err = mysqli_stmt_error($stmt2);
+                            mysqli_rollback($mysqli);
+                        }
+                    } else {
+                        $err = mysqli_stmt_error($stmt2);
+                        mysqli_rollback($mysqli);
+                    }
+                    mysqli_stmt_close($stmt2);
+                } else {
+                    mysqli_commit($mysqli);
+                }
+            } else {
+                $err = mysqli_stmt_error($stmt1);
+            }
+        } else {
+            $err = mysqli_stmt_error($stmt1);
+        }
+        mysqli_stmt_close($stmt1);
+    } else {
+        $err = mysqli_error($mysqli);
+    }
+
+    mysqli_close($mysqli);
+
+    if (!empty($err)) {
+        throw new Exception($err);
+    } else {
+        return $muhasebe_id;
+    }
+}
+
+function uyeodemeduzelt(int $muhasebe_id, string $tarhi, float $tutar, string $kasa, string $aciklama, string $tahsilatci) {
+    $sql = "UPDATE muhasebe SET tarih = ?, tutar = ?, kasa = ?, aciklama =?, tahsilatci =? WHERE muhasebe_id = ?";
+    $err = "";
+    $mysqli = mysqlilink();
+    $stmt = mysqli_prepare($mysqli,$sql);
+    if ($stmt) {
+        if (mysqli_stmt_bind_param($stmt,"sdsssi", $tarhi, $tutar, $kasa, $aciklama, $tahsilatci,$muhasebe_id)) {
+            if ( !mysqli_stmt_execute($stmt) ) {
+                $err = mysqli_stmt_error($stmt);
+            }
+        } else {
+            $err = mysqli_stmt_error($stmt);
+        }
+        mysqli_stmt_close($stmt);
+    } else {
+        $err = mysqli_error($mysqli);   
+    }
+
+    mysqli_close($mysqli);
+
+    if (!empty($err)) {
+        throw new Exception($err);
+    }
+}
+
+function uyeodemesil(int $muhasebe_id) {
+    $sql1 = "DELETE FROM muhasebe WHERE muhasebe_id = $muhasebe_id";
+    $sql2 = "UPDATE uye_tahakkuk SET muhasebe_id = NULL WHERE muhasebe_id = $muhasebe_id";
+
+    $err = "";
+    $mysqli = mysqlilink();
+    mysqli_begin_transaction($mysqli);
+    if ( mysqli_query($mysqli,$sql1) ) {
+        if (mysqli_query($mysqli,$sql2)) {
+            mysqli_commit($mysqli);
+        } else {
+            $err = mysqli_error($mysqli);   
+            mysqli_rollback($mysqli); 
+        }
+    } else {
+        $err = mysqli_error($mysqli);
+    }
+    mysqli_close($mysqli);
+
+    if (!empty($err)) {
+        throw new Exception($err);
+    }
+}

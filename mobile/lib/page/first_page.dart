@@ -1,7 +1,5 @@
 import 'package:dojo_mobile/page/kendoka.dart';
 import 'package:dojo_mobile/page/widget/app_drawer.dart';
-import 'package:intl/intl.dart';
-
 import '../api.dart';
 import '../service.dart';
 import '../store.dart';
@@ -157,18 +155,13 @@ class _AdminPageState extends State<FirstPage> {
                             itemCount: data.length,
                             itemBuilder: (context, index) {
                               String info1 = "Aidat Borcu ${data[index].odenmemis_aidat_syisi}";
-                              String info2 = "Son Keiko: ${DateFormat.yMd().format(data[index].son_keiko)}";
+                              String info2 = "Son Keiko: ${dateFormater(data[index].son_keiko, "dd.MM.yyyy")}";
                               String info3 = "Son3Ay: ${data[index].son3Ay.toString()}";
                               return Padding(
                                   padding: AppPading,
                                   child: ListTile(
                                     visualDensity: const VisualDensity(vertical: 4),
-                                    leading: data[index].image != null
-                                        ? Padding(
-                                            padding: const EdgeInsets.only(bottom: 7),
-                                            child: Image.memory(data[index].image!),
-                                          )
-                                        : const Icon(Icons.accessibility_outlined),
+                                    leading: CircleAvatar(radius: 30, backgroundImage: MemoryImage(data[index].image!)),
                                     title: Text("${data[index].ad} / ${data[index].seviye}"),
                                     subtitle: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                                       Text(info1, style: TextStyle(fontSize: 12, color: renkver(data[index].odenmemis_aidat_syisi))),

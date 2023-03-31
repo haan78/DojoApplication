@@ -51,8 +51,6 @@ class _Kendoka extends State<Kendoka> {
         sabitler: formSabitler,
         bilgi: bilgi,
         store: store,
-        updateParentData: updateData,
-        uyeAd: bilgi.ad,
       );
     } else if (_bottomNavIndex == 2) {
       return KendokaSeviye(sabitler: sabitler, bilgi: bilgi, store: store, uyeAd: bilgi.ad);

@@ -46,19 +46,6 @@ BEGIN
     WHERE us.`uye_id` = p_uye_id
     ORDER BY s.`deger` DESC;
     
-    SELECT ut.`uye_tahakkuk_id`,ut.`yil`,ut.`ay`,ut.`tahakkuk_tarih`,ut.`borc`,t.tanim , 
-    m.`tutar` as odeme_tutar,m.`tarih` as odeme_tarih, m.muhasebe_id, m.aciklama,m.kasa,
-     y.tanim as yoklama, ut.yoklama_id,
-     (SELECT 
-     	GROUP_CONCAT(DISTINCT uy.tarih ORDER BY uy.tarih ASC SEPARATOR ',') 
-     		FROM uye_yoklama uy
-     			WHERE uy.uye_id = ut.uye_id AND MONTH(uy.tarih) = ut.ay AND YEAR(uy.tarih) = ut.yil AND uy.yoklama_id = ut.yoklama_id ) as keikolar
-    FROM `uye_tahakkuk` ut 
-    LEFT JOIN `tahakkuk` t ON t.`tahakkuk_id` = ut.`tahakkuk_id`
-    LEFT JOIN `muhasebe` m ON m.`muhasebe_id` = ut.`muhasebe_id`
-    LEFT JOIN yoklama y on y.yoklama_id = ut.yoklama_id 
-	    WHERE ut.`uye_id` = p_uye_id ORDER BY tahakkuk_tarih DESC;
-    
    SELECT uy.tarih,y.yoklama_id , y.tanim  
   	FROM uye_yoklama uy inner JOIN yoklama y on y.yoklama_id  = uy.yoklama_id WHERE uy.uye_id  = p_uye_id
   		ORDER BY uy.tarih DESC;
