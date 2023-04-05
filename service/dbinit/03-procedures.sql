@@ -165,7 +165,7 @@ BEGIN
 				WHERE uye_id = p_uye_id 
 					AND yoklama_id = p_yoklama_id 
 					AND ay = MONTH(uy.tarih) 
-					AND yil = MONTH(p_tarih)
+					AND yil = YEAR(p_tarih)
 					AND muhasebe_id IS NULL;
 		end if;
 		SELECT -1 as result;
