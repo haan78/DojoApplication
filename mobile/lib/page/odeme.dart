@@ -65,7 +65,7 @@ class _Odeme extends State<Odeme> {
                       }
                     }),
                     validator: (value) {
-                      if (value == null && value as int > 0) {
+                      if (value == null || value == 0) {
                         return "Lütfen bir ödeme türü seçin";
                       } else {
                         return null;
@@ -136,7 +136,27 @@ class _Odeme extends State<Odeme> {
                     Expanded(
                         child: ElevatedButton(
                       child: const Text("Ödeme Tahsilat"),
-                      onPressed: () {},
+                      onPressed: () async {
+                        if (_formKey.currentState!.validate()) {
+                          int muhasebeId = 0;
+                          setState(() {
+                            loading = true;
+                          });
+                          try {
+                            muhasebeId = await digerodemeal(api, widget.muhasebe, widget.uyeId);
+                            if (context.mounted) {
+                              Navigator.pop(context);
+                            }
+                          } catch (e) {
+                            errorAlert(context, e.toString());
+                          } finally {
+                            setState(() {
+                              loading = false;
+                              widget.muhasebe.muhasebe_id = muhasebeId;
+                            });
+                          }
+                        }
+                      },
                     )),
                     const SizedBox(width: 20),
                     ElevatedButton(

@@ -194,7 +194,7 @@ enum MuhasebeTanimEnum { gelir, gider }
 List<DropdownMenuItem<int>> getMuhasebeTanimItems(List<MuhasebeTanim> tanimlar, MuhasebeTanimEnum tur, {bool bosDeger = true}) {
   List<DropdownMenuItem<int>> l = [];
   if (bosDeger) {
-    l.add(const DropdownMenuItem<int>(value: 0, child: Text("")));
+    l.add(const DropdownMenuItem<int>(value: 0, child: Text("[Seçiniz]")));
   }
   for (final tanim in tanimlar) {
     if (tur == MuhasebeTanimEnum.gelir && tanim.tur == 'GELIR' && tanim.muhasebe_tanim_id != 9) {
