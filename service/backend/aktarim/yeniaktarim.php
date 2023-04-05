@@ -323,7 +323,7 @@ define("QUERY", array (
 
 require_once __DIR__ . "/vendor/autoload.php";
 
-function muhtanim($tanim) {
+function muhtanim($tanim,$tutar) {
   if (!is_null($tanim)) {
     return trim(str_replace([
       'AIDAT TAM',
@@ -334,17 +334,35 @@ function muhtanim($tanim) {
       'Diğer Harcamalar',
       'Diğer Masraflar',
       'Ögrenci Aidat',
-      'Organizasyon Harcamaları'
-    ], [
       'Tam Aidat',
-      'Ögrenci Aidat',
-      'Tam Sınav',
-      'Öğrenci Sınav',
+      'Organizasyon Harcamaları',
+      'Diğer',
+      'DİĞER',
       'Salon Kirası',
-      'Diğer',
-      'Diğer',
+      'Bağış',
+      'Satış',
       'Öğrenci Aidat',
-      'Etkinlik Masrafı'
+      'Tam Sınav',
+      'Öğrenci Sınav'
+    ], [
+      9,
+      9,
+      10,
+      10,
+      1,
+      $tutar >= 0 ? 15 : 8,
+      $tutar >= 0 ? 15 : 8,
+      9,
+      9,
+      2,
+      $tutar >= 0 ? 15 : 8,
+      $tutar >= 0 ? 15 : 8,
+      1,
+      14,
+      13,
+      9,
+      10,
+      10
     ], $tanim));
   } else {
     return null;
@@ -418,7 +436,7 @@ $uyeit = new \IteratorIterator($cursor);
 $uyeit->rewind();
 $id = 1;
 $muhasebe_id = 1;
-echo "SET NAMES utf8mb3 COLLATE utf8_turkish_ci;".PHP_EOL;
+echo "SET NAMES utf8mb4 COLLATE utf8mb4_turkish_ci;".PHP_EOL;
 echo "USE dojo;".PHP_EOL;
 
 echo "TRUNCATE TABLE uye;".PHP_EOL;
@@ -505,7 +523,7 @@ while ($doc = $uyeit->current()) {
         "tarih" => $aidat["tarih"]->toDateTime()->format('Y-m-d'),
         "tutar" => floatval($aidat["toplam"]),
         "aciklama" => str_replace(["\n", "'"], " ", $aidat["aciklama"]),
-        "tanim" => muhtanim($aidat["tanim"]),
+        "muhasebe_tanim_id" => muhtanim($aidat["tanim"],floatval($aidat["toplam"])),
         "kasa" => $aidat["kasa"],
         "tahsilatci" => $aidat["user_text"],
         "ay" => intval($aidat["ay"]),
@@ -521,7 +539,7 @@ while ($doc = $uyeit->current()) {
         "tarih" => $diger["tarih"]->toDateTime()->format('Y-m-d'),
         "tutar" => floatval($diger["tutar"]),
         "aciklama" => str_replace(["\n", "'"], " ", $diger["aciklama"]),
-        "tanim" => muhtanim($diger["tanim"]),
+        "muhasebe_tanim_id" => muhtanim($diger["tanim"],floatval($diger["tutar"])),
         "kasa" => $diger["kasa"],
         "tahsilatci" => $diger["user_text"],
         "ay" => null,

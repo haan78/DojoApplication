@@ -154,16 +154,23 @@ function sabitler() {
     $mysqli = mysqlilink();
     mysqli_multi_query($mysqli,
         "SELECT tahakkuk_id,tanim,tutar FROM tahakkuk;
-        SELECT yoklama_id,tanim FROM yoklama"
+        SELECT yoklama_id,tanim FROM yoklama;
+        SELECT muhasebe_tanim_id,tanim,tur FROM muhasebe_tanim
+        ",
+        
+
     );
 
     $result_tahakkuklar = mysqli_store_result($mysqli);
     mysqli_next_result($mysqli);
     $result_yoklamalar = mysqli_store_result($mysqli);
+    mysqli_next_result($mysqli);
+    $result_muhasebe_tanim = mysqli_store_result($mysqli);
 
     $data = [
         "tahakkuklar"=>resultToArray($result_tahakkuklar),
-        "yoklamalar" =>resultToArray($result_yoklamalar)
+        "yoklamalar" =>resultToArray($result_yoklamalar),
+        "muhasebe_tanimlar" => resultToArray($result_muhasebe_tanim)
     ];
     mysqli_free_result($result_tahakkuklar);
     mysqli_free_result($result_yoklamalar);
@@ -449,7 +456,7 @@ function yoklamaliste(int $yoklama_id, string $tarih) {
 }
 
 function uyetahakkuklist(int $uye_id) {
-    $sql = "SELECT ut.`uye_tahakkuk_id`,ut.`yil`,ut.`ay`,ut.`tahakkuk_tarih`,ut.`borc`,t.tanim , 
+    $sql = "SELECT ut.uye_tahakkuk_id,ut.yil, ut.ay, ut.tahakkuk_tarih,ut.borc, t.tanim, ut.tahakkuk_id,
     m.`tutar` as odeme_tutar,m.`tarih` as odeme_tarih, m.muhasebe_id, m.aciklama,m.kasa,
      y.tanim as yoklama, ut.yoklama_id,
      (SELECT 
@@ -477,9 +484,10 @@ function uyetahakkuklist(int $uye_id) {
 }
 
 function uyedigerodemelist(int $uye_id) {
-    $sql = "SELECT m.muhasebe_id, m.tarih, m.kasa, m.tanim, m.aciklama, m.tutar 
+    $sql = "SELECT m.muhasebe_id, m.tarih, m.kasa, mt.tanim, m.muhasebe_tanim_id, m.aciklama, m.tutar 
             FROM muhasebe m LEFT JOIN uye_tahakkuk ut ON ut.muhasebe_id = m.muhasebe_id
-            WHERE m.uye_id = $uye_id AND ut.uye_tahakkuk_id  IS NULL AND m.tutar >= 0 ORDER BY m.tarih DESC";
+            INNER JOIN muhasebe_tanim mt ON mt.muhasebe_tanim_id = m.muhasebe_tanim_id AND mt.tur = 'GELIR' and mt.muhasebe_tanim_id <> 9
+            WHERE m.uye_id = $uye_id AND ut.uye_tahakkuk_id  IS NULL ORDER BY m.tarih DESC";
     $err = "";
     $mysqli = mysqlilink();
     $result = mysqli_query($mysqli,$sql);
@@ -496,9 +504,10 @@ function uyedigerodemelist(int $uye_id) {
 }
 
 function uyeharcamalist(int $uye_id) {
-    $sql = "SELECT m.muhasebe_id, m.tarih, m.kasa, m.tanim, m.aciklama, m.tutar 
+    $sql = "SELECT m.muhasebe_id, m.tarih, m.kasa, mt.tanim, m.muhasebe_tanim_id, m.aciklama, m.tutar 
             FROM muhasebe m LEFT JOIN uye_tahakkuk ut ON ut.muhasebe_id = m.muhasebe_id
-            WHERE m.uye_id = $uye_id AND ut.uye_tahakkuk_id  IS NULL AND m.tutar < 0 ORDER BY m.tarih DESC";
+            INNER JOIN muhasebe_tanim mt ON mt.muhasebe_tanim_id = m.muhasebe_tanim_id AND mt.tur = 'GIDER'
+            WHERE m.uye_id = $uye_id AND ut.uye_tahakkuk_id  IS NULL ORDER BY m.tarih DESC";
     $err = "";
     $mysqli = mysqlilink();
     $result = mysqli_query($mysqli,$sql);
@@ -514,95 +523,42 @@ function uyeharcamalist(int $uye_id) {
     }
 }
 
-function uyeodemeal(int $uye_id, int $uye_tahakkuk_id,string $tarih, float $tutar, string $kasa, string $tanim, string $aciklama, string $tahsilatci ) {
-    $sql1 = "INSERT INTO muhasebe (uye_id,tarih,tutar,kasa,aciklama,tanim,tahsilatci) VALUES(?,?,?,?,?,?,?)";
-    $sql2 = "UPDATE uye_tahakkuk SET muhasebe_id = ? WHERE uye_tahakkuk_id = ?";
-    $muhasebe_id = 0;
-    $err = "";
-    $mysqli = mysqlilink();
-    mysqli_begin_transaction($mysqli);
-    $stmt1 = mysqli_prepare($mysqli, $sql1);
-    if ( $stmt1 ) {
-        if ( mysqli_stmt_bind_param($stmt1, "isdssss", $uye_id,$tarih,$tutar,$kasa,$aciklama,$tanim,$tahsilatci) ) {
-            if ( mysqli_stmt_execute($stmt1) ) {
-                $muhasebe_id = mysqli_stmt_insert_id($stmt1);
-                if ( $uye_tahakkuk_id > 0 ) {
-                    $stmt2 = mysqli_prepare($mysqli, $sql2);
-                    if (mysqli_stmt_bind_param($stmt2,"ii",$muhasebe_id,$uye_tahakkuk_id) ) {
-                        if ( mysqli_stmt_execute($stmt2) ) {
-                            mysqli_commit($mysqli);
-                        } else {
-                            $err = mysqli_stmt_error($stmt2);
-                            mysqli_rollback($mysqli);
-                        }
-                    } else {
-                        $err = mysqli_stmt_error($stmt2);
-                        mysqli_rollback($mysqli);
-                    }
-                    mysqli_stmt_close($stmt2);
-                } else {
-                    mysqli_commit($mysqli);
-                }
-            } else {
-                $err = mysqli_stmt_error($stmt1);
-            }
-        } else {
-            $err = mysqli_stmt_error($stmt1);
-        }
-        mysqli_stmt_close($stmt1);
-    } else {
-        $err = mysqli_error($mysqli);
-    }
-
-    mysqli_close($mysqli);
-
-    if (!empty($err)) {
-        throw new Exception($err);
-    } else {
-        return $muhasebe_id;
-    }
+function aidat_odeme_al(int $uye_id, int $tahakkuk_id, int $yoklama_id, string $tarih, int $yil, int $ay, string $kasa, float $tutar, string $aciklama, string $tahsilatci) {
+    $p = new \MySqlTool\MySqlToolCall(mysqlilink());
+    $result = $p->procedure("aidat_odeme_al")->in($uye_id)->in($tahakkuk_id)->in($yoklama_id)->in($tarih)->in($yil)->in($ay)->in($kasa)->in($tutar)->in($aciklama)->in($tahsilatci)->call()->result("queries");
+    return intval($result[0][0]["muhasebe_id"]);
 }
 
-function uyeodemeduzelt(int $muhasebe_id, string $tarhi, float $tutar, string $kasa, string $aciklama, string $tahsilatci) {
-    $sql = "UPDATE muhasebe SET tarih = ?, tutar = ?, kasa = ?, aciklama =?, tahsilatci =? WHERE muhasebe_id = ?";
-    $err = "";
-    $mysqli = mysqlilink();
-    $stmt = mysqli_prepare($mysqli,$sql);
-    if ($stmt) {
-        if (mysqli_stmt_bind_param($stmt,"sdsssi", $tarhi, $tutar, $kasa, $aciklama, $tahsilatci,$muhasebe_id)) {
-            if ( !mysqli_stmt_execute($stmt) ) {
-                $err = mysqli_stmt_error($stmt);
-            }
-        } else {
-            $err = mysqli_stmt_error($stmt);
-        }
-        mysqli_stmt_close($stmt);
-    } else {
-        $err = mysqli_error($mysqli);   
-    }
-
-    mysqli_close($mysqli);
-
-    if (!empty($err)) {
-        throw new Exception($err);
-    }
+function aidat_odeme_sil(int $muhasebe_id) {
+    $p = new \MySqlTool\MySqlToolCall(mysqlilink());
+    $p->procedure("aidat_odeme_sil")->in($muhasebe_id)->call();
+    return true;
 }
 
-function uyeodemesil(int $muhasebe_id) {
-    $sql1 = "DELETE FROM muhasebe WHERE muhasebe_id = $muhasebe_id";
-    $sql2 = "UPDATE uye_tahakkuk SET muhasebe_id = NULL WHERE muhasebe_id = $muhasebe_id";
+function muhasebe_duzelt(int $muhasebe_id, int $uye_id, string $tarih, float $tutar, string $kasa, int $muhasebe_tanim_id,string $aciklama, string $tahsilatci) {
+    $p = new \MySqlTool\MySqlToolCall(mysqlilink());
+    //muhasebe_id, uye_id, tarih,tutar,kasa, muhasebe_tanim_id bigint , in p_aciklama varchar(255), in p_tahsilatci varchar(80)
+    $outs = $p->procedure("muhasebe_esd")
+        ->out("muhasebe_id",$muhasebe_id)
+        ->in($uye_id)
+        ->in($tarih)
+        ->in($tutar)
+        ->in($kasa)
+        ->in($muhasebe_tanim_id)
+        ->in($aciklama)
+        ->in($tahsilatci)
+        ->call()
+        ->result("outs");
+    return intval($outs["muhasebe_id"]);
+}
+
+function muhasebe_sil(int $muhasebe_id) {
+    $sql = "DELETE FROM muhasebe WHERE muhasebe_id = $muhasebe_id AND muhasebe_tanim_id <> 9";
 
     $err = "";
     $mysqli = mysqlilink();
     mysqli_begin_transaction($mysqli);
-    if ( mysqli_query($mysqli,$sql1) ) {
-        if (mysqli_query($mysqli,$sql2)) {
-            mysqli_commit($mysqli);
-        } else {
-            $err = mysqli_error($mysqli);   
-            mysqli_rollback($mysqli); 
-        }
-    } else {
+    if ( !mysqli_query($mysqli,$sql) ) {
         $err = mysqli_error($mysqli);
     }
     mysqli_close($mysqli);

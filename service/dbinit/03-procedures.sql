@@ -118,7 +118,7 @@ END;;
 
 CREATE FUNCTION `dojo`.`parola_uret`(
         `length` TINYINT
-    ) RETURNS varchar(100) CHARSET utf8mb3 COLLATE utf8_turkish_ci
+    ) RETURNS varchar(100) CHARSET utf8mb4 COLLATE utf8mb4_turkish_ci
 	READS SQL DATA DETERMINISTIC 
 BEGIN
   SET @returnStr = '';
@@ -172,6 +172,75 @@ BEGIN
 	end if;
 	
 	COMMIT;
+	
+END;;
+
+CREATE PROCEDURE dojo.aidat_odeme_sil(in p_muhasebe_id bigint)
+BEGIN
+	declare utid bigint default null;
+	SELECT ut.uye_tahakkuk_id into utid FROM uye_tahakkuk ut WHERE ut.muhasebe_id = p_muhasebe_id limit 1;
+	if utid is not null then
+		start transaction;
+		DELETE FROM muhasebe WHERE muhasebe_id = p_muhasebe_id and muhasebe_tanim_id = 9;
+		if ROW_COUNT() > 0 then	
+			UPDATE uye_tahakkuk ut set ut.muhasebe_id = NULL WHERE ut.muhasebe_id = p_muhasebe_id;
+			commit;
+		else
+			rollback;
+			SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Kayit silinemdei', MYSQL_ERRNO = 1002;
+		end if;		
+	else
+		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Ilgili tahakkuk bulunamadi', MYSQL_ERRNO = 1001;
+	end if;
+	
+END;;
+
+
+CREATE PROCEDURE dojo.aidat_odeme_al(in p_uye_id bigint, in p_tahakkuk_id bigint, in p_yoklama_id bigint, in p_tarih date, in p_yil smallint, in p_ay tinyint , in p_kasa varchar(20), in p_tutar decimal(14,2), in p_aciklama varchar(255), in p_tahsilatci varchar(80) )
+BEGIN
+	declare utid bigint default null;
+	declare muhid bigint default null;	
+	
+	SELECT ut.uye_tahakkuk_id,ut.muhasebe_id into utid,muhid FROM uye_tahakkuk ut 
+			WHERE ut.uye_id = p_uye_id AND ut.yoklama_id = p_yoklama_id AND ut.ay = p_ay AND ut.yil = p_yil LIMIT 1;
+
+	START TRANSACTION;
+	
+	if muhid is null then
+		INSERT into muhasebe ( uye_id, tarih, tutar, kasa, aciklama, muhasebe_tanim_id, tahsilatci, ay, yil  )
+			values (p_uye_id, p_tarih, p_tutar, p_kasa, p_aciklama, 9, p_tahsilatci, p_ay, p_yil );
+		SET muhid = LAST_INSERT_ID();
+	else
+		UPDATE muhasebe m 
+			SET m.tarih = p_tarih, m.tutar = p_tutar, m.kasa = p_kasa, m.aciklama = p_aciklama, m.tahsilatci = p_tahsilatci, m.ay = p_ay, m.yil = p_yil
+				WHERE m.muhasebe_id = muhid;
+	end if;
+
+	if utid is not null then
+		UPDATE uye_tahakkuk ut SET ut.muhasebe_id = muhid, ut.borc = p_tutar  WHERE ut.uye_tahakkuk_id = utid;
+	else	
+		INSERT into uye_tahakkuk (uye_id,tahakkuk_id,borc,tahakkuk_tarih,muhasebe_id,yil,ay,yoklama_id)
+			VALUES(p_uye_id, p_tahakkuk_id, p_tutar, p_tarih, muhid, p_yil, p_ay, p_yoklama_id );
+	end if;
+	COMMIT;
+	SELECT muhid AS muhasebe_id;
+END;;
+
+CREATE PROCEDURE dojo.muhasebe_esd(inout p_muhasebe_id bigint, in p_uye_id bigint, in p_tarih date, in p_tutar decimal(14,2), in p_kasa varchar(20), in p_muhasebe_tanim_id bigint , in p_aciklama varchar(255), in p_tahsilatci varchar(80))
+BEGIN
+	if p_muhasebe_tanim_id = 9 then
+		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Aidatlar degisiklik buradan yapilamaz', MYSQL_ERRNO = 1001;
+	end if;
+	if p_muhasebe_id is not null and p_tutar is null then
+		DELETE from muhasebe WHERE muhasebe_id = p_muhasebe_id and muhasebe_tanim_id <> 9;
+	elseif p_muhasebe_id is null and p_tutar is not null then
+		insert into muhasebe ( uye_id, tarih, tutar, kasa, aciklama, muhasebe_tanim_id, tahsilatci )
+			values (p_uye_id, p_tarih, p_kasa, p_aciklama, p_muhasebe_tanim_id, p_tahsilatci );
+		SET p_muhasebe_id = last_insert_id();
+	elseif p_muhasebe_id is not null and p_tutar is not null then
+		update muhasebe m set m.tarih = p_tarih, m.tutar = p_tutar, m.kasa = p_kasa, m.aciklama = p_aciklama, m.muhasebe_tanim_id = p_muhasebe_tanim_id, m.tahsilatci = p_tahsilatci
+			WHERE m.muhasebe_id  = p_muhasebe_id and m.muhasebe_tanim_id <> 9;
+	end if;
 	
 END;;
 

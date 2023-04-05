@@ -196,28 +196,44 @@ $router->add("/admin/uye/muhasebe/harcamalist/#uye_id",function(Request $req) {
 });
 
 
-$router->add("/admin/muhasebe/odemeal",function(Request $req){
+$router->add("/admin/muhasebe/aidatal",function(Request $req){
     $jdata = $req->json();
-    $uye_tahakkuk_id = $jdata->uye_tahakkuk_id ?? 0;
     $uye_id = $jdata->uye_id ?? 0;
     $tutar = $jdata->tutar ?? 0;
     $tarih = $jdata->tarih ?? "";
     $kasa = $jdata->kasa ?? "";
-    $tanim = $jdata->tanim ?? "";
-    $aciklama = $jdata->aciklama ?? "";
-    $muhasebe_id = $jdata->muhasebe_id ?? 0;
-    $tahsilatci = $req->local()->ad ?? "";    
-    if ($muhasebe_id > 0) {
-        return uyeodemeduzelt($muhasebe_id,$tarih,$tutar,$kasa,$aciklama,$tahsilatci);
-    } else {
-        return uyeodemeal($uye_id,$uye_tahakkuk_id,$tarih,$tutar,$kasa,$tanim,$aciklama,$tahsilatci);
-    }    
+    $aciklama = $jdata->aciklama ?? "";    
+    $tahsilatci = $req->local()->ad ?? "";
+    $yoklama_id =  $jdata->yoklama_id ?? 0;
+    $tahakkuk_id = $jdata->tahakkuk_id ?? 0;
+    $yil = $jdata->yil ?? 0;
+    $ay = $jdata->ay ?? 0;
+    return aidat_odeme_al($uye_id, $tahakkuk_id, $yoklama_id, $tarih, $yil, $ay, $kasa, $tutar, $aciklama, $tahsilatci);
 });
 
-$router->add("/admin/muhasebe/odemesil/#muhasebe_id",function(Request $req){
+$router->add("/admin/muhasebe/aidatsil/#muhasebe_id",function(Request $req){
     $muhasebe_id = $req->param("muhasebe_id");
-    return uyeodemesil($muhasebe_id);
+    return aidat_odeme_sil($muhasebe_id);
 });
+
+$router->add("/admin/muhasebe/sil/#muhasebe_id",function(Request $req){
+    $muhasebe_id = $req->param("muhasebe_id");
+    return muhasebe_sil($muhasebe_id);
+});
+
+$router->add("/admin/muhasebe/duzelt",function(Request $req){
+    $jdata = $req->json();
+    $muhasebe_id = $jdata->muhasebe_id ?? 0;
+    $uye_id = $jdata->uye_id ?? 0;
+    $tutar = $jdata->tutar ?? null;
+    $tarih = $jdata->tarih ?? "";
+    $kasa = $jdata->kasa ?? "";
+    $aciklama = $jdata->aciklama ?? "";
+    $muhasebe_tanim_id = $jdata->muhasebe_tanim_id ?? 0;    
+    $tahsilatci = $req->local()->ad ?? "";
+    return  muhasebe_duzelt($muhasebe_id, $uye_id, $tarih, $tutar, $kasa, $muhasebe_tanim_id, $aciklama, $tahsilatci);
+});
+
 
 $router->add("/admin/yoklamalar", function (Request $req) {    
     return yoklamalar();

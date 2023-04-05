@@ -49,7 +49,7 @@ class _KendokaSeviye extends State<KendokaSeviye> {
                       child: DropdownButtonFormField(
                         value: seviye.seviye,
                         decoration: const InputDecoration(labelText: "Seviye"),
-                        items: Seviyeler,
+                        items: seviyeler,
                         onChanged: (value) {
                           if (value != null) {
                             setState(() {

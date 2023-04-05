@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
+import '../service.dart';
+
 const Color colorGood = Color.fromARGB(255, 19, 94, 9);
 const Color colorBad = Color.fromARGB(255, 173, 5, 5);
 const Color colorWarn = Color.fromARGB(255, 204, 191, 11);
@@ -90,7 +92,7 @@ String trKisaDate(DateTime tarih) {
   return "$gun $ay $yil ($hg)";
 }
 
-List<DropdownMenuItem> Seviyeler = [
+final List<DropdownMenuItem> seviyeler = [
   const DropdownMenuItem(value: "", child: Text("")),
   DropdownMenuItem(value: "7 KYU", child: Text("7 KYU", style: TextStyle(color: Colors.pink.shade200))),
   DropdownMenuItem(value: "6 KYU", child: Text("6 KYU", style: TextStyle(color: Colors.pink.shade200))),
@@ -106,6 +108,13 @@ List<DropdownMenuItem> Seviyeler = [
   DropdownMenuItem(value: "5 DAN", child: Text("5 DAN", style: TextStyle(color: Colors.red.shade600))),
   DropdownMenuItem(value: "6 DAN", child: Text("6 DAN", style: TextStyle(color: Colors.red.shade900))),
   DropdownMenuItem(value: "7 DAN", child: Text("7 DAN", style: TextStyle(color: Colors.brown.shade800)))
+];
+
+const kasalar = [
+  DropdownMenuItem(value: "", child: Text("[Seçiniz]")),
+  DropdownMenuItem(value: "Elden", child: Text("Elden")),
+  DropdownMenuItem(value: "Sayman Banka", child: Text("Sayman Banka")),
+  DropdownMenuItem(value: "Dernek Banka", child: Text("Dernek Banka"))
 ];
 
 const Dikey = SizedBox(height: 10);
@@ -171,4 +180,29 @@ class FBuilder<T> extends StatelessWidget {
           }
         });
   }
+}
+
+Scaffold uyeScaffold({required String uyeAd, required Widget body}) {
+  return Scaffold(
+    appBar: AppBar(title: appTitle(text: uyeAd)),
+    body: Padding(padding: const EdgeInsets.all(10), child: body),
+  );
+}
+
+enum MuhasebeTanimEnum { gelir, gider }
+
+List<DropdownMenuItem<int>> getMuhasebeTanimItems(List<MuhasebeTanim> tanimlar, MuhasebeTanimEnum tur, {bool bosDeger = true}) {
+  List<DropdownMenuItem<int>> l = [];
+  if (bosDeger) {
+    l.add(const DropdownMenuItem<int>(value: 0, child: Text("")));
+  }
+  for (final tanim in tanimlar) {
+    if (tur == MuhasebeTanimEnum.gelir && tanim.tur == 'GELIR' && tanim.muhasebe_tanim_id != 9) {
+      // aidati buraya alma
+      l.add(DropdownMenuItem<int>(value: tanim.muhasebe_tanim_id, child: Text(tanim.tanim)));
+    } else if (tur == MuhasebeTanimEnum.gider && tanim.tur == 'GIDER') {
+      l.add(DropdownMenuItem<int>(value: tanim.muhasebe_tanim_id, child: Text(tanim.tanim)));
+    }
+  }
+  return l;
 }

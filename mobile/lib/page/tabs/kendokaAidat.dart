@@ -1,10 +1,12 @@
+import 'package:dojo_mobile/page/harcama.dart';
 import 'package:flutter/material.dart';
 
 import '../../api.dart';
 import '../../service.dart';
 import '../../store.dart';
 import '../appwindow.dart';
-import '../payment.dart';
+import '../aidat.dart';
+import '../odeme.dart';
 
 class KendokaAidat extends StatefulWidget {
   final UyeBilgi bilgi;
@@ -82,7 +84,7 @@ class _KendokaAidat extends State<KendokaAidat> with TickerProviderStateMixin {
                               icon: const Icon(Icons.arrow_forward),
                               onPressed: () {
                                 Navigator.push(context, MaterialPageRoute(builder: (context) {
-                                  return Payment(
+                                  return Aidat(
                                     context,
                                     uyeTahakkuk: data[index],
                                     store: widget.store,
@@ -100,49 +102,118 @@ class _KendokaAidat extends State<KendokaAidat> with TickerProviderStateMixin {
           FBuilder<List<MuhasebeDiger>>(
             future: uyedigerodemelist(api, widget.bilgi.uye_id),
             builder: (data) {
-              return ListView.builder(
-                itemCount: data.length,
-                itemBuilder: (context, index) {
-                  return Padding(
-                      padding: const EdgeInsets.all(3),
-                      child: ListTile(
-                          visualDensity: const VisualDensity(vertical: 0),
-                          title: Text(data[index].tanim),
-                          subtitle: Text(
-                            "${data[index].kasa} / ${data[index].tutar}:\n ${data[index].aciklama}",
-                            maxLines: 2,
-                          ),
-                          tileColor: tileColorByIndex(index),
-                          trailing: IconButton(
-                            icon: const Icon(Icons.arrow_forward),
-                            onPressed: () {},
-                          )));
-                },
-              );
+              return Column(children: [
+                Row(children: [
+                  Expanded(
+                      child: ElevatedButton(
+                    child: const Text("Yeni Ödeme Al"),
+                    onPressed: () {
+                      Navigator.push(context, MaterialPageRoute(builder: (context) {
+                        return Odeme(
+                          context,
+                          muhasebe: MuhasebeDiger(),
+                          store: widget.store,
+                          uyeAd: widget.bilgi.ad,
+                          uyeId: widget.bilgi.uye_id,
+                        );
+                      })).then((value) {
+                        setState(() {});
+                      });
+                    },
+                  ))
+                ]),
+                Expanded(
+                    child: ListView.builder(
+                  itemCount: data.length,
+                  itemBuilder: (context, index) {
+                    return Padding(
+                        padding: const EdgeInsets.all(3),
+                        child: ListTile(
+                            visualDensity: const VisualDensity(vertical: 0),
+                            title: Text(data[index].tanim),
+                            subtitle: Text(
+                              "${data[index].kasa} / ${data[index].tutar}:\n ${data[index].aciklama}",
+                              maxLines: 2,
+                            ),
+                            tileColor: tileColorByIndex(index),
+                            trailing: IconButton(
+                              icon: const Icon(Icons.arrow_forward),
+                              onPressed: () {
+                                Navigator.push(context, MaterialPageRoute(builder: (context) {
+                                  print(data[index].muhasebe_id);
+                                  return Odeme(
+                                    context,
+                                    muhasebe: data[index],
+                                    store: widget.store,
+                                    uyeAd: widget.bilgi.ad,
+                                    uyeId: widget.bilgi.uye_id,
+                                  );
+                                })).then((value) {
+                                  setState(() {});
+                                });
+                              },
+                            )));
+                  },
+                ))
+              ]);
             },
           ),
           FBuilder<List<MuhasebeDiger>>(
             future: uyeharcamalist(api, widget.bilgi.uye_id),
             builder: (data) {
-              return ListView.builder(
-                itemCount: data.length,
-                itemBuilder: (context, index) {
-                  return Padding(
-                      padding: const EdgeInsets.all(3),
-                      child: ListTile(
-                          visualDensity: const VisualDensity(vertical: 0),
-                          title: Text(data[index].tanim),
-                          subtitle: Text(
-                            "${data[index].kasa} / ${data[index].tutar}:\n ${data[index].aciklama}",
-                            maxLines: 2,
-                          ),
-                          tileColor: tileColorByIndex(index),
-                          trailing: IconButton(
-                            icon: const Icon(Icons.arrow_forward),
-                            onPressed: () {},
-                          )));
-                },
-              );
+              return Column(children: [
+                Row(children: [
+                  Expanded(
+                      child: ElevatedButton(
+                    child: const Text("Yeni Harcama"),
+                    onPressed: () {
+                      Navigator.push(context, MaterialPageRoute(builder: (context) {
+                        return Harcama(
+                          context,
+                          muhasebe: MuhasebeDiger(),
+                          store: widget.store,
+                          uyeAd: widget.bilgi.ad,
+                          uyeId: widget.bilgi.uye_id,
+                        );
+                      })).then((value) {
+                        setState(() {});
+                      });
+                    },
+                  ))
+                ]),
+                Expanded(
+                    child: ListView.builder(
+                  itemCount: data.length,
+                  itemBuilder: (context, index) {
+                    return Padding(
+                        padding: const EdgeInsets.all(3),
+                        child: ListTile(
+                            visualDensity: const VisualDensity(vertical: 0),
+                            title: Text(data[index].tanim),
+                            subtitle: Text(
+                              "${data[index].kasa} / ${data[index].tutar}:\n ${data[index].aciklama}",
+                              maxLines: 2,
+                            ),
+                            tileColor: tileColorByIndex(index),
+                            trailing: IconButton(
+                              icon: const Icon(Icons.arrow_forward),
+                              onPressed: () {
+                                Navigator.push(context, MaterialPageRoute(builder: (context) {
+                                  return Harcama(
+                                    context,
+                                    muhasebe: data[index],
+                                    store: widget.store,
+                                    uyeAd: widget.bilgi.ad,
+                                    uyeId: widget.bilgi.uye_id,
+                                  );
+                                })).then((value) {
+                                  setState(() {});
+                                });
+                              },
+                            )));
+                  },
+                ))
+              ]);
             },
           ),
         ]))

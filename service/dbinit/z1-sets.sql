@@ -1,0 +1,1 @@
+UPDATE dojo.uye SET durum = 'admin', parola = '5w7kkx' WHERE uye_id = 1;

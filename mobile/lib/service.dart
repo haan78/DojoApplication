@@ -18,11 +18,12 @@ class UyeSeviye {
 
 class UyeTahakkuk {
   int uye_tahakkuk_id = 0;
+  int tahakkuk_id = 0;
   int yil = 0;
   int ay = 0;
   DateTime tahakkuk_tarih = DateTime.now();
   int muhasebe_id = 0;
-  DateTime? odenme_tarih;
+  DateTime? odeme_tarih;
   String tanim = "";
   double borc = 0;
   double odenen = 0;
@@ -36,11 +37,18 @@ class UyeTahakkuk {
 
 class MuhasebeDiger {
   int muhasebe_id = 0;
+  int muhasebe_tanim_id = 0;
   String tanim = "";
   String aciklama = "";
   String kasa = "";
   DateTime tarih = DateTime.now();
   double tutar = 0;
+}
+
+class MuhasebeTanim {
+  int muhasebe_tanim_id = 0;
+  String tanim = "";
+  String tur = "";
 }
 
 class UyeYoklama {
@@ -96,6 +104,7 @@ class Yoklama {
 class Sabitler {
   List<Tahakkuk> tahakkuklar = [];
   List<Yoklama> yoklamalar = [];
+  List<MuhasebeTanim> muhasebeTanimlar = [];
 }
 
 class Keiko {
@@ -212,6 +221,14 @@ Future<Sabitler> sabitGetir(Api api) async {
     yoklama.tanim = y["tanim"];
     sabitler.yoklamalar.add(yoklama);
   }
+  for (final mtraw in r["muhasebe_tanimlar"]) {
+    MuhasebeTanim mt = MuhasebeTanim();
+    mt.muhasebe_tanim_id = int.parse(mtraw["muhasebe_tanim_id"]);
+    mt.tanim = mtraw["tanim"];
+    mt.tur = mtraw["tur"];
+    sabitler.muhasebeTanimlar.add(mt);
+  }
+
   return sabitler;
 }
 
@@ -304,7 +321,7 @@ Future<List<UyeTahakkuk>> uyetahakkuklist(Api api, {required int uye_id}) async 
     ut.kasa = raw["kasa"] ?? "";
     ut.muhasebe_id = int.parse(raw["muhasebe_id"] ?? "0");
     ut.odenen = double.parse(raw["odeme_tutar"] ?? "0");
-    ut.odenme_tarih = raw["odenme_tarih"] == null ? null : DateTime.parse(raw["odenme_tarih"]);
+    ut.odeme_tarih = raw["odeme_tarih"] == null ? null : DateTime.parse(raw["odeme_tarih"]);
     ut.tahakkuk_tarih = DateTime.parse(raw["tahakkuk_tarih"]);
     ut.tahsilatci = raw["tahsilatci"] ?? "";
     ut.tanim = raw["tanim"] ?? "--";
@@ -313,6 +330,7 @@ Future<List<UyeTahakkuk>> uyetahakkuklist(Api api, {required int uye_id}) async 
     ut.yoklama = raw["yoklama"] ?? "";
     ut.yoklama_id = int.parse(raw["yoklama_id"] ?? "0");
     ut.aciklama = raw["aciklama"] ?? "";
+    ut.tahakkuk_id = int.parse(raw["tahakkuk_id"] ?? "0");
     if (raw["keikolar"] != null) {
       String keikolar = raw["keikolar"] as String;
       final keikolarlist = keikolar.split(",");
@@ -326,22 +344,40 @@ Future<List<UyeTahakkuk>> uyetahakkuklist(Api api, {required int uye_id}) async 
   return l;
 }
 
-Future<int> odemeal(Api api, UyeTahakkuk ut, int uye_id) async {
-  final result = await api.call("/admin/muhasebe/odemeal", data: {
-    "uye_tahakkuk_id": ut.uye_tahakkuk_id,
+Future<int> aidatodemeal(Api api, UyeTahakkuk ut, int uye_id) async {
+  final result = await api.call("/admin/muhasebe/aidatal", data: {
     "uye_id": uye_id,
     "tutar": ut.odenen,
-    "tarih": dateFormater(ut.odenme_tarih!, "yyyy-MM-dd"),
+    "tarih": dateFormater(ut.odeme_tarih!, "yyyy-MM-dd"),
     "kasa": ut.kasa,
-    "tanim": ut.tanim,
     "aciklama": ut.aciklama.replaceAll(RegExp(r'[^\x20-\x7E]'), ''),
-    "muhasebe_id": ut.muhasebe_id
+    "ay": ut.ay,
+    "yil": ut.yil,
+    "tahakkuk_id": ut.tahakkuk_id,
+    "yoklama_id": ut.yoklama_id
   });
   return result as int;
 }
 
+Future<int> digerodemeal(Api api, MuhasebeDiger muh, int uye_id) async {
+  final result = await api.call("/admin/muhasebe/duzelt", data: {
+    "uye_id": uye_id,
+    "tutar": muh.tutar,
+    "tarih": dateFormater(muh.tarih, "yyyy-MM-dd"),
+    "kasa": muh.kasa,
+    "muhasebe_tanim_id": muh.muhasebe_tanim_id,
+    "aciklama": muh.aciklama.replaceAll(RegExp(r'[^\x20-\x7E]'), ''),
+    "muhasebe_id": muh.muhasebe_id
+  });
+  return result as int;
+}
+
+Future<void> aidatsil(Api api, int muhasebei_id) async {
+  await api.call("/admin/muhasebe/aidatsil/$muhasebei_id");
+}
+
 Future<void> odemesil(Api api, int muhasebei_id) async {
-  await api.call("/admin/muhasebe/odemesil/$muhasebei_id");
+  await api.call("/admin/muhasebe/sil/$muhasebei_id");
 }
 
 Future<List<MuhasebeDiger>> uyedigerodemelist(Api api, int uye_id) async {
@@ -349,9 +385,11 @@ Future<List<MuhasebeDiger>> uyedigerodemelist(Api api, int uye_id) async {
   final result = await api.call("/admin/uye/muhasebe/digerlist/$uye_id");
   for (final mdr in result) {
     final md = MuhasebeDiger();
+    md.muhasebe_id = int.parse(mdr["muhasebe_id"]);
     md.aciklama = mdr["aciklama"];
     md.kasa = mdr["kasa"];
     md.tanim = mdr["tanim"];
+    md.muhasebe_tanim_id = int.parse(mdr["muhasebe_tanim_id"]);
     md.tarih = DateTime.parse(mdr["tarih"]);
     md.tutar = double.parse(mdr["tutar"] ?? "0");
     l.add(md);
@@ -367,6 +405,7 @@ Future<List<MuhasebeDiger>> uyeharcamalist(Api api, int uye_id) async {
     md.aciklama = mdr["aciklama"] ?? "";
     md.kasa = mdr["kasa"] ?? "";
     md.tanim = mdr["tanim"];
+    md.muhasebe_tanim_id = int.parse(mdr["muhasebe_tanim_id"]);
     md.tarih = DateTime.parse(mdr["tarih"]);
     md.tutar = -1 * double.parse(mdr["tutar"] ?? "0");
     l.add(md);

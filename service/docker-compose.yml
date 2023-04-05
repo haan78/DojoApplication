@@ -19,9 +19,11 @@ services:
             - "8002:80"
     mysql:
         image: mysql:8.0.28
+        cap_add:
+            - SYS_NICE  # CAP_SYS_NICE
         command: 
-            - "--character-set-server=utf8"
-            - "--collation-server=utf8_turkish_ci"
+            - "--character-set-server=utf8mb4"
+            - "--collation-server=utf8mb4_turkish_ci"
         environment:
             TZ: Turkey
             MYSQL_ROOT_PASSWORD: 12345
