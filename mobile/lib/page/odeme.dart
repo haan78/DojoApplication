@@ -162,7 +162,7 @@ class _Odeme extends State<Odeme> {
                     ElevatedButton(
                       onPressed: loading || widget.muhasebe.muhasebe_id == 0
                           ? null
-                          : () {
+                          : () async {
                               //Silme Buraya
                               yesNoDialog(context, text: "Bu ödeme kaydını silmek istediğinizden emin misiniz?", onYes: (() async {
                                 setState(() {
@@ -170,8 +170,11 @@ class _Odeme extends State<Odeme> {
                                 });
                                 int muhasebeId = widget.muhasebe.muhasebe_id;
                                 try {
-                                  odemesil(api, widget.muhasebe.muhasebe_id);
+                                  await odemesil(api, widget.muhasebe.muhasebe_id);
                                   muhasebeId = 0;
+                                  if (context.mounted) {
+                                    Navigator.pop(context);
+                                  }
                                 } catch (e) {
                                   errorAlert(context, e.toString());
                                 } finally {

@@ -539,8 +539,8 @@ function muhasebe_duzelt(int $muhasebe_id, int $uye_id, string $tarih, float $tu
     $p = new \MySqlTool\MySqlToolCall(mysqlilink());
     //muhasebe_id, uye_id, tarih,tutar,kasa, muhasebe_tanim_id bigint , in p_aciklama varchar(255), in p_tahsilatci varchar(80)
     $outs = $p->procedure("muhasebe_esd")
-        ->out("muhasebe_id",$muhasebe_id)
-        ->in($uye_id)
+        ->out("muhasebe_id",$muhasebe_id > 0 ? $muhasebe_id : null )
+        ->in($uye_id > 0 ? $uye_id : null )
         ->in($tarih)
         ->in($tutar)
         ->in($kasa)
@@ -557,7 +557,6 @@ function muhasebe_sil(int $muhasebe_id) {
 
     $err = "";
     $mysqli = mysqlilink();
-    mysqli_begin_transaction($mysqli);
     if ( !mysqli_query($mysqli,$sql) ) {
         $err = mysqli_error($mysqli);
     }

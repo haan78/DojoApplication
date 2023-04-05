@@ -1,5 +1,6 @@
 import 'package:dojo_mobile/page/harcama.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 import '../../api.dart';
 import '../../service.dart';
@@ -126,13 +127,15 @@ class _KendokaAidat extends State<KendokaAidat> with TickerProviderStateMixin {
                     child: ListView.builder(
                   itemCount: data.length,
                   itemBuilder: (context, index) {
+                    final numfor = NumberFormat("#,##0.00", "tr_TR");
+
                     return Padding(
                         padding: const EdgeInsets.all(3),
                         child: ListTile(
                             visualDensity: const VisualDensity(vertical: 0),
                             title: Text(data[index].tanim),
                             subtitle: Text(
-                              "${data[index].kasa} / ${data[index].tutar}:\n ${data[index].aciklama}",
+                              "${dateFormater(data[index].tarih, "dd.MM.yyyy")}  ${data[index].kasa} ${numfor.format(data[index].tutar)} TL:\n ${data[index].aciklama}",
                               maxLines: 2,
                             ),
                             tileColor: tileColorByIndex(index),
@@ -140,7 +143,6 @@ class _KendokaAidat extends State<KendokaAidat> with TickerProviderStateMixin {
                               icon: const Icon(Icons.arrow_forward),
                               onPressed: () {
                                 Navigator.push(context, MaterialPageRoute(builder: (context) {
-                                  print(data[index].muhasebe_id);
                                   return Odeme(
                                     context,
                                     muhasebe: data[index],
