@@ -31,12 +31,22 @@ class _Aidat extends State<Aidat> {
   @override
   void initState() {
     api = Api(url: widget.store.ApiUrl, authorization: widget.store.ApiToken);
+
     widget.uyeTahakkuk.odeme_tarih ??= DateTime.now();
 
     aciklamacon.text = widget.uyeTahakkuk.aciklama;
     if (widget.uyeTahakkuk.muhasebe_id == 0) {
       widget.uyeTahakkuk.odenen = widget.uyeTahakkuk.borc;
     }
+
+    if (widget.uyeTahakkuk.ay == 0) {
+      widget.uyeTahakkuk.ay = DateTime.now().month;
+    }
+
+    if (widget.uyeTahakkuk.yil == 0) {
+      widget.uyeTahakkuk.yil = DateTime.now().year;
+    }
+
     tutarcon = MoneyMaskedTextController(thousandSeparator: ".", decimalSeparator: "", rightSymbol: "TL", precision: 0, initialValue: widget.uyeTahakkuk.odenen);
     super.initState();
   }
@@ -71,7 +81,7 @@ class _Aidat extends State<Aidat> {
         child: const Text("Kaydet"),
       ))
     ];
-    if (widget.uyeTahakkuk.muhasebe_id > 0) {
+    if (widget.uyeTahakkuk.uye_tahakkuk_id > 0) {
       bgl.add(const SizedBox(width: 20));
       bgl.add(SizedBox(
         width: 50,
@@ -86,7 +96,15 @@ class _Aidat extends State<Aidat> {
                     });
                     int muhasebeId = widget.uyeTahakkuk.muhasebe_id;
                     try {
-                      await aidatsil(api, widget.uyeTahakkuk.muhasebe_id);
+                      if (widget.uyeTahakkuk.muhasebe_id > 0) {
+                        await aidatodemesil(api, widget.uyeTahakkuk.muhasebe_id);
+                      } else if (widget.uyeTahakkuk.uye_tahakkuk_id > 0) {
+                        await aidatsil(api, widget.uyeTahakkuk.uye_tahakkuk_id);
+                        widget.uyeTahakkuk.uye_tahakkuk_id = 0;
+                      } else {
+                        //sacmalik
+                        return;
+                      }
                       muhasebeId = 0;
                       if (context.mounted) {
                         Navigator.pop(context);
@@ -120,14 +138,85 @@ class _Aidat extends State<Aidat> {
         body: Form(
           key: _formKey,
           child: Column(children: [
-            Text("${widget.uyeTahakkuk.tanim} ${aylarText[widget.uyeTahakkuk.ay - 1]} / ${widget.uyeTahakkuk.yil}"),
+            widget.uyeTahakkuk.uye_tahakkuk_id > 0
+                ? Text("${widget.uyeTahakkuk.tanim} ${aylarText[widget.uyeTahakkuk.ay - 1]} / ${widget.uyeTahakkuk.yil}")
+                : Row(children: [
+                    SizedBox(
+                        width: 90,
+                        child: DropdownButtonFormField(
+                            value: widget.uyeTahakkuk.ay,
+                            items: aylarMenuItem,
+                            onChanged: (int? value) {
+                              if (value != null && value > 0) {
+                                setState(() {
+                                  widget.uyeTahakkuk.ay = value;
+                                });
+                              }
+                            },
+                            validator: (value) {
+                              if (value == null || value == 0) {
+                                return "Ay Seçin";
+                              } else {
+                                return null;
+                              }
+                            })),
+                    const SizedBox(width: 10),
+                    SizedBox(
+                        width: 85,
+                        child: DropdownButtonFormField(
+                            items: [
+                              const DropdownMenuItem<int>(value: 0, child: Text("[Seçiniz]")),
+                              //DropdownMenuItem<int>(value: yil - 2, child: Text((yil - 2).toString())),
+                              //DropdownMenuItem<int>(value: yil - 1, child: Text((yil - 1).toString())),
+                              DropdownMenuItem<int>(value: yil, child: Text((yil).toString())),
+                              DropdownMenuItem<int>(value: yil + 1, child: Text((yil + 1).toString())),
+                              //DropdownMenuItem<int>(value: yil + 2, child: Text((yil + 2).toString()))
+                            ],
+                            value: widget.uyeTahakkuk.yil,
+                            onChanged: (value) {
+                              if (value != null && value > 0) {
+                                setState(() {
+                                  widget.uyeTahakkuk.yil = value;
+                                });
+                              }
+                            },
+                            validator: (value) {
+                              if (value == null || value == 0) {
+                                return "Yıl Seçin";
+                              } else {
+                                return null;
+                              }
+                            })),
+                    const SizedBox(width: 10),
+                    Expanded(
+                        child: DropdownButtonFormField(
+                      items: yoklamaMenuItems(widget.store.sabitler.yoklamalar),
+                      onChanged: (value) {
+                        if (value != null && value > 0) {
+                          setState(() {
+                            widget.uyeTahakkuk.yoklama_id = value;
+                          });
+                        }
+                      },
+                      validator: (value) {
+                        if (value == null || value == 0) {
+                          return "Yoklama Seçin";
+                        } else {
+                          return null;
+                        }
+                      },
+                    ))
+                  ]),
             Row(
               children: [
                 Expanded(
                     child: ElevatedButton(
                   onPressed: () async {
                     DateTime? dt = await showDatePicker(
-                        context: context, initialDate: widget.uyeTahakkuk.odeme_tarih!, firstDate: DateTime(yil - 3, 1, 1), lastDate: DateTime(yil + 3, 1, 1));
+                        context: context,
+                        initialDate: widget.uyeTahakkuk.odeme_tarih ?? DateTime.now(),
+                        firstDate: DateTime(yil - 2, 1, 1),
+                        lastDate: DateTime(yil + 2, 1, 1));
                     if (dt != null) {
                       setState(() {
                         widget.uyeTahakkuk.odeme_tarih = dt;
@@ -135,7 +224,8 @@ class _Aidat extends State<Aidat> {
                     }
                   },
                   style: ButtonStyle(backgroundColor: MaterialStateProperty.resolveWith((states) => const Color.fromARGB(255, 192, 180, 8))),
-                  child: Text("Tarih :${dateFormater(widget.uyeTahakkuk.odeme_tarih!, "dd.MM.yyyy")}", textAlign: TextAlign.left),
+                  child: Text("Tarih :${widget.uyeTahakkuk.odeme_tarih != null ? dateFormater(widget.uyeTahakkuk.odeme_tarih!, "dd.MM.yyyy") : "Hatalı"}",
+                      textAlign: TextAlign.left),
                 ))
               ],
             ),

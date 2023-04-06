@@ -134,7 +134,7 @@ Future<Uint8List> uyeResim(Api api, {BoxFit fit = BoxFit.fill}) async {
 }
 
 Future<List<UyeListDetay>> uye_listele(Api api, {required String durumlar}) async {
-  dynamic r = await api.call("/admin/uyeler", data: {"durumlar": durumlar});
+  dynamic r = await api.call("/admin/uyeler", data: {"durumlar": durumlar}, tryit: 5);
 
   List<UyeListDetay> l = [];
   for (final urd in r) {
@@ -353,7 +353,6 @@ Future<int> aidatodemeal(Api api, UyeTahakkuk ut, int uye_id) async {
     "aciklama": ut.aciklama.replaceAll(RegExp(r'[^\x20-\x7E]'), ''),
     "ay": ut.ay,
     "yil": ut.yil,
-    "tahakkuk_id": ut.tahakkuk_id,
     "yoklama_id": ut.yoklama_id
   });
   return result as int;
@@ -372,8 +371,12 @@ Future<int> digerodemeal(Api api, MuhasebeDiger muh, int uye_id) async {
   return result as int;
 }
 
-Future<void> aidatsil(Api api, int muhasebei_id) async {
-  await api.call("/admin/muhasebe/aidatsil/$muhasebei_id");
+Future<void> aidatodemesil(Api api, int muhasebei_id) async {
+  await api.call("/admin/muhasebe/aidatodemesil/$muhasebei_id");
+}
+
+Future<void> aidatsil(Api api, int uye_tahakkuk_id) async {
+  await api.call("/admin/muhasebe/aidatsil/$uye_tahakkuk_id");
 }
 
 Future<void> odemesil(Api api, int muhasebei_id) async {

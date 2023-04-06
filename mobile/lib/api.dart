@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
 
@@ -45,12 +46,15 @@ class Api {
     return auth;
   }
 
-  Future<dynamic> call(String method, {dynamic data}) async {
+  Future<dynamic> call(String method, {dynamic data, int tryit = 0, int timeout = 10}) async {
     dynamic response;
     message = "";
     try {
       Response res;
       headers["authorization"] = authorization;
+      if (tryit > 0) {
+        headers["Keep-Alive"] = "timeout=$timeout, max=$tryit";
+      }
       Uri fullurl = Uri.parse("$url$method");
       if (data != null) {
         res = await http.post(fullurl, headers: headers, body: jsonEncode(data));

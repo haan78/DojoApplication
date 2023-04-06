@@ -523,9 +523,9 @@ function uyeharcamalist(int $uye_id) {
     }
 }
 
-function aidat_odeme_al(int $uye_id, int $tahakkuk_id, int $yoklama_id, string $tarih, int $yil, int $ay, string $kasa, float $tutar, string $aciklama, string $tahsilatci) {
+function aidat_odeme_al(int $uye_id, int $yoklama_id, string $tarih, int $yil, int $ay, string $kasa, float $tutar, string $aciklama, string $tahsilatci) {
     $p = new \MySqlTool\MySqlToolCall(mysqlilink());
-    $result = $p->procedure("aidat_odeme_al")->in($uye_id)->in($tahakkuk_id)->in($yoklama_id)->in($tarih)->in($yil)->in($ay)->in($kasa)->in($tutar)->in($aciklama)->in($tahsilatci)->call()->result("queries");
+    $result = $p->procedure("aidat_odeme_al")->in($uye_id)->in($yoklama_id)->in($tarih)->in($yil)->in($ay)->in($kasa)->in($tutar)->in($aciklama)->in($tahsilatci)->call()->result("queries");
     return intval($result[0][0]["muhasebe_id"]);
 }
 
@@ -533,6 +533,20 @@ function aidat_odeme_sil(int $muhasebe_id) {
     $p = new \MySqlTool\MySqlToolCall(mysqlilink());
     $p->procedure("aidat_odeme_sil")->in($muhasebe_id)->call();
     return true;
+}
+
+function aidat_sil(int $uye_tahakkuk_id) {
+    $sql = "DELETE FROM uye_tahakkuk WHERE uye_tahakkuk_id = $uye_tahakkuk_id AND muhasebe_id IS NULL";
+    $err = "";
+    $mysqli = mysqlilink();
+    if ( !mysqli_query($mysqli,$sql) ) {
+        $err = mysqli_error($mysqli);
+    }
+    mysqli_close($mysqli);
+
+    if (!empty($err)) {
+        throw new Exception($err);
+    }
 }
 
 function muhasebe_duzelt(int $muhasebe_id, int $uye_id, string $tarih, float $tutar, string $kasa, int $muhasebe_tanim_id,string $aciklama, string $tahsilatci) {

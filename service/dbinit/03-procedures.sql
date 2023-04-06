@@ -196,9 +196,10 @@ BEGIN
 END;;
 
 
-CREATE PROCEDURE dojo.aidat_odeme_al(in p_uye_id bigint, in p_tahakkuk_id bigint, in p_yoklama_id bigint, in p_tarih date, in p_yil smallint, in p_ay tinyint , in p_kasa varchar(20), in p_tutar decimal(14,2), in p_aciklama varchar(255), in p_tahsilatci varchar(80) )
+CREATE PROCEDURE dojo.aidat_odeme_al(in p_uye_id bigint, in p_yoklama_id bigint, in p_tarih date, in p_yil smallint, in p_ay tinyint , in p_kasa varchar(20), in p_tutar decimal(14,2), in p_aciklama varchar(255), in p_tahsilatci varchar(80) )
 BEGIN
 	declare utid bigint default null;
+	declare tid bigint default null;
 	declare muhid bigint default null;	
 	
 	SELECT ut.uye_tahakkuk_id,ut.muhasebe_id into utid,muhid FROM uye_tahakkuk ut 
@@ -218,9 +219,10 @@ BEGIN
 
 	if utid is not null then
 		UPDATE uye_tahakkuk ut SET ut.muhasebe_id = muhid, ut.borc = p_tutar  WHERE ut.uye_tahakkuk_id = utid;
-	else	
+	else
+		SELECT u.tahakkuk_id into tid FROM uye u WHERE u.uye_id  = p_uye_id;
 		INSERT into uye_tahakkuk (uye_id,tahakkuk_id,borc,tahakkuk_tarih,muhasebe_id,yil,ay,yoklama_id)
-			VALUES(p_uye_id, p_tahakkuk_id, p_tutar, p_tarih, muhid, p_yil, p_ay, p_yoklama_id );
+			VALUES(p_uye_id, tid, p_tutar, p_tarih, muhid, p_yil, p_ay, p_yoklama_id );
 	end if;
 	COMMIT;
 	SELECT muhid AS muhasebe_id;

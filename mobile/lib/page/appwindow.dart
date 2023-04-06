@@ -51,12 +51,14 @@ Color tileColorByIndex(int index) {
   return index % 2 == 1 ? const Color.fromARGB(255, 208, 224, 233) : const Color.fromARGB(255, 229, 233, 208);
 }
 
-String trAy(int index) {
-  return ["Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran", "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"][index % 12];
+String trAy(int ayint) {
+  final ind = ayint - 1;
+  return ["Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran", "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"][ind % 12];
 }
 
 const aylarText = ["Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran", "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"];
-List<DropdownMenuItem<int>> aylar = const [
+const List<DropdownMenuItem<int>> aylarMenuItem = [
+  DropdownMenuItem(value: 0, child: Text("[Seçiniz]")),
   DropdownMenuItem(value: 1, child: Text("Ocak")),
   DropdownMenuItem(value: 2, child: Text("Şubat")),
   DropdownMenuItem(value: 3, child: Text("Mart")),
@@ -68,12 +70,18 @@ List<DropdownMenuItem<int>> aylar = const [
   DropdownMenuItem(value: 9, child: Text("Eylül")),
   DropdownMenuItem(value: 10, child: Text("Ekim")),
   DropdownMenuItem(value: 11, child: Text("Kasım")),
-  DropdownMenuItem(value: 12, child: Text("Aralık")),
-  DropdownMenuItem(value: 0, child: Text("[Seçiniz]")),
+  DropdownMenuItem(value: 12, child: Text("Aralık"))
 ];
-
 bool isEmail(String value) {
   return RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+").hasMatch(value);
+}
+
+List<DropdownMenuItem<int>> yoklamaMenuItems(List<Yoklama> yoklamalar) {
+  List<DropdownMenuItem<int>> l = yoklamalar.asMap().entries.map((e) {
+    return DropdownMenuItem<int>(value: e.value.yoklama_id, child: Text(e.value.tanim));
+  }).toList();
+  l.insert(0, const DropdownMenuItem<int>(value: 0, child: Text("Seçiniz")));
+  return l;
 }
 
 String dateFormater(DateTime value, String format) {

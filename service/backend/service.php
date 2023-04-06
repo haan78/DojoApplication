@@ -205,15 +205,19 @@ $router->add("/admin/muhasebe/aidatal",function(Request $req){
     $aciklama = $jdata->aciklama ?? "";    
     $tahsilatci = $req->local()->ad ?? "";
     $yoklama_id =  $jdata->yoklama_id ?? 0;
-    $tahakkuk_id = $jdata->tahakkuk_id ?? 0;
     $yil = $jdata->yil ?? 0;
     $ay = $jdata->ay ?? 0;
-    return aidat_odeme_al($uye_id, $tahakkuk_id, $yoklama_id, $tarih, $yil, $ay, $kasa, $tutar, $aciklama, $tahsilatci);
+    return aidat_odeme_al($uye_id, $yoklama_id, $tarih, $yil, $ay, $kasa, $tutar, $aciklama, $tahsilatci);
 });
 
-$router->add("/admin/muhasebe/aidatsil/#muhasebe_id",function(Request $req){
+$router->add("/admin/muhasebe/aidatodemesil/#muhasebe_id",function(Request $req){
     $muhasebe_id = $req->param("muhasebe_id");
     return aidat_odeme_sil($muhasebe_id);
+});
+
+$router->add("/admin/muhasebe/aidatsil/#uye_tahakkuk_id",function(Request $req){
+    $uye_tahakkuk_id = $req->param("uye_tahakkuk_id");
+    return aidat_sil($uye_tahakkuk_id);
 });
 
 $router->add("/admin/muhasebe/sil/#muhasebe_id",function(Request $req){
