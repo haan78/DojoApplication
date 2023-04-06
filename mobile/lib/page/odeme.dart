@@ -23,9 +23,9 @@ class Odeme extends StatefulWidget {
 class _Odeme extends State<Odeme> {
   final int yil = DateTime.now().year;
   final _formKey = GlobalKey<FormState>();
-  bool loading = false;
   final aciklamacon = TextEditingController();
   late Api api;
+  late LoadingDialog loadingdlg;
 
   late MoneyMaskedTextController tutarcon;
 
@@ -36,6 +36,7 @@ class _Odeme extends State<Odeme> {
     aciklamacon.text = widget.muhasebe.aciklama;
     tutarcon = MoneyMaskedTextController(thousandSeparator: ".", decimalSeparator: "", rightSymbol: "TL", precision: 0, initialValue: widget.muhasebe.tutar);
     super.initState();
+    loadingdlg = LoadingDialog(context);
   }
 
   @override
@@ -137,12 +138,13 @@ class _Odeme extends State<Odeme> {
                         child: ElevatedButton(
                       child: const Text("Ödeme Tahsilat"),
                       onPressed: () async {
+                        if (loadingdlg.started) {
+                          return;
+                        }
                         if (_formKey.currentState!.validate()) {
                           int muhasebeId = 0;
-                          setState(() {
-                            loading = true;
-                          });
                           try {
+                            loadingdlg.toggle();
                             muhasebeId = await digerodemeal(api, widget.muhasebe, widget.uyeId);
                             if (context.mounted) {
                               Navigator.pop(context);
@@ -150,8 +152,8 @@ class _Odeme extends State<Odeme> {
                           } catch (e) {
                             errorAlert(context, e.toString());
                           } finally {
+                            loadingdlg.toggle();
                             setState(() {
-                              loading = false;
                               widget.muhasebe.muhasebe_id = muhasebeId;
                             });
                           }
@@ -160,14 +162,16 @@ class _Odeme extends State<Odeme> {
                     )),
                     const SizedBox(width: 20),
                     ElevatedButton(
-                      onPressed: loading || widget.muhasebe.muhasebe_id == 0
+                      onPressed: widget.muhasebe.muhasebe_id == 0
                           ? null
                           : () async {
+                              if (loadingdlg.started) {
+                                return;
+                              }
+
                               //Silme Buraya
                               yesNoDialog(context, text: "Bu ödeme kaydını silmek istediğinizden emin misiniz?", onYes: (() async {
-                                setState(() {
-                                  loading = true;
-                                });
+                                loadingdlg.toggle();
                                 int muhasebeId = widget.muhasebe.muhasebe_id;
                                 try {
                                   await odemesil(api, widget.muhasebe.muhasebe_id);
@@ -178,9 +182,9 @@ class _Odeme extends State<Odeme> {
                                 } catch (e) {
                                   errorAlert(context, e.toString());
                                 } finally {
+                                  loadingdlg.toggle();
                                   setState(() {
                                     widget.muhasebe.muhasebe_id = muhasebeId;
-                                    loading = false;
                                   });
                                 }
                               }));

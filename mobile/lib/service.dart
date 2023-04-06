@@ -43,6 +43,7 @@ class MuhasebeDiger {
   String kasa = "";
   DateTime tarih = DateTime.now();
   double tutar = 0;
+  String belge = "";
 }
 
 class MuhasebeTanim {
@@ -366,7 +367,8 @@ Future<int> digerodemeal(Api api, MuhasebeDiger muh, int uye_id) async {
     "kasa": muh.kasa,
     "muhasebe_tanim_id": muh.muhasebe_tanim_id,
     "aciklama": muh.aciklama.replaceAll(RegExp(r'[^\x20-\x7E]'), ''),
-    "muhasebe_id": muh.muhasebe_id
+    "muhasebe_id": muh.muhasebe_id,
+    "belge": muh.belge.isEmpty ? null : muh.belge
   });
   return result as int;
 }
@@ -395,6 +397,7 @@ Future<List<MuhasebeDiger>> uyedigerodemelist(Api api, int uye_id) async {
     md.muhasebe_tanim_id = int.parse(mdr["muhasebe_tanim_id"]);
     md.tarih = DateTime.parse(mdr["tarih"]);
     md.tutar = double.parse(mdr["tutar"] ?? "0");
+    md.belge = mdr["tutar"] ?? "";
     l.add(md);
   }
   return l;
@@ -411,6 +414,7 @@ Future<List<MuhasebeDiger>> uyeharcamalist(Api api, int uye_id) async {
     md.muhasebe_tanim_id = int.parse(mdr["muhasebe_tanim_id"]);
     md.tarih = DateTime.parse(mdr["tarih"]);
     md.tutar = -1 * double.parse(mdr["tutar"] ?? "0");
+    md.belge = mdr["tutar"] ?? "";
     l.add(md);
   }
   return l;

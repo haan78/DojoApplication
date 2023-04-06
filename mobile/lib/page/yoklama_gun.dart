@@ -17,18 +17,18 @@ class YoklamaGun extends StatefulWidget {
 }
 
 class _YoklamaGun extends State<YoklamaGun> {
-  bool loading = false;
   List<KeikoKendoka> list = [];
   bool reload = true;
   late ScrollController _ScrollController;
   final tbas = DateTime.now().add(const Duration(days: -14));
   final tbit = DateTime.now().add(const Duration(days: 14));
   late Api api;
+  late LoadingDialog loadingdlg;
   double _offset = 0;
 
   Future<List<KeikoKendoka>> getList() async {
     if (reload) {
-      loading = true;
+      loadingdlg.toggle();
       KeikoListe kl = await yoklamaliste(api, tarih: widget.keiko.tarih, yoklama_id: widget.keiko.yoklama_id);
       reload = false;
       if (widget.keiko.sayi != kl.katilanSayisi) {
@@ -36,7 +36,7 @@ class _YoklamaGun extends State<YoklamaGun> {
           widget.keiko.sayi = kl.katilanSayisi;
         });
       }
-      loading = false;
+      loadingdlg.toggle();
       list = kl.list;
     }
     return list;
@@ -149,9 +149,10 @@ class _YoklamaGun extends State<YoklamaGun> {
                           ),
                         ),
                         onTap: () async {
-                          if (!loading) {
+                          if (!loadingdlg.started) {
+                            loadingdlg.toggle();
                             final result = await uyeYoklama(api, yoklama_id: widget.keiko.yoklama_id, uye_id: data[index].uye_id, tarih: widget.keiko.tarih);
-                            loading = false;
+                            loadingdlg.toggle();
                             setState(() {
                               _offset = _ScrollController.offset;
                               if (result == 1) {

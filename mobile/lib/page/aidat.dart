@@ -22,9 +22,9 @@ class Aidat extends StatefulWidget {
 
 class _Aidat extends State<Aidat> {
   final _formKey = GlobalKey<FormState>();
-  bool loading = false;
   final aciklamacon = TextEditingController();
   late Api api;
+  late LoadingDialog loadingdlg;
 
   late MoneyMaskedTextController tutarcon;
 
@@ -49,35 +49,35 @@ class _Aidat extends State<Aidat> {
 
     tutarcon = MoneyMaskedTextController(thousandSeparator: ".", decimalSeparator: "", rightSymbol: "TL", precision: 0, initialValue: widget.uyeTahakkuk.odenen);
     super.initState();
+    loadingdlg = LoadingDialog(context);
   }
 
   List<Widget> btnGorup() {
     List<Widget> bgl = [
       Expanded(
           child: ElevatedButton(
-        onPressed: loading
-            ? null
-            : () async {
-                if (_formKey.currentState!.validate()) {
-                  int muhasebeId = 0;
-                  setState(() {
-                    loading = true;
-                  });
-                  try {
-                    muhasebeId = await aidatodemeal(api, widget.uyeTahakkuk, widget.uyeId);
-                    if (context.mounted) {
-                      Navigator.pop(context);
-                    }
-                  } catch (e) {
-                    errorAlert(context, e.toString());
-                  } finally {
-                    setState(() {
-                      loading = false;
-                      widget.uyeTahakkuk.muhasebe_id = muhasebeId;
-                    });
-                  }
-                }
-              },
+        onPressed: () async {
+          if (loadingdlg.started) {
+            return;
+          }
+          if (_formKey.currentState!.validate()) {
+            int muhasebeId = 0;
+            try {
+              loadingdlg.toggle();
+              muhasebeId = await aidatodemeal(api, widget.uyeTahakkuk, widget.uyeId);
+              if (context.mounted) {
+                Navigator.pop(context);
+              }
+            } catch (e) {
+              errorAlert(context, e.toString());
+            } finally {
+              loadingdlg.toggle();
+              setState(() {
+                widget.uyeTahakkuk.muhasebe_id = muhasebeId;
+              });
+            }
+          }
+        },
         child: const Text("Kaydet"),
       ))
     ];
@@ -86,39 +86,37 @@ class _Aidat extends State<Aidat> {
       bgl.add(SizedBox(
         width: 50,
         child: ElevatedButton(
-          onPressed: loading
-              ? null
-              : () {
-                  //Silme Buraya
-                  yesNoDialog(context, text: "Bu ödeme kaydını silmek istediğinizden emin misiniz?", onYes: (() async {
-                    setState(() {
-                      loading = true;
-                    });
-                    int muhasebeId = widget.uyeTahakkuk.muhasebe_id;
-                    try {
-                      if (widget.uyeTahakkuk.muhasebe_id > 0) {
-                        await aidatodemesil(api, widget.uyeTahakkuk.muhasebe_id);
-                      } else if (widget.uyeTahakkuk.uye_tahakkuk_id > 0) {
-                        await aidatsil(api, widget.uyeTahakkuk.uye_tahakkuk_id);
-                        widget.uyeTahakkuk.uye_tahakkuk_id = 0;
-                      } else {
-                        //sacmalik
-                        return;
-                      }
-                      muhasebeId = 0;
-                      if (context.mounted) {
-                        Navigator.pop(context);
-                      }
-                    } catch (e) {
-                      errorAlert(context, e.toString());
-                    } finally {
-                      setState(() {
-                        widget.uyeTahakkuk.muhasebe_id = muhasebeId;
-                        loading = false;
-                      });
-                    }
-                  }));
-                },
+          onPressed: () {
+            //Silme Buraya
+            if (loadingdlg.started) {
+              return;
+            }
+            yesNoDialog(context, text: "Bu ödeme kaydını silmek istediğinizden emin misiniz?", onYes: (() async {
+              int muhasebeId = widget.uyeTahakkuk.muhasebe_id;
+              try {
+                if (widget.uyeTahakkuk.muhasebe_id > 0) {
+                  await aidatodemesil(api, widget.uyeTahakkuk.muhasebe_id);
+                } else if (widget.uyeTahakkuk.uye_tahakkuk_id > 0) {
+                  await aidatsil(api, widget.uyeTahakkuk.uye_tahakkuk_id);
+                  widget.uyeTahakkuk.uye_tahakkuk_id = 0;
+                } else {
+                  //sacmalik
+                  return;
+                }
+                muhasebeId = 0;
+                if (context.mounted) {
+                  Navigator.pop(context);
+                }
+              } catch (e) {
+                errorAlert(context, e.toString());
+              } finally {
+                loadingdlg.toggle();
+                setState(() {
+                  widget.uyeTahakkuk.muhasebe_id = muhasebeId;
+                });
+              }
+            }));
+          },
           style: ButtonStyle(backgroundColor: MaterialStateProperty.resolveWith((states) => colorBad)),
           child: const Text("Sil"),
         ),

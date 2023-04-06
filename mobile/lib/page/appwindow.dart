@@ -214,3 +214,41 @@ List<DropdownMenuItem<int>> getMuhasebeTanimItems(List<MuhasebeTanim> tanimlar, 
   }
   return l;
 }
+
+class LoadingDialog {
+  final BuildContext context;
+  bool _started = false;
+  LoadingDialog(this.context);
+
+  bool get started {
+    return _started;
+  }
+
+  void push() {
+    _started = true;
+    showDialog(context: context, barrierDismissible: false, builder: (context) => const Center(child: CircularProgressIndicator())).then((value) {
+      _started = false;
+    });
+  }
+
+  void pop() {
+    if (context.mounted && _started) {
+      Navigator.of(context).pop();
+      _started = false;
+    }
+  }
+
+  void toggle() {
+    if (_started) {
+      pop();
+    } else {
+      push();
+    }
+  }
+
+  @protected
+  @mustCallSuper
+  void dispose() {
+    pop();
+  }
+}

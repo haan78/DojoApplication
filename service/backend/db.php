@@ -484,7 +484,7 @@ function uyetahakkuklist(int $uye_id) {
 }
 
 function uyedigerodemelist(int $uye_id) {
-    $sql = "SELECT m.muhasebe_id, m.tarih, m.kasa, mt.tanim, m.muhasebe_tanim_id, m.aciklama, m.tutar 
+    $sql = "SELECT m.muhasebe_id, m.tarih, m.kasa, mt.tanim, m.muhasebe_tanim_id, m.aciklama, m.tutar, m.belge
             FROM muhasebe m LEFT JOIN uye_tahakkuk ut ON ut.muhasebe_id = m.muhasebe_id
             INNER JOIN muhasebe_tanim mt ON mt.muhasebe_tanim_id = m.muhasebe_tanim_id AND mt.tur = 'GELIR' and mt.muhasebe_tanim_id <> 9
             WHERE m.uye_id = $uye_id AND ut.uye_tahakkuk_id  IS NULL ORDER BY m.tarih DESC";
@@ -504,7 +504,7 @@ function uyedigerodemelist(int $uye_id) {
 }
 
 function uyeharcamalist(int $uye_id) {
-    $sql = "SELECT m.muhasebe_id, m.tarih, m.kasa, mt.tanim, m.muhasebe_tanim_id, m.aciklama, m.tutar 
+    $sql = "SELECT m.muhasebe_id, m.tarih, m.kasa, mt.tanim, m.muhasebe_tanim_id, m.aciklama, m.tutar, m.belge 
             FROM muhasebe m LEFT JOIN uye_tahakkuk ut ON ut.muhasebe_id = m.muhasebe_id
             INNER JOIN muhasebe_tanim mt ON mt.muhasebe_tanim_id = m.muhasebe_tanim_id AND mt.tur = 'GIDER'
             WHERE m.uye_id = $uye_id AND ut.uye_tahakkuk_id  IS NULL ORDER BY m.tarih DESC";
@@ -549,7 +549,7 @@ function aidat_sil(int $uye_tahakkuk_id) {
     }
 }
 
-function muhasebe_duzelt(int $muhasebe_id, int $uye_id, string $tarih, float $tutar, string $kasa, int $muhasebe_tanim_id,string $aciklama, string $tahsilatci) {
+function muhasebe_duzelt(int $muhasebe_id, int $uye_id, string $tarih, float $tutar, string $kasa, int $muhasebe_tanim_id,string $aciklama, string $belge, string $tahsilatci) {
     $p = new \MySqlTool\MySqlToolCall(mysqlilink());
     //muhasebe_id, uye_id, tarih,tutar,kasa, muhasebe_tanim_id bigint , in p_aciklama varchar(255), in p_tahsilatci varchar(80)
     $outs = $p->procedure("muhasebe_esd")
@@ -560,7 +560,8 @@ function muhasebe_duzelt(int $muhasebe_id, int $uye_id, string $tarih, float $tu
         ->in($kasa)
         ->in($muhasebe_tanim_id)
         ->in($aciklama)
-        ->in($tahsilatci)
+        ->in($belge)
+        ->in($tahsilatci)        
         ->call()
         ->result("outs");
     return intval($outs["muhasebe_id"]);

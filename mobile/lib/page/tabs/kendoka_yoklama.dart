@@ -21,12 +21,13 @@ class KendokaYoklama extends StatefulWidget {
 }
 
 class _KendokaYoklama extends State<KendokaYoklama> {
-  bool loading = false;
   late Api api;
+  late LoadingDialog loadingdlg;
   @override
   void initState() {
     super.initState();
     api = Api(url: widget.store.ApiUrl, authorization: widget.store.ApiToken);
+    loadingdlg = LoadingDialog(context);
   }
 
   @override
@@ -44,28 +45,23 @@ class _KendokaYoklama extends State<KendokaYoklama> {
                     return Padding(
                         padding: const EdgeInsets.all(3),
                         child: ElevatedButton(
-                          onPressed: loading
-                              ? null
-                              : () {
-                                  yesNoDialog(context, text: "Bu yoklama kaydını silmek istediğinizden emin misiniz?", title: "Onay", onYes: () async {
-                                    setState(() {
-                                      loading = true;
-                                    });
-                                    try {
-                                      await uyeYoklama(api,
-                                          yoklama_id: widget.bilgi.yoklamalar[index].yoklama_id,
-                                          uye_id: widget.bilgi.uye_id,
-                                          tarih: widget.bilgi.yoklamalar[index].tarih);
-                                      widget.bilgi.yoklamalar.removeAt(index);
-                                    } catch (ex) {
-                                      errorAlert(context, ex.toString());
-                                    } finally {
-                                      setState(() {
-                                        loading = false;
-                                      });
-                                    }
-                                  });
-                                },
+                          onPressed: () {
+                            if (loadingdlg.started) {
+                              return;
+                            }
+                            yesNoDialog(context, text: "Bu yoklama kaydını silmek istediğinizden emin misiniz?", title: "Onay", onYes: () async {
+                              loadingdlg.toggle();
+                              try {
+                                await uyeYoklama(api,
+                                    yoklama_id: widget.bilgi.yoklamalar[index].yoklama_id, uye_id: widget.bilgi.uye_id, tarih: widget.bilgi.yoklamalar[index].tarih);
+                                widget.bilgi.yoklamalar.removeAt(index);
+                              } catch (ex) {
+                                errorAlert(context, ex.toString());
+                              } finally {
+                                loadingdlg.toggle();
+                              }
+                            });
+                          },
                           child: Text("$tar/$tanim"),
                         ));
                   })))

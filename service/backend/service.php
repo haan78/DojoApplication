@@ -233,9 +233,10 @@ $router->add("/admin/muhasebe/duzelt",function(Request $req){
     $tarih = $jdata->tarih ?? "";
     $kasa = $jdata->kasa ?? "";
     $aciklama = $jdata->aciklama ?? "";
-    $muhasebe_tanim_id = $jdata->muhasebe_tanim_id ?? 0;    
+    $muhasebe_tanim_id = $jdata->muhasebe_tanim_id ?? 0;
+    $belge = $jdata->belge ?? null;
     $tahsilatci = $req->local()->ad ?? "";
-    return  muhasebe_duzelt($muhasebe_id, $uye_id, $tarih, $tutar, $kasa, $muhasebe_tanim_id, $aciklama, $tahsilatci);
+    return  muhasebe_duzelt($muhasebe_id, $uye_id, $tarih, $tutar, $kasa, $muhasebe_tanim_id, $aciklama, $belge, $tahsilatci);
 });
 
 

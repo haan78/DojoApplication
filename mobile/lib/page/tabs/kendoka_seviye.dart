@@ -16,25 +16,26 @@ class KendokaSeviye extends StatefulWidget {
 
   @override
   State<StatefulWidget> createState() {
-    // ignore: no_logic_in_create_state
-    return _KendokaSeviye(sabitler: sabitler, bilgi: bilgi, store: store, uyeAd: uyeAd);
+    return _KendokaSeviye();
   }
 }
 
 int yil = DateTime.now().year;
 
 class _KendokaSeviye extends State<KendokaSeviye> {
-  final UyeBilgi bilgi;
-  final Store store;
-  final Sabitler sabitler;
-  final String uyeAd;
   UyeSeviye seviye = UyeSeviye();
-  bool loading = false;
-  _KendokaSeviye({required this.sabitler, required this.bilgi, required this.store, required this.uyeAd});
+  late LoadingDialog loadingdlg;
+  late Api api;
+
+  @override
+  void initState() {
+    super.initState();
+    api = Api(url: widget.store.ApiUrl, authorization: widget.store.ApiToken);
+    loadingdlg = LoadingDialog(context);
+  }
 
   @override
   Widget build(BuildContext context) {
-    Api api = Api(url: store.ApiUrl, authorization: store.ApiToken);
     return Column(
       children: [
         Container(
@@ -86,66 +87,61 @@ class _KendokaSeviye extends State<KendokaSeviye> {
                 Dikey2,
                 Row(children: [
                   ElevatedButton(
-                      onPressed: loading
-                          ? null
-                          : () {
-                              setState(() {
-                                seviye = UyeSeviye();
-                              });
-                            },
+                      onPressed: () {
+                        if (loadingdlg.started) {
+                          return;
+                        }
+                        setState(() {
+                          seviye = UyeSeviye();
+                        });
+                      },
                       style: warnBtnStyle,
                       child: const Text("Yeni")),
                   const SizedBox(width: 10),
                   ElevatedButton(
-                      onPressed: loading
-                          ? null
-                          : () async {
-                              if (seviye.seviye.isEmpty) {
-                                errorAlert(context, "Bir seviye değeri gerekli", caption: "Giriş Hatası");
-                                return;
-                              }
-                              setState(() {
-                                loading = true;
-                              });
-                              await uyeSeviyeEkle(api, uye_id: bilgi.uye_id, us: seviye);
-                              final ind = bilgi.seviyeler.indexWhere((element) {
-                                if (element.seviye == seviye.seviye) {
-                                  return true;
-                                } else {
-                                  return false;
-                                }
-                              });
-                              if (ind > -1) {
-                                bilgi.seviyeler[ind] = seviye;
-                              } else {
-                                bilgi.seviyeler.add(seviye);
-                              }
-                              setState(() {
-                                loading = false;
-                              });
-                            },
+                      onPressed: () async {
+                        if (loadingdlg.started) {
+                          return;
+                        }
+                        if (seviye.seviye.isEmpty) {
+                          errorAlert(context, "Bir seviye değeri gerekli", caption: "Giriş Hatası");
+                          return;
+                        }
+                        loadingdlg.toggle();
+                        await uyeSeviyeEkle(api, uye_id: widget.bilgi.uye_id, us: seviye);
+                        final ind = widget.bilgi.seviyeler.indexWhere((element) {
+                          if (element.seviye == seviye.seviye) {
+                            return true;
+                          } else {
+                            return false;
+                          }
+                        });
+                        if (ind > -1) {
+                          widget.bilgi.seviyeler[ind] = seviye;
+                        } else {
+                          widget.bilgi.seviyeler.add(seviye);
+                        }
+                        loadingdlg.toggle();
+                      },
                       style: goodBtnStyle,
                       child: const Text("Kaydet")),
                   const SizedBox(width: 10),
                   ElevatedButton(
-                      onPressed: loading
-                          ? null
-                          : () async {
-                              if (seviye.seviye.isEmpty) {
-                                return;
-                              }
-                              yesNoDialog(context, text: "Bu kaydı silmek istediğinizden emin misiniz?", onYes: (() async {
-                                setState(() {
-                                  loading = true;
-                                });
-                                await uyeSeviyeSil(api, uye_id: bilgi.uye_id, us: seviye);
-                                bilgi.seviyeler.remove(seviye);
-                                seviye = UyeSeviye();
-                                setState(() {
-                                  loading = false;
-                                });
-                              }));
-                            },
+                      onPressed: () async {
+                        if (loadingdlg.started) {
+                          return;
+                        }
+                        if (seviye.seviye.isEmpty) {
+                          return;
+                        }
+                        yesNoDialog(context, text: "Bu kaydı silmek istediğinizden emin misiniz?", onYes: (() async {
+                          loadingdlg.toggle();
+                          await uyeSeviyeSil(api, uye_id: widget.bilgi.uye_id, us: seviye);
+                          widget.bilgi.seviyeler.remove(seviye);
+                          seviye = UyeSeviye();
+                          loadingdlg.toggle();
+                        }));
+                      },
                       style: badBtnStyle,
                       child: const Text("Sil"))
                 ])
@@ -153,7 +149,7 @@ class _KendokaSeviye extends State<KendokaSeviye> {
         ),
         Expanded(
             child: ListView.builder(
-          itemCount: bilgi.seviyeler.length,
+          itemCount: widget.bilgi.seviyeler.length,
           itemBuilder: (context, index) {
             return Padding(
                 padding: const EdgeInsets.all(5),
@@ -161,14 +157,14 @@ class _KendokaSeviye extends State<KendokaSeviye> {
                     decoration: BoxDecoration(border: Border.all(color: Colors.black, width: 2), borderRadius: BorderRadius.circular(20)),
                     child: ListTile(
                       tileColor: tileColorByIndex(index),
-                      leading: Text(bilgi.seviyeler[index].seviye),
-                      title: Text(dateFormater(bilgi.seviyeler[index].tarih, "dd.MM.yyyy")),
-                      subtitle: Text(bilgi.seviyeler[index].aciklama),
+                      leading: Text(widget.bilgi.seviyeler[index].seviye),
+                      title: Text(dateFormater(widget.bilgi.seviyeler[index].tarih, "dd.MM.yyyy")),
+                      subtitle: Text(widget.bilgi.seviyeler[index].aciklama),
                       trailing: IconButton(
                         icon: const Icon(Icons.arrow_upward),
                         onPressed: () {
                           setState(() {
-                            seviye = bilgi.seviyeler[index];
+                            seviye = widget.bilgi.seviyeler[index];
                           });
                         },
                       ),

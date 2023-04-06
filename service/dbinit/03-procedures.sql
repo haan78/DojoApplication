@@ -228,19 +228,31 @@ BEGIN
 	SELECT muhid AS muhasebe_id;
 END;;
 
-CREATE PROCEDURE dojo.muhasebe_esd(inout p_muhasebe_id bigint, in p_uye_id bigint, in p_tarih date, in p_tutar decimal(14,2), in p_kasa varchar(20), in p_muhasebe_tanim_id bigint , in p_aciklama varchar(255), in p_tahsilatci varchar(80))
+CREATE PROCEDURE dojo.muhasebe_esd(inout p_muhasebe_id bigint, in p_uye_id bigint, in p_tarih date, in p_tutar decimal(14,2), in p_kasa varchar(20), in p_muhasebe_tanim_id bigint , in p_aciklama varchar(255), in p_belge varchar(50), in p_tahsilatci varchar(80))
 BEGIN
 	if p_muhasebe_tanim_id = 9 then
 		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Aidatlar degisiklik buradan yapilamaz', MYSQL_ERRNO = 1001;
 	end if;
+	
+	if p_belge is not null then
+		SET @c = null;
+		SELECT count(1) into @c from muhasebe m WHERE m.belge LIKE p_belge and m.muhasebe_id = COALESCE(p_muhasebe_id, m.muhasebe_id);
+		if COALESCE(@c,0) > 0 then
+			SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Bu belge kodu daha once kullanilmis', MYSQL_ERRNO = 1002;
+		end if;
+	end if;
+
 	if p_muhasebe_id is not null and p_tutar is null then
 		DELETE from muhasebe WHERE muhasebe_id = p_muhasebe_id and muhasebe_tanim_id <> 9;
 	elseif p_muhasebe_id is null and p_tutar is not null then
-		insert into muhasebe ( uye_id, tarih, tutar, kasa, aciklama, muhasebe_tanim_id, tahsilatci )
-			values (p_uye_id, p_tarih, p_kasa, p_aciklama, p_muhasebe_tanim_id, p_tahsilatci );
+		
+		insert into muhasebe ( uye_id, tarih, tutar, kasa, aciklama, muhasebe_tanim_id, belge, tahsilatci )
+			values (p_uye_id, p_tarih, p_tutar, p_kasa, p_aciklama, p_muhasebe_tanim_id, p_belge, p_tahsilatci );
 		SET p_muhasebe_id = last_insert_id();
 	elseif p_muhasebe_id is not null and p_tutar is not null then
-		update muhasebe m set m.tarih = p_tarih, m.tutar = p_tutar, m.kasa = p_kasa, m.aciklama = p_aciklama, m.muhasebe_tanim_id = p_muhasebe_tanim_id, m.tahsilatci = p_tahsilatci
+		update muhasebe m set m.tarih = p_tarih, m.tutar = p_tutar, m.kasa = p_kasa, 
+			m.aciklama = p_aciklama, m.muhasebe_tanim_id = p_muhasebe_tanim_id, 
+			m.tahsilatci = p_tahsilatci, m.belge = p_belge
 			WHERE m.muhasebe_id  = p_muhasebe_id and m.muhasebe_tanim_id <> 9;
 	end if;
 	

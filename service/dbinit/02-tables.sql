@@ -19,7 +19,7 @@ CREATE TABLE muhasebe (
   tutar decimal(14,2) NOT NULL,
   kasa varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_turkish_ci DEFAULT NULL,
   aciklama varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_turkish_ci DEFAULT NULL,
-  dosya_id bigint DEFAULT NULL,
+  belge varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_turkish_ci DEFAULT NULL,
   muhasebe_tanim_id bigint NOT NULL,
   tahsilatci varchar(80) CHARACTER SET utf8mb4 COLLATE utf8mb4_turkish_ci DEFAULT NULL,
   olusma timestamp NULL DEFAULT CURRENT_TIMESTAMP,
@@ -28,7 +28,7 @@ CREATE TABLE muhasebe (
   yil year DEFAULT NULL,
   PRIMARY KEY (muhasebe_id),
   KEY muhasebe_idx2 (tarih)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_turkish_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=1239 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_turkish_ci;
 
 
 CREATE TABLE seviye (

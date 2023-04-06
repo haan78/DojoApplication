@@ -35,7 +35,7 @@ class KendokaBase extends StatefulWidget {
 class _KendokaBase extends State<KendokaBase> {
   final tbas = DateTime(DateTime.now().year - 70, 1, 1);
   final tbit = DateTime(DateTime.now().year - 10, 1, 1);
-  bool loading = false;
+
   bool resimsecildi = true;
   bool tarihsecildi = true;
   late Api api;
@@ -44,10 +44,12 @@ class _KendokaBase extends State<KendokaBase> {
   late TextEditingController ekfnoEdit;
   TextEditingController adEdit = TextEditingController();
   CameraController? camera;
+  late LoadingDialog loadingdlg;
 
   @override
   void initState() {
     super.initState();
+    loadingdlg = LoadingDialog(context);
     adEdit.text = widget.bilgi.ad;
     api = Api(url: widget.store.ApiUrl, authorization: widget.store.ApiToken);
     ekfnoEdit = TextEditingController(text: widget.bilgi.ekfno);
@@ -259,33 +261,29 @@ class _KendokaBase extends State<KendokaBase> {
             ]),
             const SizedBox(height: 15),
             ElevatedButton(
-                onPressed: loading
-                    ? null
-                    : () async {
-                        if (!resimsecildi) {
-                          errorAlert(context, "Lütfen üyenin fotoğrafını yükleyin");
-                          return;
-                        }
+                onPressed: () async {
+                  if (loadingdlg.started) {
+                    return;
+                  }
+                  if (!resimsecildi) {
+                    errorAlert(context, "Lütfen üyenin fotoğrafını yükleyin");
+                    return;
+                  }
 
-                        if (!tarihsecildi) {
-                          errorAlert(context, "Lütfen üyenin doğum tarihini seçin");
-                          return;
-                        }
+                  if (!tarihsecildi) {
+                    errorAlert(context, "Lütfen üyenin doğum tarihini seçin");
+                    return;
+                  }
 
-                        if (_formKey.currentState!.validate()) {
-                          setState(() {
-                            loading = true;
-                          });
-
-                          widget.bilgi.uye_id = await uyeKayit(api, ub: widget.bilgi);
-                          setState(() {
-                            loading = false;
-                          });
-                          if (widget.bilgi.durum == "registered" && context.mounted) {
-                            Navigator.pop(context);
-                          }
-                        }
-                      },
+                  if (_formKey.currentState!.validate()) {
+                    loadingdlg.toggle();
+                    widget.bilgi.uye_id = await uyeKayit(api, ub: widget.bilgi);
+                    loadingdlg.toggle();
+                    if (widget.bilgi.durum == "registered" && context.mounted) {
+                      Navigator.pop(context);
+                    }
+                  }
+                },
                 child: const Text("Kaydet"))
           ],
         ));

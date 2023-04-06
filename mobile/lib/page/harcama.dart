@@ -22,9 +22,9 @@ class Harcama extends StatefulWidget {
 class _Harcama extends State<Harcama> {
   final int yil = DateTime.now().year;
   final _formKey = GlobalKey<FormState>();
-  bool loading = false;
   final aciklamacon = TextEditingController();
   late Api api;
+  late LoadingDialog loadingdlg;
 
   late MoneyMaskedTextController tutarcon;
 
@@ -39,6 +39,23 @@ class _Harcama extends State<Harcama> {
 
   @override
   Widget build(BuildContext context) {
-    return uyeScaffold(uyeAd: widget.uyeAd, body: Form(key: _formKey, child: const Text("Harcama")));
+    loadingdlg = LoadingDialog(context);
+    return uyeScaffold(
+        uyeAd: widget.uyeAd,
+        body: Form(
+            key: _formKey,
+            child: Column(children: [
+              ElevatedButton(
+                  onPressed: () {
+                    loadingdlg.toggle();
+                    Future.delayed(
+                      const Duration(seconds: 5),
+                      () {
+                        loadingdlg.toggle();
+                      },
+                    );
+                  },
+                  child: Text("load"))
+            ])));
   }
 }
