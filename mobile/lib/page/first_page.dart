@@ -1,4 +1,5 @@
 import 'package:dojo_mobile/page/kendoka.dart';
+import 'package:dojo_mobile/page/widget/alert.dart';
 import 'package:dojo_mobile/page/widget/app_drawer.dart';
 import '../api.dart';
 import '../service.dart';
@@ -27,14 +28,16 @@ class FirstPage extends StatefulWidget {
 class _AdminPageState extends State<FirstPage> {
   bool _reload = true;
   FilterAction _filterAction = FilterAction.name;
-  int tahakkuk_id = 1;
+  int tahakkukId = 1;
   bool activemembers = true;
+  late Api api;
 
   String search = "";
 
   @override
   void initState() {
     super.initState();
+    api = Api(url: widget.store.ApiUrl, authorization: widget.store.ApiToken);
   }
 
   @override
@@ -146,7 +149,7 @@ class _AdminPageState extends State<FirstPage> {
             ),
             Expanded(
                 child: FutureBuilder<List<UyeListDetay>>(
-                    future: uyeler(activemembers, search, _filterAction, store, _reload, tahakkuk_id),
+                    future: uyeler(activemembers, search, _filterAction, store, _reload),
                     builder: (BuildContext context, AsyncSnapshot<List<UyeListDetay>> snapshot) {
                       if (snapshot.connectionState == ConnectionState.done) {
                         if (!snapshot.hasError && snapshot.data != null) {
@@ -195,42 +198,45 @@ class _AdminPageState extends State<FirstPage> {
           ],
         ));
   }
-}
 
-Future<List<UyeListDetay>> uyeler(bool active, String search, FilterAction fa, Store store, bool reload, int tahakkukId) async {
-  List<UyeListDetay> data = [];
-  if (reload) {
-    Api api = Api(url: store.ApiUrl, authorization: store.ApiToken);
-    listData = await uye_listele(api, durumlar: active ? "active,admin,super-admin" : "passive,registered");
-  }
-
-  if (search.isNotEmpty) {
-    data = listData.where((element) {
-      if (element.ad.toLowerCase().startsWith(search.toLowerCase()) || element.seviye.startsWith(search.toUpperCase())) {
-        return true;
-      } else {
-        return false;
+  Future<List<UyeListDetay>> uyeler(bool active, String search, FilterAction fa, Store store, bool reload) async {
+    List<UyeListDetay> data = [];
+    if (reload) {
+      try {
+        listData = await uye_listele(api, durumlar: active ? "active,admin,super-admin" : "passive,registered");
+      } catch (err) {
+        errorAlert(context, err.toString());
       }
-    }).toList();
-  } else {
-    data = listData;
-  }
+    }
 
-  if (fa == FilterAction.debt) {
-    data.sort(((a, b) {
-      return b.odenmemis_aidat_borcu.compareTo(a.odenmemis_aidat_borcu);
-    }));
-  } else if (fa == FilterAction.last) {
-    data.sort((a, b) {
-      return a.son_keiko.compareTo(b.son_keiko);
-    });
-  } else {
-    data.sort(((a, b) {
-      return a.ad.compareTo(b.ad);
-    }));
-  }
+    if (search.isNotEmpty) {
+      data = listData.where((element) {
+        if (element.ad.toLowerCase().startsWith(search.toLowerCase()) || element.seviye.startsWith(search.toUpperCase())) {
+          return true;
+        } else {
+          return false;
+        }
+      }).toList();
+    } else {
+      data = listData;
+    }
 
-  return Future<List<UyeListDetay>>(() => data);
+    if (fa == FilterAction.debt) {
+      data.sort(((a, b) {
+        return b.odenmemis_aidat_borcu.compareTo(a.odenmemis_aidat_borcu);
+      }));
+    } else if (fa == FilterAction.last) {
+      data.sort((a, b) {
+        return a.son_keiko.compareTo(b.son_keiko);
+      });
+    } else {
+      data.sort(((a, b) {
+        return a.ad.compareTo(b.ad);
+      }));
+    }
+
+    return Future<List<UyeListDetay>>(() => data);
+  }
 }
 
 Color renkver(int val) {

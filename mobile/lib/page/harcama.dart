@@ -28,6 +28,7 @@ class _Harcama extends State<Harcama> {
   late LoadingDialog loadingdlg;
 
   late MoneyMaskedTextController tutarcon;
+  late TextEditingController belgecon;
 
   @override
   void initState() {
@@ -35,6 +36,7 @@ class _Harcama extends State<Harcama> {
     widget.muhasebe.tarih = DateTime.now();
     aciklamacon.text = widget.muhasebe.aciklama;
     tutarcon = MoneyMaskedTextController(thousandSeparator: ".", decimalSeparator: "", rightSymbol: "TL", precision: 0, initialValue: widget.muhasebe.tutar);
+    belgecon = TextEditingController(text: widget.muhasebe.belge);
     super.initState();
   }
 
@@ -130,6 +132,16 @@ class _Harcama extends State<Harcama> {
                       return null;
                     }
                   }),
+              const SizedBox(height: 10),
+              TextFormField(
+                decoration: const InputDecoration(labelText: "Belge No"),
+                controller: belgecon,
+                onChanged: (value) {
+                  setState(() {
+                    widget.muhasebe.belge = value.trim();
+                  });
+                },
+              ),
               const SizedBox(height: 10),
               Row(
                 children: [

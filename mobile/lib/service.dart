@@ -368,7 +368,7 @@ Future<int> digerodemeal(Api api, MuhasebeDiger muh, int uye_id) async {
     "muhasebe_tanim_id": muh.muhasebe_tanim_id,
     "aciklama": muh.aciklama.replaceAll(RegExp(r'[^\x20-\x7E]'), ''),
     "muhasebe_id": muh.muhasebe_id,
-    "belge": muh.belge.isEmpty ? null : muh.belge
+    "belge": muh.belge.trim().isEmpty ? null : muh.belge.trim()
   });
   return result as int;
 }
