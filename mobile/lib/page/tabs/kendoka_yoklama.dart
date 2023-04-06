@@ -46,19 +46,17 @@ class _KendokaYoklama extends State<KendokaYoklama> {
                         padding: const EdgeInsets.all(3),
                         child: ElevatedButton(
                           onPressed: () {
-                            if (loadingdlg.started) {
-                              return;
-                            }
                             yesNoDialog(context, text: "Bu yoklama kaydını silmek istediğinizden emin misiniz?", title: "Onay", onYes: () async {
-                              loadingdlg.toggle();
                               try {
+                                loadingdlg.push();
                                 await uyeYoklama(api,
                                     yoklama_id: widget.bilgi.yoklamalar[index].yoklama_id, uye_id: widget.bilgi.uye_id, tarih: widget.bilgi.yoklamalar[index].tarih);
+                                loadingdlg.pop();
                                 widget.bilgi.yoklamalar.removeAt(index);
                               } catch (ex) {
                                 errorAlert(context, ex.toString());
                               } finally {
-                                loadingdlg.toggle();
+                                loadingdlg.pop();
                               }
                             });
                           },

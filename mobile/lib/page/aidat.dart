@@ -57,21 +57,19 @@ class _Aidat extends State<Aidat> {
       Expanded(
           child: ElevatedButton(
         onPressed: () async {
-          if (loadingdlg.started) {
-            return;
-          }
           if (_formKey.currentState!.validate()) {
             int muhasebeId = 0;
             try {
-              loadingdlg.toggle();
+              loadingdlg.push();
               muhasebeId = await aidatodemeal(api, widget.uyeTahakkuk, widget.uyeId);
+              loadingdlg.pop();
               if (context.mounted) {
                 Navigator.pop(context);
               }
             } catch (e) {
               errorAlert(context, e.toString());
             } finally {
-              loadingdlg.toggle();
+              loadingdlg.pop();
               setState(() {
                 widget.uyeTahakkuk.muhasebe_id = muhasebeId;
               });
@@ -95,10 +93,14 @@ class _Aidat extends State<Aidat> {
               int muhasebeId = widget.uyeTahakkuk.muhasebe_id;
               try {
                 if (widget.uyeTahakkuk.muhasebe_id > 0) {
+                  loadingdlg.push();
                   await aidatodemesil(api, widget.uyeTahakkuk.muhasebe_id);
+                  loadingdlg.pop();
                 } else if (widget.uyeTahakkuk.uye_tahakkuk_id > 0) {
+                  loadingdlg.push();
                   await aidatsil(api, widget.uyeTahakkuk.uye_tahakkuk_id);
                   widget.uyeTahakkuk.uye_tahakkuk_id = 0;
+                  loadingdlg.pop();
                 } else {
                   //sacmalik
                   return;
@@ -110,7 +112,7 @@ class _Aidat extends State<Aidat> {
               } catch (e) {
                 errorAlert(context, e.toString());
               } finally {
-                loadingdlg.toggle();
+                loadingdlg.pop();
                 setState(() {
                   widget.uyeTahakkuk.muhasebe_id = muhasebeId;
                 });

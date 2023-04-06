@@ -276,11 +276,17 @@ class _KendokaBase extends State<KendokaBase> {
                   }
 
                   if (_formKey.currentState!.validate()) {
-                    loadingdlg.toggle();
-                    widget.bilgi.uye_id = await uyeKayit(api, ub: widget.bilgi);
-                    loadingdlg.toggle();
-                    if (widget.bilgi.durum == "registered" && context.mounted) {
-                      Navigator.pop(context);
+                    try {
+                      loadingdlg.push();
+                      widget.bilgi.uye_id = await uyeKayit(api, ub: widget.bilgi);
+                      loadingdlg.pop();
+                      if (widget.bilgi.durum == "registered" && context.mounted) {
+                        Navigator.pop(context);
+                      }
+                    } catch (err) {
+                      errorAlert(context, err.toString());
+                    } finally {
+                      loadingdlg.pop();
                     }
                   }
                 },

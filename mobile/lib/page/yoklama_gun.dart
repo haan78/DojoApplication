@@ -1,4 +1,5 @@
 import 'package:dojo_mobile/page/appwindow.dart';
+import 'package:dojo_mobile/page/widget/alert.dart';
 import 'package:flutter/material.dart';
 
 import '../api.dart';
@@ -19,7 +20,7 @@ class YoklamaGun extends StatefulWidget {
 class _YoklamaGun extends State<YoklamaGun> {
   List<KeikoKendoka> list = [];
   bool reload = true;
-  late ScrollController _ScrollController;
+  late ScrollController _scrollController;
   final tbas = DateTime.now().add(const Duration(days: -14));
   final tbit = DateTime.now().add(const Duration(days: 14));
   late Api api;
@@ -28,16 +29,22 @@ class _YoklamaGun extends State<YoklamaGun> {
 
   Future<List<KeikoKendoka>> getList() async {
     if (reload) {
-      loadingdlg.toggle();
-      KeikoListe kl = await yoklamaliste(api, tarih: widget.keiko.tarih, yoklama_id: widget.keiko.yoklama_id);
-      reload = false;
-      if (widget.keiko.sayi != kl.katilanSayisi) {
-        setState(() {
-          widget.keiko.sayi = kl.katilanSayisi;
-        });
+      try {
+        loadingdlg.push();
+        KeikoListe kl = await yoklamaliste(api, tarih: widget.keiko.tarih, yoklama_id: widget.keiko.yoklama_id);
+        loadingdlg.pop();
+        reload = false;
+        if (widget.keiko.sayi != kl.katilanSayisi) {
+          setState(() {
+            widget.keiko.sayi = kl.katilanSayisi;
+          });
+        }
+        list = kl.list;
+      } catch (err) {
+        errorAlert(context, err.toString());
+      } finally {
+        loadingdlg.pop();
       }
-      loadingdlg.toggle();
-      list = kl.list;
     }
     return list;
   }
@@ -62,7 +69,7 @@ class _YoklamaGun extends State<YoklamaGun> {
 
   @override
   Widget build(BuildContext context) {
-    _ScrollController = ScrollController(keepScrollOffset: true, initialScrollOffset: _offset);
+    _scrollController = ScrollController(keepScrollOffset: true, initialScrollOffset: _offset);
     return Scaffold(
       appBar: AppBar(title: AppTitle, actions: [
         IconButton(
@@ -117,7 +124,7 @@ class _YoklamaGun extends State<YoklamaGun> {
                   List<KeikoKendoka> data = snapshot.data!;
 
                   return GridView.builder(
-                    controller: _ScrollController,
+                    controller: _scrollController,
                     padding: const EdgeInsets.all(10),
                     gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3, childAspectRatio: 0.6),
                     itemCount: data.length,
@@ -149,12 +156,12 @@ class _YoklamaGun extends State<YoklamaGun> {
                           ),
                         ),
                         onTap: () async {
-                          if (!loadingdlg.started) {
-                            loadingdlg.toggle();
+                          try {
+                            loadingdlg.push();
                             final result = await uyeYoklama(api, yoklama_id: widget.keiko.yoklama_id, uye_id: data[index].uye_id, tarih: widget.keiko.tarih);
-                            loadingdlg.toggle();
+                            loadingdlg.pop();
                             setState(() {
-                              _offset = _ScrollController.offset;
+                              _offset = _scrollController.offset;
                               if (result == 1) {
                                 list[index].katilim = true;
                                 widget.keiko.sayi += 1;
@@ -163,6 +170,10 @@ class _YoklamaGun extends State<YoklamaGun> {
                                 widget.keiko.sayi -= 1;
                               }
                             });
+                          } catch (err) {
+                            errorAlert(context, err.toString());
+                          } finally {
+                            loadingdlg.pop();
                           }
                         },
                       );

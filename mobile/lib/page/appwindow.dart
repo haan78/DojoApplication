@@ -225,10 +225,12 @@ class LoadingDialog {
   }
 
   void push() {
-    _started = true;
-    showDialog(context: context, barrierDismissible: false, builder: (context) => const Center(child: CircularProgressIndicator())).then((value) {
-      _started = false;
-    });
+    if (!_started) {
+      _started = true;
+      showDialog(context: context, barrierDismissible: false, builder: (context) => const Center(child: CircularProgressIndicator())).then((value) {
+        _started = false;
+      });
+    }
   }
 
   void pop() {
@@ -238,7 +240,7 @@ class LoadingDialog {
     }
   }
 
-  void toggle() {
+  void _toggle() {
     if (_started) {
       pop();
     } else {

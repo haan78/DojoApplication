@@ -144,15 +144,16 @@ class _Odeme extends State<Odeme> {
                         if (_formKey.currentState!.validate()) {
                           int muhasebeId = 0;
                           try {
-                            loadingdlg.toggle();
+                            loadingdlg.push();
                             muhasebeId = await digerodemeal(api, widget.muhasebe, widget.uyeId);
+                            loadingdlg.pop();
                             if (context.mounted) {
                               Navigator.pop(context);
                             }
                           } catch (e) {
                             errorAlert(context, e.toString());
                           } finally {
-                            loadingdlg.toggle();
+                            loadingdlg.pop();
                             setState(() {
                               widget.muhasebe.muhasebe_id = muhasebeId;
                             });
@@ -165,16 +166,13 @@ class _Odeme extends State<Odeme> {
                       onPressed: widget.muhasebe.muhasebe_id == 0
                           ? null
                           : () async {
-                              if (loadingdlg.started) {
-                                return;
-                              }
-
                               //Silme Buraya
                               yesNoDialog(context, text: "Bu ödeme kaydını silmek istediğinizden emin misiniz?", onYes: (() async {
-                                loadingdlg.toggle();
                                 int muhasebeId = widget.muhasebe.muhasebe_id;
                                 try {
+                                  loadingdlg.push();
                                   await odemesil(api, widget.muhasebe.muhasebe_id);
+                                  loadingdlg.pop();
                                   muhasebeId = 0;
                                   if (context.mounted) {
                                     Navigator.pop(context);
@@ -182,7 +180,7 @@ class _Odeme extends State<Odeme> {
                                 } catch (e) {
                                   errorAlert(context, e.toString());
                                 } finally {
-                                  loadingdlg.toggle();
+                                  loadingdlg.pop();
                                   setState(() {
                                     widget.muhasebe.muhasebe_id = muhasebeId;
                                   });
