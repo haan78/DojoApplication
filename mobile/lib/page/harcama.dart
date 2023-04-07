@@ -32,12 +32,12 @@ class _Harcama extends State<Harcama> {
 
   @override
   void initState() {
+    super.initState();
     api = Api(url: widget.store.ApiUrl, authorization: widget.store.ApiToken);
     widget.muhasebe.tarih = DateTime.now();
     aciklamacon.text = widget.muhasebe.aciklama;
     tutarcon = MoneyMaskedTextController(thousandSeparator: ".", decimalSeparator: "", rightSymbol: "TL", precision: 0, initialValue: widget.muhasebe.tutar);
     belgecon = TextEditingController(text: widget.muhasebe.belge);
-    super.initState();
   }
 
   @override
@@ -153,7 +153,7 @@ class _Harcama extends State<Harcama> {
                         int muhasebeId = 0;
                         try {
                           loadingdlg.push();
-                          muhasebeId = await digerodemeal(api, widget.muhasebe, widget.uyeId);
+                          muhasebeId = await digerodemeal(api, widget.muhasebe, widget.uyeId, negative: true);
                           loadingdlg.pop();
                           if (context.mounted) {
                             Navigator.pop(context);

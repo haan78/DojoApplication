@@ -359,10 +359,10 @@ Future<int> aidatodemeal(Api api, UyeTahakkuk ut, int uye_id) async {
   return result as int;
 }
 
-Future<int> digerodemeal(Api api, MuhasebeDiger muh, int uye_id) async {
+Future<int> digerodemeal(Api api, MuhasebeDiger muh, int uye_id, {bool negative = false}) async {
   final result = await api.call("/admin/muhasebe/duzelt", data: {
     "uye_id": uye_id,
-    "tutar": muh.tutar,
+    "tutar": negative ? -1 * muh.tutar : muh.tutar,
     "tarih": dateFormater(muh.tarih, "yyyy-MM-dd"),
     "kasa": muh.kasa,
     "muhasebe_tanim_id": muh.muhasebe_tanim_id,
@@ -408,13 +408,14 @@ Future<List<MuhasebeDiger>> uyeharcamalist(Api api, int uye_id) async {
   final result = await api.call("/admin/uye/muhasebe/harcamalist/$uye_id");
   for (final mdr in result) {
     final md = MuhasebeDiger();
+    md.muhasebe_id = int.parse(mdr["muhasebe_id"]);
     md.aciklama = mdr["aciklama"] ?? "";
     md.kasa = mdr["kasa"] ?? "";
     md.tanim = mdr["tanim"];
     md.muhasebe_tanim_id = int.parse(mdr["muhasebe_tanim_id"]);
     md.tarih = DateTime.parse(mdr["tarih"]);
     md.tutar = -1 * double.parse(mdr["tutar"] ?? "0");
-    md.belge = mdr["tutar"] ?? "";
+    md.belge = mdr["belge"] ?? "";
     l.add(md);
   }
   return l;
