@@ -71,7 +71,7 @@ class _YoklamaGun extends State<YoklamaGun> {
   Widget build(BuildContext context) {
     _scrollController = ScrollController(keepScrollOffset: true, initialScrollOffset: _offset);
     return Scaffold(
-      appBar: AppBar(title: AppTitle, actions: [
+      appBar: AppBar(title: appTitle(text: "Keikoda Olan Kişiler"), actions: [
         IconButton(
             onPressed: () {
               setState(() {

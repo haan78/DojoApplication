@@ -48,7 +48,7 @@ class _YoklamaPage extends State<YoklamaPage> {
     return Scaffold(
         drawer: appDrawer(context),
         appBar: AppBar(
-          title: appTitle(),
+          title: appTitle(text: "Yoklamalar"),
           actions: [
             IconButton(
                 onPressed: () {

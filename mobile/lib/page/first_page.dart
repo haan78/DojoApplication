@@ -48,7 +48,7 @@ class _AdminPageState extends State<FirstPage> {
     return Scaffold(
         drawer: appDrawer(context),
         appBar: AppBar(
-          title: AppTitle,
+          title: appTitle(text: "Üyeler"),
           actions: [
             PopupMenuButton(
               itemBuilder: (BuildContext context) {

@@ -131,19 +131,6 @@ const Yatay = SizedBox(width: 10);
 const Yatay2 = SizedBox(width: 20);
 
 // ignore: unnecessary_const
-final AppTitle = Row(
-  children: [
-    Image.asset(
-      "assets/logo.png",
-      fit: BoxFit.contain,
-      height: 32,
-    ),
-    const SizedBox(
-      width: 10,
-    ),
-    const Text(AppTitleText)
-  ],
-);
 
 Row appTitle({String text = AppTitleText}) {
   return Row(

@@ -1,3 +1,4 @@
+import 'package:dojo_mobile/page/raporlar_page.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -63,8 +64,7 @@ appDrawer(BuildContext context) {
               title: Text("Yoklamalar"))),
       TextButton(
           onPressed: () {
-            //scaffoldKey.currentState?.openEndDrawer();
-            //callback(AppWindow.ayarlar);
+            Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => RaporlarPage(store: store)));
           },
           child: const ListTile(
               leading: Icon(
