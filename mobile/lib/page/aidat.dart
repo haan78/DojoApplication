@@ -11,7 +11,8 @@ class Aidat extends StatefulWidget {
   final Store store;
   final String uyeAd;
   final int uyeId;
-  const Aidat(BuildContext context, {super.key, required this.uyeTahakkuk, required this.store, required this.uyeAd, required this.uyeId});
+  final int tahakkukId;
+  const Aidat(BuildContext context, {super.key, required this.uyeTahakkuk, required this.store, required this.uyeAd, required this.uyeId, required this.tahakkukId});
 
   @override
   State<StatefulWidget> createState() {
@@ -35,9 +36,6 @@ class _Aidat extends State<Aidat> {
     widget.uyeTahakkuk.odeme_tarih ??= DateTime.now();
 
     aciklamacon.text = widget.uyeTahakkuk.aciklama;
-    if (widget.uyeTahakkuk.muhasebe_id == 0) {
-      widget.uyeTahakkuk.odenen = widget.uyeTahakkuk.borc;
-    }
 
     if (widget.uyeTahakkuk.ay == 0) {
       widget.uyeTahakkuk.ay = DateTime.now().month;
@@ -47,7 +45,25 @@ class _Aidat extends State<Aidat> {
       widget.uyeTahakkuk.yil = DateTime.now().year;
     }
 
+    if (widget.uyeTahakkuk.tahakkuk_id == 0) {
+      widget.uyeTahakkuk.tahakkuk_id = widget.tahakkukId;
+      widget.uyeTahakkuk.odenen = widget.store.sabitler.tahakkuklar.firstWhere((element) {
+        if (element.tahakkuk_id == widget.uyeTahakkuk.tahakkuk_id) {
+          return true;
+        } else {
+          return false;
+        }
+      }).tutar;
+    } else if (widget.uyeTahakkuk.muhasebe_id == 0) {
+      widget.uyeTahakkuk.odenen = widget.uyeTahakkuk.borc;
+    }
+
     tutarcon = MoneyMaskedTextController(thousandSeparator: ".", decimalSeparator: "", rightSymbol: "TL", precision: 0, initialValue: widget.uyeTahakkuk.odenen);
+
+    if (widget.store.sabitler.yoklamalar.length == 1 && widget.uyeTahakkuk.uye_tahakkuk_id == 0) {
+      widget.uyeTahakkuk.yoklama_id = widget.store.sabitler.yoklamalar[0].yoklama_id;
+    }
+
     super.initState();
     loadingdlg = LoadingDialog(context);
   }
@@ -190,6 +206,7 @@ class _Aidat extends State<Aidat> {
                     const SizedBox(width: 10),
                     Expanded(
                         child: DropdownButtonFormField(
+                      value: widget.uyeTahakkuk.yoklama_id,
                       items: yoklamaMenuItems(widget.store.sabitler.yoklamalar),
                       onChanged: (value) {
                         if (value != null && value > 0) {

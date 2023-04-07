@@ -46,7 +46,7 @@ class _YoklamaPage extends State<YoklamaPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        drawer: app_drawer(context),
+        drawer: appDrawer(context),
         appBar: AppBar(
           title: appTitle(),
           actions: [

@@ -62,6 +62,7 @@ class _KendokaAidat extends State<KendokaAidat> with TickerProviderStateMixin {
                             store: widget.store,
                             uyeAd: widget.bilgi.ad,
                             uyeId: widget.bilgi.uye_id,
+                            tahakkukId: widget.bilgi.tahakkuk_id,
                           );
                         })).then((value) {
                           setState(() {});
@@ -112,6 +113,7 @@ class _KendokaAidat extends State<KendokaAidat> with TickerProviderStateMixin {
                                       store: widget.store,
                                       uyeAd: widget.bilgi.ad,
                                       uyeId: widget.bilgi.uye_id,
+                                      tahakkukId: widget.bilgi.tahakkuk_id,
                                     );
                                   })).then((value) {
                                     setState(() {});

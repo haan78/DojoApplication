@@ -7,7 +7,7 @@ import '../first_page.dart';
 import '../web_login_page.dart';
 import '../yoklama_page.dart';
 
-app_drawer(BuildContext context) {
+appDrawer(BuildContext context) {
   final store = Provider.of<Store>(context);
   return Drawer(
       child: Column(
@@ -64,27 +64,15 @@ app_drawer(BuildContext context) {
       TextButton(
           onPressed: () {
             //scaffoldKey.currentState?.openEndDrawer();
-            //callback(AppWindow.harcamalar);
-          },
-          child: const ListTile(
-              leading: Icon(
-                Icons.payments,
-                size: 32,
-                color: Colors.black,
-              ),
-              title: Text("Harcamalar"))),
-      TextButton(
-          onPressed: () {
-            //scaffoldKey.currentState?.openEndDrawer();
             //callback(AppWindow.ayarlar);
           },
           child: const ListTile(
               leading: Icon(
-                Icons.settings,
+                Icons.summarize,
                 size: 32,
                 color: Colors.black,
               ),
-              title: Text("Ayarlar"))),
+              title: Text("Raporlar"))),
       TextButton(
           onPressed: () {
             //scaffoldKey.currentState?.openEndDrawer();
