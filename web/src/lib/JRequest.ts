@@ -42,7 +42,6 @@ export function JRequest<T>(uri:string,data:unknown = null) : Promise<T> {
         }).then(response =>{
             let ah = response.headers.get("authorization") ?? "";
             if (ah) {
-                console.log(["AH",ah]);
                 sessionStorage.setItem("authorization",ah);
             }
             response.json().then(json=>{

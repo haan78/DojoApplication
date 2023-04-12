@@ -54,6 +54,5 @@ export interface UyeYoklama {
 export type Uyebilgi = [
     Array<MemberInfo>,
     Array<Level>,
-    Array<Due>,
     Array<UyeYoklama>
 ]

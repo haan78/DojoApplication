@@ -9,7 +9,7 @@
         </div>
 
         <div class="link">
-            <a href="?m=login">Üye Girişi</a>
+            <a href="?m=login">Üye Girişi ve Şifre Alma</a>
         </div>
 
     </div>

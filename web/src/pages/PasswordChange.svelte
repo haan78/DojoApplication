@@ -37,41 +37,41 @@
     import { onMount } from "svelte";
     import { JRequest } from "../lib/JRequest";
     import validate from "../lib/Vaildate";
-    import Alert from "./comp/Alert.js";
+    import { Popup } from "./comp/AlertDlg";
     import Dialog from "./comp/Dialog.svelte";
     let oldpass:string = "";
     let newpass:string = "";
     let repatpass:string = "";
     let newemail:string = "";
-    let passform:any;
-    let emailform:any;
-    let altpass:any;
-    let altemail:any;
+    let passform:HTMLDivElement;
+    let emailform:HTMLDivElement;
     let disemail:boolean = false;
     let dispass:boolean = false;
     let dlgemailshow:boolean = false;
+    let popup1: Popup;
+    let popup2: Popup;
     onMount(()=>{
-        altpass = Alert(passform);
-        altemail = Alert(emailform);
+        popup1 = new Popup(passform);
+        popup2 = new Popup(emailform);
     });
 
     function validatepass() {
         if (oldpass.trim().length < 1) {
-            if (altpass.bad) altpass.bad("Eski parolayı girmeniz gerekiyor.");
+            popup1.push( { message:"Eski parolayı girmeniz gerekiyor.", type: "bad" } );
         } else if (newpass.trim().length < 6) {
-            if (altpass.bad) altpass.bad("Yeni parola en az 6 karakterden oluşmalı");
+            popup1.push({message:"Yeni parola en az 6 karakterden oluşmalı", type:"bad"});
         } else if (repatpass != newpass) {
-            if (altpass.bad) altpass.bad("Parolanın tekrarı hatalı");
+            popup1.push({message:"Parolanın tekrarı hatalı", type:"bad"});
         } else {
             dispass = true;
             JRequest<void>("/member/password",{"oldpass":oldpass, "newpass":newpass}).then(()=>{                
-                altpass.good("Prolanız başarıyla değiştirildi");
+                popup1.push({message:"Prolanız başarıyla değiştirildi", type:"good"});                
                 dispass = false;
                 oldpass = "";
                 newpass = "";
                 repatpass = "";
             }).catch(err=>{
-                altpass.bad(err.message);
+                popup1.push({message:err.message, type:"bad"});                
                 dispass = false;
             });
         }
@@ -79,7 +79,7 @@
 
     function validateemail() {
         if (!validate.email(newemail)) {
-            if (altemail.bad) altemail.bad("Lütfen geçerli bir eposta adresi girin");
+            popup2.push({message:"Lütfen geçerli bir eposta adresi girin", type:"bad"});            
         } else {
             disemail = true;
             JRequest<void>("/member/email",{"email":newemail}).then(()=>{                
@@ -87,7 +87,7 @@
                 dispass = false;
                 newemail = "";
             }).catch(err=>{
-                altemail.bad(err.message);
+                popup2.push({message:err.message, type:"bad"});                 
                 dispass = false;
             });
         }

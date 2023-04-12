@@ -1,0 +1,138 @@
+.alert-background {
+    --bg-color: rgba(125, 126, 125, 0.25);
+    --br-color: rgb(37, 37, 39);
+    --sh-color: rgb(164, 164, 177);
+    --def-bg-color:rgb(221, 222, 226);
+    --def-fg-color:rgb(37, 37, 39);
+    --good-bg-color:rgb(0, 58, 0);
+    --good-fg-color:rgb(221, 222, 226);
+    --bad-bg-color: rgb(109, 13, 21);
+    --bad-fg-color:rgb(221, 222, 226);
+    --ugly-bg-color: rgb(112, 106, 13);
+    --ugly-fg-color:rgb(221, 222, 226);
+    --frame-bg-golor:rgb(244, 251, 252);
+    --gl-color:rgba(255, 215, 0, 0.512); /*rgba(116, 99, 211, 0.712);*/
+    --tl-bg-color:rgb(112, 106, 13); /*rgb(9, 42, 150);*/
+    --tl-fg-color:rgb(221, 222, 226);
+    --loading-color:rgb(255, 215, 0,1);
+    background: var(--bg-color);
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.alert-background > .alert-frame.popup {
+    padding-left: .5rem;
+    padding-right: .5rem;
+    padding-top: .5rem;
+    padding-bottom: .5rem;
+    border: solid var(--br-color) 1px;
+    border-radius: 1rem;
+    filter: drop-shadow(8px 8px 5px var(--sh-color));
+    white-space: normal;
+    width: 10rem;
+    min-height: 3rem;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 1rem;
+    cursor: pointer;
+}
+
+.alert-background > .alert-frame.popup.tm {
+    margin-top: 2rem;
+}
+
+.alert-background > .alert-frame.popup > .message {
+    display: inline-block;
+}
+
+.alert-background > .alert-frame.popup.default {
+    background-color: var(--def-bg-color);
+    color: var(--def-fg-color);
+}
+
+.alert-background > .alert-frame.popup.good {
+    background-color: var(--good-bg-color);
+    color: var(--good-fg-color);
+}
+
+.alert-background > .alert-frame.popup.bad {
+    background-color: var(--bad-bg-color);
+    color: var(--bad-fg-color);
+}
+
+.alert-background > .alert-frame.popup.ugly {
+    background-color: var(--ugly-bg-color);
+    color: var(--ugly-fg-color);
+}
+
+
+.alert-background > .alert-frame.confirm {
+    background-color: var(--frame-bg-golor);
+    border: solid black .1rem;
+    border-radius: .7rem;
+    min-width: 20rem;
+    min-height: 10rem;
+
+    display: flex;
+    flex-direction: column;
+    filter: drop-shadow(8px 8px 5px var(--sh-color));
+    overflow: hidden;
+}
+
+.alert-background > .alert-frame.confirm > .title {
+    font-weight: bolder;
+    font-size: large;
+    color: var(--tl-fg-color);
+    background-color: var(--tl-bg-color);
+
+    padding: .5rem;
+    text-align: center;
+
+}
+
+.alert-background > .alert-frame.confirm > .message {
+    flex: 1;
+    padding: .5rem;
+}
+
+.alert-background > .alert-frame.confirm > .buttons {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    padding: .5rem;
+
+    border-top: solid var(--sh-color) 1px;
+}
+
+.alert-background > .alert-frame.confirm > .buttons > .btn {
+    margin-left: 1rem;
+    cursor: pointer;
+    font-size: small;
+    padding-top: .5rem;
+    padding-top: .5rem;
+    padding-bottom: .5rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    border-radius: .5rem;
+    border: solid var(--br-color) 1px;
+}
+.alert-background > .alert-frame.confirm > .buttons > .btn:hover {    
+    -webkit-box-shadow:0px 0px 7px 3px var(--gl-color);
+    -moz-box-shadow: 0px 0px 7px 3px var(--gl-color);
+    box-shadow: 0px 0px 7px 3px var(--gl-color);
+}
+
+.alert-background > .alert-frame.confirm > .buttons > .btn.yes {
+    background-color: var(--good-bg-color);
+    color: var(--good-fg-color);
+}
+
+.alert-background > .alert-frame.confirm > .buttons > .btn.no {
+    background-color: var(--bad-bg-color);
+    color: var(--bad-fg-color);
+}
+
+.alert-background >.alert-frame.loading > svg * {
+    fill: var(--loading-color);
+}

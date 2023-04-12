@@ -1,4 +1,7 @@
-<main>
+<main bind:this={container}>
+    {#if loading}
+    <span>Loading...</span>
+    {:else}
     <table id="tbl1" style="width: 100%;">
         <thead>
             <tr>
@@ -26,6 +29,7 @@
             {/each}
         </tbody>
     </table>
+    {/if}
     
     <Dialog bind:visible={showdlg}>
         <fieldset class="dlg">
@@ -43,11 +47,17 @@
     import { onMount } from 'svelte';
     import { AlertCircleIcon, CheckCircleIcon } from 'svelte-feather-icons';
     import { Aylar, type Due } from "../Types";
-    import Dialog from "./comp/Dialog.svelte";
-    export let dues:Array<Due> = [];
+    import Dialog from "./comp/Dialog.svelte";    
+    import {JRequest } from "../lib/JRequest";
+    import type { JRequestError } from "../lib/JRequest";
+    import { Popup } from "./comp/AlertDlg";
+    let dues:Array<Due> = [];
     let showdlg:boolean = false;
     let tarihler:Array<Date> = [];
     let dlgtitle:string;
+    let popup : Popup;
+    let container: HTMLElement;
+    let loading:boolean = false;
     function aytr(num:number) {
         return Aylar[num-1];
     }
@@ -64,7 +74,16 @@
     }
 
     onMount(()=>{
-
+        popup = new Popup(container);
+        loading = true;
+        JRequest<Array<Due>>("/member/tahakkuk/list").then( response=>{
+            loading = false;
+            dues = response;
+        }).catch((err:JRequestError)=>{
+            loading = false;
+            popup.push({message:err.message, type:"bad"});
+        });
+        
     });
 </script>
 <style>

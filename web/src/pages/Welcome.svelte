@@ -3,18 +3,23 @@
         <span slot="exit"></span>
     </AppBar>
     <div class="container">
+        {#if (module != "Error" && module != "Loading")}
         <div class="settings">            
             <a class:active={module=="Member"}  href={'javascript:;'} on:click={()=>{ module="Member"; }}><UserIcon size="1x" /> Üye Bilgisi</a>
             <a class:active={module=="Dues"}  href={'javascript:;'} on:click={()=>{ module="Dues"; }}><CreditCardIcon size="1x" /> Aidatlar</a>
             <a class:active={module=="PasswordChange"} href={'javascript:;'} on:click={()=>{ module="PasswordChange"; }}><KeyIcon size="1x" /> Parola Değiştir</a>
         </div>
+        {/if}
     <div>
         {#if module=="PasswordChange"}
         <PasswordChange />
         {:else if module == "Dues"}
-        <Dues dues={duelist}/>
+        <Dues/>
         {:else if module == "Loading"}
         <img src="loading.svg" alt="" />
+        {:else if module == "Error"}
+        <h2>Sistemede bir hata oluştur</h2>
+        <p style="color: brown;">{detail}</p>
         {:else}
     <div class="info">
         <div class="left">
@@ -22,24 +27,23 @@
             <p>Üyelik bilgilerinizle ilgili bir sorun olduğunu düşüyor veya resminizi değiştirmek istiyorsanız. Lütfen çalışmadaki yetkili <i>Senpai</i> ile temasa geçin</p>
         </div>
         <div class="labels">
-            <span><b>Üye</b>{info.ad} / {info.cinsiyet}</span>            
-            <span><b>Doğum Tar.</b>{trDate(info.dogum_tarih)}</span>
+            <span><b>Üye</b>{info.ad}</span>            
             <span><b>Üyelik Tipi / Durumu</b> {info.tahakkuk} / {durum}</span>
             <hr/>            
             <span><b>Seviye</b>{level.seviye}</span>
             <span><b>Seviye Tar.</b>{ trDate(level.tarih)}</span>            
             <hr/>        
             <span><b>Son Çal.</b>{attendances[0] ? ( trDate(attendances[0].tarih) ) + " / " + attendances[0].tanim : "" }</span>
-            <span><b>Son 3 Ay Çal.</b>{info.son3Ay}</span>  
+            <span><b>Son 3 Ay Çal.</b>{info.son3Ay}</span>            
+            {#if borcbilgiparse(info.borcbilgi,1) != 0}
             <hr/>
-            {#if duesum_count > 0}
-                <span class="bad"><b>Ödenmemiş Aidat</b>{duesum_count}</span>
-                <span class="bad"><b>Ödenmemiş Borç</b>{duesum_total}</span>
-                <a href={'javascript:;'} on:click={() => module = "Dues"}>Aidatlar</a>  
-            {:else}
-                <span class="good"><b>Aidat Borcunuz Blunmamaktadır</b></span>
+            <a href={'javascript:;'} on:click={()=>{module="Dues"}} style="color: red;">
+            <span><b>Ödenmemiş aidta Sayısı </b>{borcbilgiparse(info.borcbilgi,1)}</span><br/>
+            <span><b>Toplma Aidat Borcu </b>{borcbilgiparse(info.borcbilgi,2)} TL</span>
+            </a>
             {/if}
-            
+            <hr/>
+            <span><a href="ankara_kendo_kyu_sinavi_yonetmeligi.pdf" target="_blank">Kyu Sınavı Yönetmeliği</a></span>
         </div>
     </div>
         {/if}
@@ -73,7 +77,8 @@
         son3Ay:0,
         tahakkuk:"",
         tahakkuk_id:0,
-        file_type:""
+        file_type:"",
+        borcbilgi:""
     };
     let levels:Array<Level> = [];
     let attendances:Array<UyeYoklama> = [];
@@ -89,6 +94,17 @@
 
 
     let module:string = "";
+    let detail:string = "";
+
+    function borcbilgiparse(borcbilgi:string,part:number):number {
+        const arr = borcbilgi.split(" ");
+        if (arr[part-1]) {
+            return parseFloat(arr[part-1]) || -1;            
+        } else {
+            return -1;
+        }
+    }
+
     onMount(()=>{
         durum = getUserData().durum;
         module = "Loading";
@@ -97,21 +113,16 @@
             if (levels[0]) {
                 level = levels[0];
             };
-            attendances = response[3];
-            duelist = response[2];
+            attendances = response[2];
+            duelist = [] //response[2];
             info = response[0][0];
-            duesum_count = 0;
-            duesum_total = 0;
-            duelist.forEach(due=>{
-                if (!due.muhasebe_id) {
-                    duesum_count += 1;                                        
-                    duesum_total += parseFloat(""+due.borc);
-                }
-            });
             module = "Member";
-        }).catch((err:JRequestError)=>{
+        }).catch((err:JRequestError)=>{            
             if (err.status == 401) {
                 push("/");
+            } else {
+                detail = err.message;
+                module = "Error";
             }
         });
     });
@@ -187,14 +198,6 @@
 
     .labels > span {
         margin-bottom: .5em;
-    }
-
-    .labels > span.bad {
-        color: red;
-    }
-
-    .labels > span.good {
-        color: darkgreen;
     }
 
     .labels > span > b {

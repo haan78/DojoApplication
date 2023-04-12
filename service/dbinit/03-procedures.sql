@@ -34,7 +34,8 @@ BEGIN
 	SELECT 
     	u.`ad`,u.`cinsiyet`,u.`dosya_id`,u.`durum`,u.`ekfno`,u.`email`,u.`tahakkuk_id`,t.tanim  as "tahakkuk",u.dogum_tarih,
         (SELECT count(*) FROM  uye_yoklama uy WHERE uy.uye_id  = u.uye_id AND uy.tarih >= DATE_ADD(CURRENT_DATE,INTERVAL -3 MONTH)) as son3Ay,
-        d.`file_type`,d.`icerik` as img64  	
+        d.`file_type`,d.`icerik` as img64,
+        (SELECT concat(count(*),' ',sum(ut.borc)) from uye_tahakkuk ut WHERE ut.muhasebe_id is null and ut.uye_id = u.uye_id )as borcbilgi
     FROM uye u 
     INNER JOIN `tahakkuk` t ON t.`tahakkuk_id` = u.`tahakkuk_id`
     LEFT JOIN dosya d ON d.`dosya_id` = u.`dosya_id`

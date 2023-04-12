@@ -36,7 +36,6 @@ function tokenPars(string &$token) {
 }
 
 $router = new DefaultJsonRouter("", function (Request $req, Response $res) {
-    return;
     $urlpattern = $req->getUriPattern();
     $token = $req->getBearerToken();
 
@@ -296,6 +295,10 @@ $router->add("/member/foto", function (Request $req) {
 
 $router->add("/member/bilgi", function (Request $req) {
     return uye($req->local()->uye_id);
+});
+
+$router->add("/member/tahakkuk/list",function(Request $req){    
+    return uyetahakkuklist($req->local()->uye_id);
 });
 
 $router->add("/member/email", function (Request $req) {
