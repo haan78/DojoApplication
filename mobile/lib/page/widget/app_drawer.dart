@@ -1,4 +1,4 @@
-import 'package:dojo_mobile/page/raporlar_page.dart';
+import 'package:dojo_mobile/page/kyu_page.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -64,15 +64,15 @@ appDrawer(BuildContext context) {
               title: Text("Yoklamalar"))),
       TextButton(
           onPressed: () {
-            Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => RaporlarPage(store: store)));
+            Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => KyuSinaviPage(store: store)));
           },
           child: const ListTile(
               leading: Icon(
-                Icons.summarize,
+                Icons.history_edu,
                 size: 32,
                 color: Colors.black,
               ),
-              title: Text("Raporlar"))),
+              title: Text("Kyu Sınavı"))),
       TextButton(
           onPressed: () {
             //scaffoldKey.currentState?.openEndDrawer();

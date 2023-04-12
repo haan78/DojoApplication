@@ -581,3 +581,28 @@ function muhasebe_sil(int $muhasebe_id) {
         throw new Exception($err);
     }
 }
+
+function kyu_oneri() {
+    $sql = "SELECT q.ad,q.sinav,q.sayi FROM (SELECT u.uye_id, u.ad,u.dogum_tarih, us.seviye,
+	CONCAT(CAST(LEFT(us.seviye,1) AS UNSIGNED) - 1,' KYU') as sinav,
+	COUNT(1) as sayi FROM uye u 
+	INNER JOIN uye_seviye us ON us.uye_id = u.uye_id
+	LEFT JOIN uye_seviye us2 ON us2.uye_id = u.uye_id AND us2.tarih > us.tarih
+	INNER JOIN seviye s ON s.seviye = us.seviye AND s.deger < 7
+	INNER JOIN uye_yoklama uy ON uy.uye_id = u.uye_id AND uy.tarih >= DATE_ADD( DATE(NOW()), INTERVAL -3 MONTH ) 
+		WHERE u.durum in ('active','admin','super-admin') and us2.uye_seviye_id IS NULL
+			GROUP BY u.uye_id, u.ad, u.dogum_tarih, us.seviye HAVING sayi > 8 ORDER BY us.seviye DESC, u.dogum_tarih DESC) q";
+    $err = "";
+    $mysqli = mysqlilink();
+    $result = mysqli_query($mysqli,$sql);
+    if ($result) {
+        $arr = resultToArray($result);
+        mysqli_free_result($result);
+        mysqli_close($mysqli);
+        return $arr;
+    } else {
+        $err = mysqli_error($mysqli);
+        mysqli_close($mysqli);
+        throw new Exception($err);
+    }
+}

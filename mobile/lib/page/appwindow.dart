@@ -100,6 +100,14 @@ String trKisaDate(DateTime tarih) {
   return "$gun $ay $yil ($hg)";
 }
 
+DateTime dateTimeSum(DateTime date, Duration d, {bool subtract = false}) {
+  if (subtract) {
+    return date.add(d);
+  } else {
+    return date.subtract(d);
+  }
+}
+
 final List<DropdownMenuItem> seviyeler = [
   const DropdownMenuItem(value: "", child: Text("")),
   DropdownMenuItem(value: "7 KYU", child: Text("7 KYU", style: TextStyle(color: Colors.pink.shade200))),

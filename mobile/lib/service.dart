@@ -128,6 +128,13 @@ class KeikoKendoka {
   Uint8List? image;
 }
 
+class KyuOneri {
+  String ad = "";
+  String sinav = "";
+  int sayi = 0;
+  bool kabuledildi = false;
+}
+
 Future<Uint8List> uyeResim(Api api, {BoxFit fit = BoxFit.fill}) async {
   dynamic r = await api.call("/member/foto");
   String b64s = r["content"];
@@ -419,6 +426,19 @@ Future<List<MuhasebeDiger>> uyeharcamalist(Api api, int uye_id) async {
     l.add(md);
   }
   return l;
+}
+
+Future<void> kyuoneri(Api api, List<KyuOneri> list) async {
+  list.clear();
+  final result = await api.call("/admin/kyu/oneri");
+  for (final raw in result) {
+    final ko = KyuOneri();
+    ko.ad = raw["ad"];
+    ko.sayi = int.parse(raw["sayi"]);
+    ko.sinav = raw["sinav"];
+    ko.kabuledildi = (ko.sayi >= 12);
+    list.add(ko);
+  }
 }
 
 typedef UpdateParentData = void Function(UyeBilgi ub, bool reload);

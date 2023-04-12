@@ -33,7 +33,7 @@ class KendokaBase extends StatefulWidget {
 }
 
 class _KendokaBase extends State<KendokaBase> {
-  final tbas = DateTime(DateTime.now().year - 70, 1, 1);
+  final tbas = DateTime(DateTime.now().year, 1, 1);
   final tbit = DateTime(DateTime.now().year - 10, 1, 1);
 
   bool resimsecildi = true;

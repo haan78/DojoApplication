@@ -308,5 +308,9 @@ $router->add("/member/email", function (Request $req) {
     ]);
 });
 
+$router->add("/admin/kyu/oneri",function(Request $req){
+    return kyu_oneri();
+});
+
 (Dotenv\Dotenv::createImmutable("/etc", "dojo_service.env"))->load();
 $router->execute();
