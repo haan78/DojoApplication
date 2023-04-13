@@ -3,8 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../store.dart';
-import '../appwindow.dart';
+import '../bilgi_page.dart';
 import '../first_page.dart';
+import '../raporlar_page.dart';
 import '../web_login_page.dart';
 import '../yoklama_page.dart';
 
@@ -28,7 +29,7 @@ appDrawer(BuildContext context) {
                 const SizedBox(
                   width: 5,
                 ),
-                Text(AppTitleText, style: TextStyle(color: Colors.yellow.shade700, fontWeight: FontWeight.bold, fontSize: 30))
+                Text(store.AppName, style: TextStyle(color: Colors.yellow.shade700, fontWeight: FontWeight.bold, fontSize: 30))
               ],
             ),
           )),
@@ -73,6 +74,28 @@ appDrawer(BuildContext context) {
                 color: Colors.black,
               ),
               title: Text("Kyu Sınavı"))),
+      TextButton(
+          onPressed: () {
+            Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => RaporlarPage(store: store)));
+          },
+          child: const ListTile(
+              leading: Icon(
+                Icons.summarize,
+                size: 32,
+                color: Colors.black,
+              ),
+              title: Text("Raporlar"))),
+      TextButton(
+          onPressed: () {
+            Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => BilgiPage(store: store)));
+          },
+          child: const ListTile(
+              leading: Icon(
+                Icons.help,
+                size: 32,
+                color: Colors.black,
+              ),
+              title: Text("Yardım"))),
       TextButton(
           onPressed: () {
             //scaffoldKey.currentState?.openEndDrawer();

@@ -6,8 +6,8 @@ import '../service.dart';
 const Color colorGood = Color.fromARGB(255, 19, 94, 9);
 const Color colorBad = Color.fromARGB(255, 173, 5, 5);
 const Color colorWarn = Color.fromARGB(255, 204, 191, 11);
-
-const AppTitleText = "Ankara Kendo";
+const appVersion = "1.0.0-beta";
+const programerEmail = "alibarisozturk@gmail.com";
 const AppPading = EdgeInsets.all(3);
 
 ButtonStyle goodBtnStyle = ButtonStyle(backgroundColor: MaterialStateProperty.resolveWith((states) => colorGood));
@@ -140,7 +140,7 @@ const Yatay2 = SizedBox(width: 20);
 
 // ignore: unnecessary_const
 
-Row appTitle({String text = AppTitleText}) {
+Row appTitle({required String text}) {
   return Row(
     children: [
       Image.asset(
@@ -232,14 +232,6 @@ class LoadingDialog {
     if (context.mounted && _started) {
       Navigator.of(context).pop();
       _started = false;
-    }
-  }
-
-  void _toggle() {
-    if (_started) {
-      pop();
-    } else {
-      push();
     }
   }
 

@@ -606,3 +606,108 @@ function kyu_oneri() {
         throw new Exception($err);
     }
 }
+
+function rapor_gelirgider() {
+    $sql = "SELECT YEAR(m.tarih) as _yil, MONTH(m.tarih) as _ay, SUM( IF(mt.tur = 'GELIR',m.tutar,0) ) as gelir,
+    SUM( IF(mt.tur = 'GELIR' and m.muhasebe_tanim_id = 9,m.tutar,0) ) as aidat,
+    SUM( IF(mt.tur = 'GIDER',m.tutar,0) ) as gider FROM muhasebe m
+    inner join muhasebe_tanim mt on mt.muhasebe_tanim_id  = m.muhasebe_tanim_id
+    GROUP BY _yil,_ay HAVING _yil >= YEAR(CURDATE()) - 10
+    order by _yil asc, _ay asc";
+    $err = "";
+    $mysqli = mysqlilink();
+    $result = mysqli_query($mysqli,$sql);
+    if ($result) {
+        $arr = resultToArray($result);
+        mysqli_free_result($result);
+        mysqli_close($mysqli);
+        return $arr;
+    } else {
+        $err = mysqli_error($mysqli);
+        mysqli_close($mysqli);
+        throw new Exception($err);
+    }
+}
+
+function rapor_aylikyoklama(int $yoklama_id) {
+    $yid = "NULL";
+    if ($yoklama_id > 0) {
+        $yid = $yoklama_id;
+    }
+    $sql = "SELECT YEAR(q.tarih) as _yil, MONTH(q.tarih) as _ay, ROUND(avg(sayi),2) as ortalama, MAX(sayi) as ust, MIN(sayi) as alt, COUNT(*) as keiko
+     from (
+        SELECT count(*) as sayi,uy.tarih  from uye_yoklama uy where uy.yoklama_id = COALESCE($yid,uy.yoklama_id) group by uy.tarih
+        ) q GROUP BY _yil,_ay HAVING _yil >= YEAR(CURDATE()) - 10 order by _yil asc, _ay asc";
+    $err = "";
+    $mysqli = mysqlilink();
+    $result = mysqli_query($mysqli,$sql);
+    if ($result) {
+        $arr = resultToArray($result);
+        mysqli_free_result($result);
+        mysqli_close($mysqli);
+        return $arr;
+    } else {
+        $err = mysqli_error($mysqli);
+        mysqli_close($mysqli);
+        throw new Exception($err);
+    }
+}
+
+function rapor_borclular() {
+    $sql = "SELECT ut.uye_id,u.ad,count(*) as sayi,sum(ut.borc) as borc FROM uye_tahakkuk ut inner join uye u on u.uye_id = ut.uye_id 
+    WHERE ut.muhasebe_id is NULL and u.durum in ('active','admin','super-admin')
+    group by ut.uye_id,u.ad order by sayi desc";
+    $err = "";
+    $mysqli = mysqlilink();
+    $result = mysqli_query($mysqli,$sql);
+    if ($result) {
+        $arr = resultToArray($result);
+        mysqli_free_result($result);
+        mysqli_close($mysqli);
+        return $arr;
+    } else {
+        $err = mysqli_error($mysqli);
+        mysqli_close($mysqli);
+        throw new Exception($err);
+    }
+}
+
+function rapor_gelmeyenler() {
+    $sql = "SELECT u.uye_id, u.ad, uy.tarih from uye u
+    left join uye_yoklama uy on uy.uye_id = u.uye_id 
+    left join uye_yoklama _uy on _uy.uye_id = uy.uye_id and _uy.tarih > uy.tarih 
+    WHERE u.durum in ('active') and _uy.uye_id is NULL and ( uy.uye_id is null or uy.tarih <= DATE_ADD(CURDATE(), INTERVAL -3 MONTH) )";
+    $err = "";
+    $mysqli = mysqlilink();
+    $result = mysqli_query($mysqli,$sql);
+    if ($result) {
+        $arr = resultToArray($result);
+        mysqli_free_result($result);
+        mysqli_close($mysqli);
+        return $arr;
+    } else {
+        $err = mysqli_error($mysqli);
+        mysqli_close($mysqli);
+        throw new Exception($err);
+    }
+}
+
+function rapor_seviyebildirim() {
+    $sql = "SELECT u.ad, u.ekfno, u.dogum_tarih, us.seviye, us.tarih, us.aciklama FROM uye u inner join uye_seviye us on us.uye_id = u.uye_id 
+    left join uye_seviye _us on _us.uye_id = us.uye_id and _us.tarih > us.tarih 
+    INNER join seviye s on s.seviye = us.seviye and s.deger >= 7
+    where _us.uye_seviye_id is null and u.durum in ('active','admin','super-admin') order by s.deger desc, us.tarih asc, u.dogum_tarih asc";
+    $err = "";
+    $mysqli = mysqlilink();
+    $result = mysqli_query($mysqli,$sql);
+    if ($result) {
+        $arr = resultToArray($result);
+        mysqli_free_result($result);
+        mysqli_close($mysqli);
+        return $arr;
+    } else {
+        $err = mysqli_error($mysqli);
+        mysqli_close($mysqli);
+        throw new Exception($err);
+    }
+}

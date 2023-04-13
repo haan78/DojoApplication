@@ -116,7 +116,7 @@ class _WebLoginPageState extends State<WebLoginPage> {
                     const Spacer(),
                     TextButton(
                         onPressed: () {
-                          launchUrl(Uri.parse(s.WebUrl));
+                          launchUrl(Uri.parse(s.HostUrl));
                         },
                         child: const Text("Bireysel"))
                   ],

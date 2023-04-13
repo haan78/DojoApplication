@@ -1,5 +1,3 @@
-// ignore_for_file: no_logic_in_create_state, non_constant_identifier_names, no_leading_underscores_for_local_identifiers
-
 import 'package:dojo_mobile/page/message_page.dart';
 import 'package:dojo_mobile/page/tabs/kendokaAidat.dart';
 import 'package:dojo_mobile/page/tabs/kendoka_base.dart';
@@ -8,38 +6,32 @@ import 'package:dojo_mobile/page/tabs/kendoka_yoklama.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../api.dart';
 import '../service.dart';
 import '../store.dart';
+import 'appwindow.dart';
 
 UyeBilgi formUyeBilgi = UyeBilgi();
 Sabitler formSabitler = Sabitler();
 int _bottomNavIndex = 0;
 
 class Kendoka extends StatefulWidget {
-  final int uye_id;
-  const Kendoka(this.uye_id, {super.key});
+  final int uyeId;
+  const Kendoka(this.uyeId, {super.key});
 
   @override
   State<Kendoka> createState() {
-    return _Kendoka(uye_id);
+    return _Kendoka();
   }
 }
 
 class _Kendoka extends State<Kendoka> {
-  final int uye_id;
   bool _reload = true;
   // ignore: prefer_function_declarations_over_variables
 
-  _Kendoka(this.uye_id);
-  void updateData(UyeBilgi ub, bool reload) {
-    formUyeBilgi = ub;
-    _reload = reload;
-    setState(() {});
-  }
-
-  Widget getWigget({required Sabitler sabitler, required UyeBilgi bilgi, required Store store, required UpdateParentData updateParentData}) {
+  Widget getWigget({required Sabitler sabitler, required UyeBilgi bilgi, required Store store}) {
     if (_bottomNavIndex == 0) {
       return KendokaBase(
         sabitler: formSabitler,
@@ -62,7 +54,7 @@ class _Kendoka extends State<Kendoka> {
   @override
   void initState() {
     super.initState();
-    if (uye_id == 0) {
+    if (widget.uyeId == 0) {
       _bottomNavIndex = 0;
     }
   }
@@ -72,7 +64,7 @@ class _Kendoka extends State<Kendoka> {
     Store store = Provider.of<Store>(context);
     final scaffoldKey = GlobalKey<ScaffoldState>();
     return FutureBuilder<UyeBilgi>(
-      future: yueBilgiGetir(store, uye_id, _reload),
+      future: yueBilgiGetir(store, widget.uyeId, _reload),
       builder: (context, snapshot) {
         if (snapshot.hasError) {
           return Text(snapshot.error.toString());
@@ -82,19 +74,7 @@ class _Kendoka extends State<Kendoka> {
           return Scaffold(
             key: scaffoldKey,
             appBar: AppBar(
-              title: Row(
-                children: [
-                  Image.asset(
-                    "assets/logo.png",
-                    fit: BoxFit.contain,
-                    height: 32,
-                  ),
-                  const SizedBox(
-                    width: 10,
-                  ),
-                  Text(ub.ad)
-                ],
-              ),
+              title: appTitle(text: ub.ad),
               actions: [
                 IconButton(
                     onPressed: () {
@@ -102,7 +82,14 @@ class _Kendoka extends State<Kendoka> {
                         _reload = true;
                       });
                     },
-                    icon: const Icon(Icons.refresh))
+                    icon: const Icon(Icons.refresh)),
+                IconButton(
+                    onPressed: () async {
+                      if (ub.email.isNotEmpty) {
+                        await launchUrl(Uri(scheme: "mailto", path: ub.email));
+                      }
+                    },
+                    icon: const Icon(Icons.email))
               ],
             ),
             body: Padding(
@@ -111,9 +98,8 @@ class _Kendoka extends State<Kendoka> {
                   sabitler: formSabitler,
                   bilgi: ub,
                   store: store,
-                  updateParentData: updateData,
                 )),
-            bottomNavigationBar: uye_id > 0
+            bottomNavigationBar: widget.uyeId > 0
                 ? BottomNavigationBar(
                     currentIndex: _bottomNavIndex,
                     onTap: (int index) {

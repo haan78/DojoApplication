@@ -15,6 +15,7 @@ class Store {
   String UserName = "";
   String LoginUrl = "";
   String WebUrl = "";
+  String HostUrl = "";
   Sabitler sabitler = Sabitler();
 
   int id = 0;
@@ -28,6 +29,7 @@ class Store {
     ApiToken = s.ApiToken;
     UserStatus = s.UserStatus;
     UserName = s.UserName;
+    HostUrl = s.HostUrl;
     id = s.id;
   }
 }
@@ -36,11 +38,11 @@ Future<Store> LoadStore() async {
   Store s = Store();
   String jdata = await rootBundle.loadString("assets/defaults.json");
   final Map<String, dynamic> data = jsonDecode(jdata);
-  String host = data["Host"].toString();
+  s.HostUrl = data["Host"].toString();
   s.AppName = data["Name"].toString();
-  s.ApiUrl = host + data["Service"];
-  s.LoginUrl = host + data["Login"];
-  s.WebUrl = host + data["Web"];
+  s.ApiUrl = s.HostUrl + data["Service"];
+  s.LoginUrl = s.HostUrl + data["Login"];
+  s.WebUrl = data["Web"];
 
   const storage = FlutterSecureStorage();
 

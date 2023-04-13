@@ -1,6 +1,7 @@
 // ignore_for_file: non_constant_identifier_names
 
 import 'dart:convert';
+import 'dart:core';
 
 import 'package:dojo_mobile/page/appwindow.dart';
 import 'package:flutter/material.dart';
@@ -133,6 +134,47 @@ class KyuOneri {
   String sinav = "";
   int sayi = 0;
   bool kabuledildi = false;
+}
+
+class GelirGiderAylik {
+  int yil = 0;
+  int ay = 0;
+  double net = 0;
+  double gelir = 0;
+  double gider = 0;
+  double aidat = 0;
+  double digergelir = 0;
+}
+
+class YoklamaAylik {
+  int yil = 0;
+  int ay = 0;
+  double ortalama = 0;
+  int alt = 0;
+  int ust = 0;
+  int keiko = 0;
+}
+
+class Borclu {
+  int uye_id = 0;
+  String ad = "";
+  int sayi = 0;
+  double borc = 0;
+}
+
+class Gelmeyen {
+  int uye_id = 0;
+  String ad = "";
+  DateTime? tarih;
+}
+
+class SeviyeBildirim {
+  String ad = "";
+  String ekfno = "";
+  DateTime dogum_tarih = DateTime.now();
+  String seviye = "";
+  DateTime tarih = DateTime.now();
+  String aciklama = "";
 }
 
 Future<Uint8List> uyeResim(Api api, {BoxFit fit = BoxFit.fill}) async {
@@ -441,4 +483,75 @@ Future<void> kyuoneri(Api api, List<KyuOneri> list) async {
   }
 }
 
-typedef UpdateParentData = void Function(UyeBilgi ub, bool reload);
+Future<void> rapor_gelirgider(Api api, List<GelirGiderAylik> list) async {
+  list.clear();
+  final result = await api.call("/admin/rapor/gelirgider");
+  for (final raw in result) {
+    final obj = GelirGiderAylik();
+    obj.ay = int.parse(raw["_ay"]);
+    obj.yil = int.parse(raw["_yil"]);
+    obj.gelir = double.parse(raw["gelir"]);
+    obj.gider = double.parse(raw["gider"]);
+    obj.aidat = double.parse(raw["aidat"]);
+    obj.digergelir = obj.gelir - obj.aidat;
+    obj.net = obj.gelir - obj.gider;
+    list.add(obj);
+  }
+}
+
+Future<void> rapor_aylikyoklama(Api api, int yoklama_id, List<YoklamaAylik> list) async {
+  list.clear();
+  final result = await api.call("/admin/rapor/aylikyoklama/$yoklama_id");
+  for (final raw in result) {
+    final obj = YoklamaAylik();
+    obj.ay = int.parse(raw["_ay"]);
+    obj.yil = int.parse(raw["_yil"]);
+    obj.ortalama = double.parse(raw["ortalama"]);
+    obj.alt = int.parse(raw["alt"]);
+    obj.ust = int.parse(raw["ust"]);
+    obj.keiko = int.parse(raw["keiko"]);
+    list.add(obj);
+  }
+}
+
+Future<void> rapor_borclular(Api api, List<Borclu> list) async {
+  list.clear();
+  final result = await api.call("/admin/rapor/borclular");
+  for (final raw in result) {
+    final obj = Borclu();
+    obj.ad = raw["ad"];
+    obj.borc = double.parse(raw["borc"]);
+    obj.sayi = int.parse(raw["sayi"]);
+    obj.uye_id = int.parse(raw["uye_id"]);
+    list.add(obj);
+  }
+}
+
+Future<void> rapor_gelmeyenler(Api api, List<Gelmeyen> list) async {
+  list.clear();
+  final result = await api.call("/admin/rapor/gelmeyenler");
+  for (final raw in result) {
+    final obj = Gelmeyen();
+    obj.ad = raw["ad"];
+    if (raw["tarih"] != null) {
+      obj.tarih = DateTime.parse(raw["tarih"]);
+    }
+    obj.uye_id = int.parse(raw["uye_id"]);
+    list.add(obj);
+  }
+}
+
+Future<void> rapor_seviyebildirim(Api api, List<SeviyeBildirim> list) async {
+  list.clear();
+  final result = await api.call("/admin/rapor/seviyebildirim");
+  for (final raw in result) {
+    final obj = SeviyeBildirim();
+    obj.ad = raw["ad"];
+    obj.aciklama = raw["aciklama"];
+    obj.dogum_tarih = DateTime.parse(raw["dogum_tarih"]);
+    obj.ekfno = raw["ekfno"];
+    obj.seviye = raw["seviye"];
+    obj.tarih = DateTime.parse(raw["tarih"]);
+    list.add(obj);
+  }
+}

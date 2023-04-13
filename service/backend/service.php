@@ -249,12 +249,6 @@ $router->add("/admin/uye/yoklama/liste/#yoklama_id/@tarih", function (Request $r
     return yoklamaliste($yoklama_id,$tarih);
 });
 
-
-
-$router->add("/admin/download/#dosya_id", function (Request $req) {
-    return download(intval($req->params()["dosya_id"]));
-});
-
 $router->add("/admin/upload", function () {
     if (!empty($_FILES)) {
         $f = $_FILES[array_key_first($_FILES)];
@@ -279,6 +273,30 @@ $router->add("/admin/upload", function () {
 
 $router->add("admin/sabitler",function(){
     return sabitler();
+});
+
+$router->add("/admin/kyu/oneri",function(Request $req){
+    return kyu_oneri();
+});
+
+$router->add("/admin/rapor/gelirgider",function(Request $req){
+    return rapor_gelirgider();
+});
+
+$router->add("/admin/rapor/aylikyoklama/#yoklama_id",function(Request $req){
+    return rapor_aylikyoklama($req->param("yoklama_id"));
+});
+
+$router->add("/admin/rapor/borclular",function(Request $req){
+    return rapor_borclular();
+});
+
+$router->add("/admin/rapor/gelmeyenler",function(Request $req){
+    return rapor_gelmeyenler();
+});
+
+$router->add("/admin/rapor/seviyebildirim",function(Request $req){
+    return rapor_seviyebildirim();
 });
 
 $router->add("/member/password", function (Request $req) {
@@ -309,10 +327,6 @@ $router->add("/member/email", function (Request $req) {
         "AD" => $ad,
         "URL" => $_ENV["SERVICE_ROOT"] . "/backend/index.php?m=reset&code=$code"
     ]);
-});
-
-$router->add("/admin/kyu/oneri",function(Request $req){
-    return kyu_oneri();
 });
 
 (Dotenv\Dotenv::createImmutable("/etc", "dojo_service.env"))->load();

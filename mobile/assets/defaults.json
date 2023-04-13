@@ -3,5 +3,5 @@
     "Service":"/backend/service.php",
     "Login":"/backend/index.php",
     "Host":"http://10.0.2.2:8002",
-    "Web":""
+    "Web":"http://ankarakendo.com"    
 }
