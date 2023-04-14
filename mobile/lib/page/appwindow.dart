@@ -47,6 +47,53 @@ yesNoDialog(BuildContext context, {required String text, String title = "Onay", 
       }));
 }
 
+class MultiSelectOption {
+  String name = "";
+  bool checked = false;
+  MultiSelectOption(this.name, this.checked);
+}
+
+void multiSelectDialog(BuildContext context,
+    {required List<MultiSelectOption> list, required Function(List<MultiSelectOption> options) onOk, Function()? onCancel, Widget? title}) {
+  showDialog(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(builder: (context, setState) {
+          final wlist = <CheckboxListTile>[];
+          for (int i = 0; i < list.length; i++) {
+            wlist.add(CheckboxListTile(
+                title: Text(list[i].name),
+                value: list[i].checked,
+                onChanged: (value) {
+                  if (value != null) {
+                    setState(() => list[i].checked = value);
+                  }
+                }));
+          }
+          return AlertDialog(title: title, content: Column(children: wlist), actions: [
+            ElevatedButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                  onOk(list);
+                },
+                //style: ButtonStyle(backgroundColor: MaterialStateProperty.resolveWith((states) => colorGood)),
+                style: goodBtnStyle,
+                child: const Text("Tamam")),
+            ElevatedButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                  if (onCancel != null) {
+                    onCancel();
+                  }
+                },
+                //style: ButtonStyle(backgroundColor: MaterialStateProperty.resolveWith((states) => colorBad)),
+                style: badBtnStyle,
+                child: const Text("İptal"))
+          ]);
+        });
+      });
+}
+
 Color tileColorByIndex(int index) {
   return index % 2 == 1 ? const Color.fromARGB(255, 208, 224, 233) : const Color.fromARGB(255, 229, 233, 208);
 }
@@ -76,11 +123,13 @@ bool isEmail(String value) {
   return RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+").hasMatch(value);
 }
 
-List<DropdownMenuItem<int>> yoklamaMenuItems(List<Yoklama> yoklamalar) {
+List<DropdownMenuItem<int>> yoklamaMenuItems(List<Yoklama> yoklamalar, {bool bosSecenek = true}) {
   List<DropdownMenuItem<int>> l = yoklamalar.asMap().entries.map((e) {
     return DropdownMenuItem<int>(value: e.value.yoklama_id, child: Text(e.value.tanim));
   }).toList();
-  l.insert(0, const DropdownMenuItem<int>(value: 0, child: Text("Seçiniz")));
+  if (bosSecenek) {
+    l.insert(0, const DropdownMenuItem<int>(value: 0, child: Text("Seçiniz")));
+  }
   return l;
 }
 

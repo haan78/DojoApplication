@@ -287,6 +287,10 @@ $router->add("/admin/rapor/aylikyoklama/#yoklama_id",function(Request $req){
     return rapor_aylikyoklama($req->param("yoklama_id"));
 });
 
+$router->add("/admin/rapor/seviye",function(Request $req){
+    return rapor_seviye();
+});
+
 $router->add("/admin/rapor/borclular",function(Request $req){
     return rapor_borclular();
 });

@@ -155,6 +155,16 @@ class YoklamaAylik {
   int keiko = 0;
 }
 
+class SeviyeRap {
+  String seviye = "";
+  int erkekSayi = 0;
+  int kadinSayi = 0;
+  int genelSayi = 0;
+  double erkekOrt = 0;
+  double kadinOrt = 0;
+  double genelOrt = 0;
+}
+
 class Borclu {
   int uye_id = 0;
   String ad = "";
@@ -494,7 +504,7 @@ Future<void> rapor_gelirgider(Api api, List<GelirGiderAylik> list) async {
     obj.gider = double.parse(raw["gider"]);
     obj.aidat = double.parse(raw["aidat"]);
     obj.digergelir = obj.gelir - obj.aidat;
-    obj.net = obj.gelir - obj.gider;
+    obj.net = obj.gelir + obj.gider;
     list.add(obj);
   }
 }
@@ -510,6 +520,22 @@ Future<void> rapor_aylikyoklama(Api api, int yoklama_id, List<YoklamaAylik> list
     obj.alt = int.parse(raw["alt"]);
     obj.ust = int.parse(raw["ust"]);
     obj.keiko = int.parse(raw["keiko"]);
+    list.add(obj);
+  }
+}
+
+Future<void> rapor_seviye(Api api, List<SeviyeRap> list) async {
+  list.clear();
+  final result = await api.call("/admin/rapor/seviye");
+  for (final raw in result) {
+    final obj = SeviyeRap();
+    obj.seviye = raw["seviye"];
+    obj.genelSayi = int.parse(raw["genel_sayi"]);
+    obj.erkekSayi = int.parse(raw["erkek_sayi"]);
+    obj.kadinSayi = int.parse(raw["kadin_sayi"]);
+    obj.genelOrt = double.parse(raw["genel_ort"]);
+    obj.erkekOrt = double.parse(raw["erkek_ort"]);
+    obj.kadinOrt = double.parse(raw["kadin_ort"]);
     list.add(obj);
   }
 }

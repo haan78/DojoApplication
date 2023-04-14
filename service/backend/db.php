@@ -653,6 +653,48 @@ function rapor_aylikyoklama(int $yoklama_id) {
     }
 }
 
+function rapor_seviye() {
+    $sql = "SELECT q.seviye,q.erkek_sayi, q.kadin_sayi,(q.erkek_sayi + q.kadin_sayi) as genel_sayi,
+    IF(q.erkek_sayi > 0, ROUND(q.erkek_yas / q.erkek_sayi,2 ),0) as erkek_ort
+    ,IF(q.kadin_sayi > 0, ROUND(q.kadin_yas / q.kadin_sayi,2 ),0) as kadin_ort
+    ,IF(q.kadin_sayi + q.erkek_sayi > 0, ROUND( (q.kadin_yas + q.erkek_yas) / (q.kadin_sayi + q.erkek_sayi),2 ),0) as genel_ort
+    FROM (		
+    SELECT s.seviye,s.deger
+    ,COALESCE(sum(u.durum in ('active','admin','super-admin') and u.cinsiyet = 'ERKEK'),0) as erkek_sayi
+    ,COALESCE(sum(u.durum in ('active','admin','super-admin') and u.cinsiyet = 'KADIN'),0) as kadin_sayi
+    ,COALESCE(sum(if(u.durum in ('active','admin','super-admin') and u.cinsiyet = 'ERKEK', YEAR(FROM_DAYS(DATEDIFF(now(),u.dogum_tarih))),0 )),0) as erkek_yas
+    ,COALESCE(sum(if(u.durum in ('active','admin','super-admin') and u.cinsiyet = 'KADIN',YEAR(FROM_DAYS(DATEDIFF(now(),u.dogum_tarih))),0)),0) as kadin_yas
+    FROM seviye s 
+        left join uye_seviye us on s.seviye = us.seviye
+        left join uye_seviye _us on _us.uye_id = us.uye_id and _us.tarih > us.tarih
+        left join uye u on u.uye_id = us.uye_id
+            WHERE s.deger >=5 and _us.uye_seviye_id is null group by s.seviye,s.deger
+            UNION ALL
+    SELECT 'Altı' as seviye, 0 as deger     
+    ,COALESCE(sum(u.durum in ('active','admin','super-admin') and u.cinsiyet = 'ERKEK'),0) as erkek_sayi
+    ,COALESCE(sum(u.durum in ('active','admin','super-admin') and u.cinsiyet = 'KADIN'),0) as kadin_sayi
+    ,COALESCE(sum(if(u.durum in ('active','admin','super-admin') and u.cinsiyet = 'ERKEK', YEAR(FROM_DAYS(DATEDIFF(now(),u.dogum_tarih))),0 )),0) as erkek_yas
+    ,COALESCE(sum(if(u.durum in ('active','admin','super-admin') and u.cinsiyet = 'KADIN',YEAR(FROM_DAYS(DATEDIFF(now(),u.dogum_tarih))),0)),0) as kadin_yas
+    FROM seviye s 
+        left join uye_seviye us on s.seviye = us.seviye
+        left join uye_seviye _us on _us.uye_id = us.uye_id and _us.tarih > us.tarih
+        left join uye u on u.uye_id = us.uye_id
+            WHERE s.deger < 5 and _us.uye_seviye_id is null GROUP by seviye order by deger desc ) q";
+    $err = "";
+    $mysqli = mysqlilink();
+    $result = mysqli_query($mysqli,$sql);
+    if ($result) {
+        $arr = resultToArray($result);
+        mysqli_free_result($result);
+        mysqli_close($mysqli);
+        return $arr;
+    } else {
+        $err = mysqli_error($mysqli);
+        mysqli_close($mysqli);
+        throw new Exception($err);
+    }
+}
+
 function rapor_borclular() {
     $sql = "SELECT ut.uye_id,u.ad,count(*) as sayi,sum(ut.borc) as borc FROM uye_tahakkuk ut inner join uye u on u.uye_id = ut.uye_id 
     WHERE ut.muhasebe_id is NULL and u.durum in ('active','admin','super-admin')
