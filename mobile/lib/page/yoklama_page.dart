@@ -68,47 +68,40 @@ class _YoklamaPage extends State<YoklamaPage> {
             child: Column(
               children: [
                 Expanded(
-                  child: FutureBuilder<List<Keiko>>(
+                  child: FBuilder(
                     future: yoklamalar(api),
-                    builder: (BuildContext context, AsyncSnapshot<List<Keiko>> snapshot) {
-                      if (snapshot.connectionState == ConnectionState.done) {
-                        List<Keiko> data = snapshot.data!;
-                        return ListView.builder(
-                          itemCount: data.length,
-                          itemBuilder: (context, index) {
-                            final tanim = data[index].tanim;
-                            final sayi = data[index].sayi.toString();
-                            final tar = trKisaDate(data[index].tarih);
-                            return Padding(
-                                padding: appPading,
-                                child: ListTile(
-                                    leading: Text(tanim),
-                                    title: Text(tar),
-                                    subtitle: Text("Ksatılan Sayısı $sayi"),
-                                    dense: true,
-                                    tileColor: tileColorByIndex(index),
-                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                                    trailing: IconButton(
-                                      icon: const Icon(Icons.arrow_forward),
-                                      onPressed: () {
-                                        Navigator.push(context, MaterialPageRoute(builder: (context) {
-                                          return YoklamaGun(
-                                            context,
-                                            keiko: data[index],
-                                            store: store,
-                                          );
-                                        })).then((value) {
-                                          setState(() {});
-                                        });
-                                      },
-                                    )));
-                          },
-                        );
-                      } else if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const Text("Loading...");
-                      } else {
-                        return const Text("Service Error");
-                      }
+                    builder: (data) {
+                      return ListView.builder(
+                        itemCount: data.length,
+                        itemBuilder: (context, index) {
+                          final tanim = data[index].tanim;
+                          final sayi = data[index].sayi.toString();
+                          final tar = trKisaDate(data[index].tarih);
+                          return Padding(
+                              padding: appPading,
+                              child: ListTile(
+                                  leading: Text(tanim),
+                                  title: Text(tar),
+                                  subtitle: Text("Ksatılan Sayısı $sayi"),
+                                  dense: true,
+                                  tileColor: tileColorByIndex(index),
+                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                                  trailing: IconButton(
+                                    icon: const Icon(Icons.arrow_forward),
+                                    onPressed: () {
+                                      Navigator.push(context, MaterialPageRoute(builder: (context) {
+                                        return YoklamaGun(
+                                          context,
+                                          keiko: data[index],
+                                          store: store,
+                                        );
+                                      })).then((value) {
+                                        setState(() {});
+                                      });
+                                    },
+                                  )));
+                        },
+                      );
                     },
                   ),
                 )

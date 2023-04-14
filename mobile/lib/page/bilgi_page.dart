@@ -1,4 +1,3 @@
-import 'package:better_open_file/better_open_file.dart';
 import 'package:dojo_mobile/page/widget/app_drawer.dart';
 import 'package:dojo_mobile/store.dart';
 import 'package:flutter/material.dart';
@@ -14,7 +13,7 @@ class BilgiPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       drawer: appDrawer(context),
-      appBar: AppBar(title: appTitle(text: "Raporlar")),
+      appBar: AppBar(title: appTitle(text: "Hakkında")),
       body: Padding(
           padding: const EdgeInsets.all(10),
           child: Column(

@@ -24,6 +24,8 @@ class ApiException implements Exception {
   }
 }
 
+typedef ApiErrCallback = void Function(String message)?;
+
 class Api {
   Map<String, String> headers = {
     "Content-Type": "application/json",
@@ -87,9 +89,11 @@ class Api {
       if (message.isNotEmpty) {
         throw Exception(message);
       }
+      //throw Exception("test");
       return response;
     } catch (ex) {
       throw ApiException(ex.toString(), status, code: code);
+      //Future.error(ex.toString());
     }
   }
 }

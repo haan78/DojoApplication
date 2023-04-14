@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:dojo_mobile/api.dart';
+import 'package:dojo_mobile/page/yoklama_page.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:webview_flutter/webview_flutter.dart';
@@ -58,6 +59,7 @@ class _WebLoginPageState extends State<WebLoginPage> {
       await writeSettings(s);
       if (mounted) {
         Navigator.push(context, MaterialPageRoute(builder: (context) => FirstPage(store: s)));
+        //Navigator.push(context, MaterialPageRoute(builder: (context) => YoklamaPage(store: s)));
       }
     });
     return c;

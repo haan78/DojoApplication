@@ -207,30 +207,26 @@ Row appTitle({required String text}) {
 
 class FBuilder<T> extends StatelessWidget {
   final Future<T> future;
-  final Widget Function(String message)? errorfnc;
   final Widget Function(T data) builder;
 
-  const FBuilder({super.key, required this.future, required this.builder, this.errorfnc});
+  const FBuilder({super.key, required this.future, required this.builder});
 
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<T>(
         future: future,
         builder: (context, AsyncSnapshot<T> snapshot) {
-          if (snapshot.connectionState == ConnectionState.done) {
+          if (snapshot.connectionState == ConnectionState.done && !snapshot.hasError) {
             return builder(snapshot.data as T);
           } else if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: Text("Lütfen Bekleyin"));
+            return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
-            if (errorfnc != null) {
-              return Center(child: errorfnc!(snapshot.error.toString()));
-            } else {
-              return Center(
-                  child: Text(
-                "Hata Oluştu\n${snapshot.error.toString()}",
-                maxLines: 2,
-              ));
-            }
+            return Center(
+                child: Text(
+              "Hata Oluştu\n${snapshot.error.toString()}",
+              maxLines: 2,
+              style: TextStyle(color: Colors.red.shade700),
+            ));
           } else {
             return const Center(child: Text("Bilinmeyen Durum"));
           }

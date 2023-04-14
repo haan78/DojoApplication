@@ -222,8 +222,13 @@ Future<List<UyeListDetay>> uye_listele(Api api, {required String durumlar}) asyn
 
 Future<UyeBilgi> uyeBilgi(Api api, {int uye_id = 0}) async {
   UyeBilgi ub = UyeBilgi();
+  dynamic r;
+  try {
+    r = await api.call("/admin/uye/$uye_id");
+  } catch (err) {
+    Future.error(err.toString());
+  }
 
-  dynamic r = await api.call("/admin/uye/$uye_id");
   ub.uye_id = uye_id;
   ub.ad = r[0][0]["ad"];
   ub.email = r[0][0]["email"];
@@ -266,8 +271,14 @@ Future<void> parolaDegistir(Api api, {required String oldpass, required String n
 }
 
 Future<Sabitler> sabitGetir(Api api) async {
-  dynamic r = await api.call("/admin/sabitler");
+  dynamic r;
   Sabitler sabitler = Sabitler();
+  try {
+    r = await api.call("/admin/sabitler");
+  } catch (err) {
+    Future.error(err.toString());
+    return sabitler;
+  }
   for (final t in r["tahakkuklar"]) {
     Tahakkuk tahakkuk = Tahakkuk();
     tahakkuk.tahakkuk_id = int.parse(t["tahakkuk_id"]);
@@ -331,7 +342,13 @@ Future<int> uyeYoklama(Api api, {required int yoklama_id, required int uye_id, r
 
 Future<List<Keiko>> yoklamalar(Api api) async {
   List<Keiko> l = [];
-  dynamic response = await api.call("/admin/yoklamalar");
+  dynamic response;
+  try {
+    response = await api.call("/admin/yoklamalar");
+  } catch (err) {
+    return Future.error(err.toString());
+  }
+
   for (final k in response) {
     Keiko keiok = Keiko();
     keiok.yoklama_id = int.parse(k["yoklama_id"]);
@@ -345,7 +362,13 @@ Future<List<Keiko>> yoklamalar(Api api) async {
 
 Future<KeikoListe> yoklamaliste(Api api, {required int yoklama_id, required DateTime tarih}) async {
   List<KeikoKendoka> l = [];
-  dynamic response = await api.call("/admin/uye/yoklama/liste/$yoklama_id/${dateFormater(tarih, "yyyy-MM-dd")}");
+  dynamic response;
+  try {
+    response = await api.call("/admin/uye/yoklama/liste/$yoklama_id/${dateFormater(tarih, "yyyy-MM-dd")}");
+  } catch (err) {
+    return Future.error(err);
+  }
+
   int katilim = 0;
   for (final kk in response) {
     KeikoKendoka kendoka = KeikoKendoka();
@@ -373,7 +396,12 @@ Future<KeikoListe> yoklamaliste(Api api, {required int yoklama_id, required Date
 
 Future<List<UyeTahakkuk>> uyetahakkuklist(Api api, {required int uye_id}) async {
   List<UyeTahakkuk> l = [];
-  dynamic response = await api.call("/admin/uye/tahakkuk/list/$uye_id");
+  dynamic response;
+  try {
+    response = await api.call("/admin/uye/tahakkuk/list/$uye_id");
+  } catch (err) {
+    return Future.error(err);
+  }
   for (final raw in response) {
     UyeTahakkuk ut = UyeTahakkuk();
     ut.ay = int.parse(raw["ay"] ?? "0");
@@ -446,8 +474,14 @@ Future<void> odemesil(Api api, int muhasebei_id) async {
 
 Future<List<MuhasebeDiger>> uyedigerodemelist(Api api, int uye_id) async {
   List<MuhasebeDiger> l = [];
-  final result = await api.call("/admin/uye/muhasebe/digerlist/$uye_id");
-  for (final mdr in result) {
+  dynamic response;
+  try {
+    response = await api.call("/admin/uye/muhasebe/digerlist/$uye_id");
+  } catch (err) {
+    return Future.error(err);
+  }
+
+  for (final mdr in response) {
     final md = MuhasebeDiger();
     md.muhasebe_id = int.parse(mdr["muhasebe_id"]);
     md.aciklama = mdr["aciklama"];
@@ -464,8 +498,13 @@ Future<List<MuhasebeDiger>> uyedigerodemelist(Api api, int uye_id) async {
 
 Future<List<MuhasebeDiger>> uyeharcamalist(Api api, int uye_id) async {
   List<MuhasebeDiger> l = [];
-  final result = await api.call("/admin/uye/muhasebe/harcamalist/$uye_id");
-  for (final mdr in result) {
+  dynamic response;
+  try {
+    response = await api.call("/admin/uye/muhasebe/harcamalist/$uye_id");
+  } catch (err) {
+    return Future.error(err);
+  }
+  for (final mdr in response) {
     final md = MuhasebeDiger();
     md.muhasebe_id = int.parse(mdr["muhasebe_id"]);
     md.aciklama = mdr["aciklama"] ?? "";
@@ -482,8 +521,13 @@ Future<List<MuhasebeDiger>> uyeharcamalist(Api api, int uye_id) async {
 
 Future<void> kyuoneri(Api api, List<KyuOneri> list) async {
   list.clear();
-  final result = await api.call("/admin/kyu/oneri");
-  for (final raw in result) {
+  dynamic response;
+  try {
+    response = await api.call("/admin/kyu/oneri");
+  } catch (err) {
+    return Future.error(err);
+  }
+  for (final raw in response) {
     final ko = KyuOneri();
     ko.ad = raw["ad"];
     ko.sayi = int.parse(raw["sayi"]);
@@ -495,8 +539,13 @@ Future<void> kyuoneri(Api api, List<KyuOneri> list) async {
 
 Future<void> rapor_gelirgider(Api api, List<GelirGiderAylik> list) async {
   list.clear();
-  final result = await api.call("/admin/rapor/gelirgider");
-  for (final raw in result) {
+  dynamic response;
+  try {
+    response = await api.call("/admin/rapor/gelirgider");
+  } catch (err) {
+    return Future.error(err);
+  }
+  for (final raw in response) {
     final obj = GelirGiderAylik();
     obj.ay = int.parse(raw["_ay"]);
     obj.yil = int.parse(raw["_yil"]);
@@ -511,8 +560,13 @@ Future<void> rapor_gelirgider(Api api, List<GelirGiderAylik> list) async {
 
 Future<void> rapor_aylikyoklama(Api api, int yoklama_id, List<YoklamaAylik> list) async {
   list.clear();
-  final result = await api.call("/admin/rapor/aylikyoklama/$yoklama_id");
-  for (final raw in result) {
+  dynamic response;
+  try {
+    response = await api.call("/admin/rapor/aylikyoklama/$yoklama_id");
+  } catch (err) {
+    return Future.error(err);
+  }
+  for (final raw in response) {
     final obj = YoklamaAylik();
     obj.ay = int.parse(raw["_ay"]);
     obj.yil = int.parse(raw["_yil"]);
@@ -526,8 +580,13 @@ Future<void> rapor_aylikyoklama(Api api, int yoklama_id, List<YoklamaAylik> list
 
 Future<void> rapor_seviye(Api api, List<SeviyeRap> list) async {
   list.clear();
-  final result = await api.call("/admin/rapor/seviye");
-  for (final raw in result) {
+  dynamic response;
+  try {
+    response = await api.call("/admin/rapor/seviye");
+  } catch (err) {
+    return Future.error(err);
+  }
+  for (final raw in response) {
     final obj = SeviyeRap();
     obj.seviye = raw["seviye"];
     obj.genelSayi = int.parse(raw["genel_sayi"]);
@@ -542,8 +601,13 @@ Future<void> rapor_seviye(Api api, List<SeviyeRap> list) async {
 
 Future<void> rapor_borclular(Api api, List<Borclu> list) async {
   list.clear();
-  final result = await api.call("/admin/rapor/borclular");
-  for (final raw in result) {
+  dynamic response;
+  try {
+    response = await api.call("/admin/rapor/borclular");
+  } catch (err) {
+    return Future.error(err);
+  }
+  for (final raw in response) {
     final obj = Borclu();
     obj.ad = raw["ad"];
     obj.borc = double.parse(raw["borc"]);
@@ -555,8 +619,13 @@ Future<void> rapor_borclular(Api api, List<Borclu> list) async {
 
 Future<void> rapor_gelmeyenler(Api api, List<Gelmeyen> list) async {
   list.clear();
-  final result = await api.call("/admin/rapor/gelmeyenler");
-  for (final raw in result) {
+  dynamic response;
+  try {
+    response = await api.call("/admin/rapor/gelmeyenler");
+  } catch (err) {
+    return Future.error(err);
+  }
+  for (final raw in response) {
     final obj = Gelmeyen();
     obj.ad = raw["ad"];
     if (raw["tarih"] != null) {
@@ -569,8 +638,13 @@ Future<void> rapor_gelmeyenler(Api api, List<Gelmeyen> list) async {
 
 Future<void> rapor_seviyebildirim(Api api, List<SeviyeBildirim> list) async {
   list.clear();
-  final result = await api.call("/admin/rapor/seviyebildirim");
-  for (final raw in result) {
+  dynamic response;
+  try {
+    response = await api.call("/admin/rapor/seviyebildirim");
+  } catch (err) {
+    return Future.error(err);
+  }
+  for (final raw in response) {
     final obj = SeviyeBildirim();
     obj.ad = raw["ad"];
     obj.aciklama = raw["aciklama"];
