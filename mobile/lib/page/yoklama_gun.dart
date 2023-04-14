@@ -165,9 +165,10 @@ class _YoklamaGun extends State<YoklamaGun> {
                             }
                           });
                         } catch (err) {
+                          if (loadingdlg.started) {
+                            loadingdlg.pop();
+                          }
                           errorAlert(context, err.toString());
-                        } finally {
-                          loadingdlg.pop();
                         }
                       },
                     );

@@ -151,9 +151,9 @@ class _Odeme extends State<Odeme> {
                               Navigator.pop(context);
                             }
                           } catch (e) {
+                            if (loadingdlg.started) loadingdlg.pop();
                             errorAlert(context, e.toString());
                           } finally {
-                            loadingdlg.pop();
                             setState(() {
                               widget.muhasebe.muhasebe_id = muhasebeId;
                             });
@@ -178,9 +178,9 @@ class _Odeme extends State<Odeme> {
                                     Navigator.pop(context);
                                   }
                                 } catch (e) {
+                                  if (loadingdlg.started) loadingdlg.pop();
                                   errorAlert(context, e.toString());
                                 } finally {
-                                  loadingdlg.pop();
                                   setState(() {
                                     widget.muhasebe.muhasebe_id = muhasebeId;
                                   });

@@ -54,9 +54,8 @@ class _KendokaYoklama extends State<KendokaYoklama> {
                                 loadingdlg.pop();
                                 widget.bilgi.yoklamalar.removeAt(index);
                               } catch (ex) {
+                                if (loadingdlg.started) loadingdlg.pop();
                                 errorAlert(context, ex.toString());
-                              } finally {
-                                loadingdlg.pop();
                               }
                             });
                           },

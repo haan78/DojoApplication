@@ -83,9 +83,9 @@ class _Aidat extends State<Aidat> {
                 Navigator.pop(context);
               }
             } catch (e) {
+              if (loadingdlg.started) loadingdlg.pop();
               errorAlert(context, e.toString());
             } finally {
-              loadingdlg.pop();
               setState(() {
                 widget.uyeTahakkuk.muhasebe_id = muhasebeId;
               });
@@ -126,9 +126,9 @@ class _Aidat extends State<Aidat> {
                   Navigator.pop(context);
                 }
               } catch (e) {
+                if (loadingdlg.started) loadingdlg.pop();
                 errorAlert(context, e.toString());
               } finally {
-                loadingdlg.pop();
                 setState(() {
                   widget.uyeTahakkuk.muhasebe_id = muhasebeId;
                 });

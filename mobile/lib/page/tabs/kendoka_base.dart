@@ -284,9 +284,8 @@ class _KendokaBase extends State<KendokaBase> {
                         Navigator.pop(context);
                       }
                     } catch (err) {
+                      if (loadingdlg.started) loadingdlg.pop();
                       errorAlert(context, err.toString());
-                    } finally {
-                      loadingdlg.pop();
                     }
                   }
                 },

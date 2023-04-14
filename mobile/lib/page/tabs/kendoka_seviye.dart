@@ -142,9 +142,8 @@ class _KendokaSeviye extends State<KendokaSeviye> {
                             widget.bilgi.seviyeler.remove(seviye);
                             seviye = UyeSeviye();
                           } catch (err) {
+                            if (loadingdlg.started) loadingdlg.pop();
                             errorAlert(context, err.toString());
-                          } finally {
-                            loadingdlg.pop();
                           }
                         }));
                       },
