@@ -64,7 +64,7 @@ class _YoklamaPage extends State<YoklamaPage> {
           ],
         ),
         body: Padding(
-            padding: AppPading,
+            padding: appPading,
             child: Column(
               children: [
                 Expanded(
@@ -80,7 +80,7 @@ class _YoklamaPage extends State<YoklamaPage> {
                             final sayi = data[index].sayi.toString();
                             final tar = trKisaDate(data[index].tarih);
                             return Padding(
-                                padding: AppPading,
+                                padding: appPading,
                                 child: ListTile(
                                     leading: Text(tanim),
                                     title: Text(tar),

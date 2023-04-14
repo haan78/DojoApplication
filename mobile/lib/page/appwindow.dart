@@ -8,7 +8,7 @@ const Color colorBad = Color.fromARGB(255, 173, 5, 5);
 const Color colorWarn = Color.fromARGB(255, 204, 191, 11);
 const appVersion = "1.0.0-beta";
 const programerEmail = "alibarisozturk@gmail.com";
-const AppPading = EdgeInsets.all(3);
+const appPading = EdgeInsets.all(3);
 
 ButtonStyle goodBtnStyle = ButtonStyle(backgroundColor: MaterialStateProperty.resolveWith((states) => colorGood));
 ButtonStyle badBtnStyle = ButtonStyle(backgroundColor: MaterialStateProperty.resolveWith((states) => colorBad));
@@ -225,7 +225,11 @@ class FBuilder<T> extends StatelessWidget {
             if (errorfnc != null) {
               return Center(child: errorfnc!(snapshot.error.toString()));
             } else {
-              return const Center(child: Text("Hata Oluştu"));
+              return Center(
+                  child: Text(
+                "Hata Oluştu\n${snapshot.error.toString()}",
+                maxLines: 2,
+              ));
             }
           } else {
             return const Center(child: Text("Bilinmeyen Durum"));

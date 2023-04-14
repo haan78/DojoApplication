@@ -10,7 +10,7 @@ errorAlert(BuildContext context, String message, {String caption = "HATA"}) {
               TextButton(
                 child: const Text('Tamam'),
                 onPressed: () {
-                  Navigator.of(context).pop();
+                  if (context.mounted) Navigator.of(context).pop();
                 },
               )
             ],
@@ -28,7 +28,7 @@ infoAlert(BuildContext context, {String caption = "BİLGİ", required Widget chi
               TextButton(
                 child: const Text('Tamam'),
                 onPressed: () {
-                  Navigator.of(context).pop();
+                  if (context.mounted) Navigator.of(context).pop();
                 },
               )
             ],

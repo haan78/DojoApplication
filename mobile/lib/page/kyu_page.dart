@@ -68,14 +68,14 @@ class _KyuSinaviPage extends State<KyuSinaviPage> {
       body: reload
           ? const Text("Loading...")
           : Padding(
-              padding: AppPading,
+              padding: appPading,
               child: Column(children: [
                 Expanded(
                     child: ListView.builder(
                         itemBuilder: (context, index) {
                           Color c = list[index].sayi >= 12 ? Colors.green.shade900 : Colors.red.shade400;
                           return Padding(
-                              padding: AppPading,
+                              padding: appPading,
                               child: ListTile(
                                 title: Text(
                                   "${list[index].sinav} ${list[index].ad} ",

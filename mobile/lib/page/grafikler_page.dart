@@ -295,9 +295,9 @@ class _GrafiklerPage extends State<GrafiklerPage> with TickerProviderStateMixin 
                               showBarValue: true,
                               showMeasureLine: false,
                               barValueFontSize: 10,
-                              barValueColor: Colors.black,
+                              barValueColor: Colors.white,
                               verticalDirection: false,
-                              barValuePosition: BarValuePosition.outside,
+                              barValuePosition: BarValuePosition.inside,
                               barValueAnchor: BarValueAnchor.end,
                               barValue: (barData, index) {
                                 final text = "${barData['measure']} / ${barData['ort']}";
