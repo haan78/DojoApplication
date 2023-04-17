@@ -1,8 +1,6 @@
 import 'dart:convert';
 
-import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:http/http.dart';
 
 class ApiResponse {
   bool success = true;
@@ -52,7 +50,7 @@ class Api {
     dynamic response;
     message = "";
     try {
-      Response res;
+      http.Response res;
       headers["authorization"] = authorization;
       if (tryit > 0) {
         headers["Keep-Alive"] = "timeout=$timeout, max=$tryit";
@@ -63,8 +61,6 @@ class Api {
       } else {
         res = await http.get(fullurl, headers: headers);
       }
-      //print(fullurl.toString());
-      //print(res.body);
       status = res.statusCode;
       final Map<String, dynamic> jres;
       try {
@@ -93,7 +89,6 @@ class Api {
       return response;
     } catch (ex) {
       throw ApiException(ex.toString(), status, code: code);
-      //Future.error(ex.toString());
     }
   }
 }

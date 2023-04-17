@@ -26,110 +26,106 @@ class KyuSinaviPage extends StatefulWidget {
 class _KyuSinaviPage extends State<KyuSinaviPage> {
   late Api api;
   final List<KyuOneri> list = [];
-  late LoadingDialog loading;
-  bool reload = false;
   DateTime tarih = DateTime.now();
   final tbas = dateTimeSum(DateTime.now(), const Duration(days: 17), subtract: false);
   final tbit = dateTimeSum(DateTime.now(), const Duration(days: 17), subtract: true);
+  bool reload = true;
+  late ScrollController _scrollController;
+  double _offset = 0;
   @override
   void initState() {
     super.initState();
     api = Api(url: widget.store.ApiUrl, authorization: widget.store.ApiToken);
-    loading = LoadingDialog(context);
     reload = true;
-    Future.delayed(
-      const Duration(seconds: 2),
-      () {
-        loadData();
-      },
-    );
   }
 
-  Future<void> loadData() async {
-    loading.push();
-    await kyuoneri(api, list);
-    loading.pop();
-    setState(() {
-      reload = false;
-    });
-  }
+  Future<void> bos() async {}
 
   @override
   Widget build(BuildContext context) {
+    _scrollController = ScrollController(keepScrollOffset: true, initialScrollOffset: _offset);
     return Scaffold(
       drawer: appDrawer(context),
       appBar: AppBar(title: appTitle(text: "Kyu Sınavı"), actions: [
         IconButton(
             onPressed: () async {
-              loadData();
+              setState(() {
+                _offset = 0;
+                reload = true;
+              });
             },
             icon: const Icon(Icons.refresh))
       ]),
-      body: reload
-          ? const Text("Loading...")
-          : Padding(
-              padding: appPading,
-              child: Column(children: [
-                Expanded(
-                    child: ListView.builder(
-                        itemBuilder: (context, index) {
-                          Color c = list[index].sayi >= 12 ? Colors.green.shade900 : Colors.red.shade400;
-                          return Padding(
-                              padding: appPading,
-                              child: ListTile(
-                                title: Text(
-                                  "${list[index].sinav} ${list[index].ad} ",
-                                  style: TextStyle(fontWeight: FontWeight.bold, color: c),
-                                ),
-                                subtitle: Text(
-                                  list[index].sayi >= 12 ? "Son üç ayda keiko sayısı ${list[index].sayi}" : "Son üç ayda ${12 - list[index].sayi} keiko eksiği var",
-                                  style: TextStyle(color: c),
-                                ),
-                                tileColor: tileColorByIndex(index),
-                                trailing: Switch(
-                                  value: list[index].kabuledildi,
-                                  activeColor: colorGood,
-                                  inactiveTrackColor: colorWarn,
-                                  onChanged: (bool value) {
-                                    setState(() {
-                                      list[index].kabuledildi = value;
-                                    });
-                                  },
-                                ),
-                              ));
-                        },
-                        itemCount: list.length)),
-                Row(children: [
-                  ElevatedButton(
-                      onPressed: () async {
-                        final dt = await showDatePicker(context: context, initialDate: tarih, firstDate: tbas, lastDate: tbit);
-                        if (dt != null) {
-                          setState(() {
-                            tarih = dt;
-                          });
-                        }
-                      },
-                      child: Text(dateFormater(tarih, 'dd.MM.yyyy'))),
-                  const SizedBox(width: 10),
+      body: FBuilder<void>(
+          future: reload ? kyuoneri(api, list) : bos(),
+          builder: (data) {
+            reload = false;
+            return Padding(
+                padding: appPading,
+                child: Column(children: [
                   Expanded(
-                      child: ElevatedButton(
-                          onPressed: () async {
-                            final pdf = pw.Document();
-                            //final font = await PdfGoogleFonts.
-                            final font = pw.Font.ttf(await rootBundle.load("fonts/turkish_times_new_roman.ttf"));
-
-                            pdf.addPage(
-                                pw.Page(build: (context) => pw.Theme(data: pw.ThemeData(defaultTextStyle: pw.TextStyle(font: font, fontSize: 12)), child: uret())));
-
-                            Directory tempDir = await getTemporaryDirectory();
-
-                            final file = File("${tempDir.path}/kyu${dateFormater(DateTime.now(), "yyyyMMddHHmmss")}.pdf");
-                            await file.writeAsBytes(await pdf.save());
-                            await OpenFile.open(file.path);
+                      child: ListView.builder(
+                          controller: _scrollController,
+                          itemBuilder: (context, index) {
+                            Color c = list[index].sayi >= 12 ? Colors.green.shade900 : Colors.red.shade400;
+                            return Padding(
+                                padding: appPading,
+                                child: ListTile(
+                                  title: Text(
+                                    "${list[index].sinav} ${list[index].ad} ",
+                                    style: TextStyle(fontWeight: FontWeight.bold, color: c),
+                                  ),
+                                  subtitle: Text(
+                                    list[index].sayi >= 12 ? "Son üç ayda keiko sayısı ${list[index].sayi}" : "Son üç ayda ${12 - list[index].sayi} keiko eksiği var",
+                                    style: TextStyle(color: c),
+                                  ),
+                                  tileColor: tileColorByIndex(index),
+                                  trailing: Switch(
+                                    value: list[index].kabuledildi,
+                                    activeColor: colorGood,
+                                    inactiveTrackColor: colorWarn,
+                                    onChanged: (bool value) {
+                                      setState(() {
+                                        _offset = _scrollController.offset;
+                                        list[index].kabuledildi = value;
+                                      });
+                                    },
+                                  ),
+                                ));
                           },
-                          child: const Text("PDF Ouştur")))
-                ])
-              ])),
+                          itemCount: list.length)),
+                  Row(children: [
+                    ElevatedButton(
+                        onPressed: () async {
+                          final dt = await showDatePicker(context: context, initialDate: tarih, firstDate: tbas, lastDate: tbit);
+                          if (dt != null) {
+                            setState(() {
+                              tarih = dt;
+                            });
+                          }
+                        },
+                        child: Text(dateFormater(tarih, 'dd.MM.yyyy'))),
+                    const SizedBox(width: 10),
+                    Expanded(
+                        child: ElevatedButton(
+                            onPressed: () async {
+                              final pdf = pw.Document();
+                              //final font = await PdfGoogleFonts.
+                              final font = pw.Font.ttf(await rootBundle.load("fonts/turkish_times_new_roman.ttf"));
+
+                              pdf.addPage(
+                                  pw.Page(build: (context) => pw.Theme(data: pw.ThemeData(defaultTextStyle: pw.TextStyle(font: font, fontSize: 12)), child: uret())));
+
+                              Directory tempDir = await getTemporaryDirectory();
+
+                              final file = File("${tempDir.path}/kyu${dateFormater(DateTime.now(), "yyyyMMddHHmmss")}.pdf");
+                              await file.writeAsBytes(await pdf.save());
+                              await OpenFile.open(file.path);
+                            },
+                            child: const Text("PDF Ouştur")))
+                  ])
+                ]));
+          }),
     );
   }
 

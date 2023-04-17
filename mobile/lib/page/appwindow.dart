@@ -206,10 +206,10 @@ Row appTitle({required String text}) {
 }
 
 class FBuilder<T> extends StatelessWidget {
-  final Future<T> future;
+  final Future<T>? future;
   final Widget Function(T data) builder;
 
-  const FBuilder({super.key, required this.future, required this.builder});
+  const FBuilder({super.key, this.future, required this.builder});
 
   @override
   Widget build(BuildContext context) {
