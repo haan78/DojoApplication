@@ -753,3 +753,51 @@ function rapor_seviyebildirim() {
         throw new Exception($err);
     }
 }
+
+function rapor_gelirgider_detay(string $baslangic, string $bitis) {
+    $sql = "SELECT 
+    m.tarih,mt.tanim,mt.tur,u.ad,tutar,m.kasa,m.tahsilatci,m.aciklama
+    FROM muhasebe m
+    left JOIN muhasebe_tanim mt on mt.muhasebe_tanim_id  = m.muhasebe_tanim_id
+    left join uye u on u.uye_id = m.uye_id 
+    WHERE m.tarih between date(?) and date(?) ORDER BY m.tarih DESC";
+    $err = "";
+    $arr = [];
+    $mysqli = mysqlilink();
+    $stmt = mysqli_prepare($mysqli,$sql);
+    if ($stmt) {
+        if (mysqli_stmt_bind_param($stmt,"ss",$baslangic,$bitis)) {
+            if ( mysqli_stmt_execute($stmt) ) {
+                if (mysqli_stmt_bind_result($stmt,$tarih,$tanim,$tur,$ad,$tutar,$kasa,$tahsilatci,$aciklama)) {                    
+                    while ( mysqli_stmt_fetch($stmt) ) {
+                        array_push($arr,[
+                            "tarih"=>$tarih,
+                            "tanim" => $tanim,
+                            "tur" => $tur,
+                            "ad" =>$ad,
+                            "tutar" =>$tutar,
+                            "kasa" =>$kasa,
+                            "tahsilatci"=>$tahsilatci,
+                            "aciklama" =>$aciklama
+                        ]);
+                    }
+                } else {
+                    $err = mysqli_stmt_error($stmt);      
+                }
+            } else {
+                $err = mysqli_stmt_error($stmt);    
+            }
+        } else {
+            $err = mysqli_stmt_error($stmt);
+        }
+        mysqli_stmt_close($stmt);
+    } else {
+        $err = mysqli_error($mysqli);   
+    }
+    mysqli_close($mysqli);
+    if (!empty($err)) {
+        throw new Exception($err);
+    }
+    return $arr;
+    
+}

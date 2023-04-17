@@ -283,6 +283,10 @@ $router->add("/admin/rapor/gelirgider",function(Request $req){
     return rapor_gelirgider();
 });
 
+$router->add("/admin/rapor/gelirgiderdetay/@baslangic/@bitis",function(Request $req){
+    return rapor_gelirgider_detay($req->param("baslangic"),$req->param("bitis"));
+});
+
 $router->add("/admin/rapor/aylikyoklama/#yoklama_id",function(Request $req){
     return rapor_aylikyoklama($req->param("yoklama_id"));
 });

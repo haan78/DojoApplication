@@ -29,7 +29,7 @@ class Kendoka extends StatefulWidget {
 
 class _Kendoka extends State<Kendoka> {
   bool _reload = true;
-  // ignore: prefer_function_declarations_over_variables
+  final scaffoldKey = GlobalKey<ScaffoldState>();
 
   Widget getWigget({required Sabitler sabitler, required UyeBilgi bilgi, required Store store}) {
     if (_bottomNavIndex == 0) {
@@ -62,7 +62,6 @@ class _Kendoka extends State<Kendoka> {
   @override
   Widget build(BuildContext context) {
     Store store = Provider.of<Store>(context);
-    final scaffoldKey = GlobalKey<ScaffoldState>();
     return FutureBuilder<UyeBilgi>(
       future: yueBilgiGetir(store, widget.uyeId, _reload),
       builder: (context, snapshot) {

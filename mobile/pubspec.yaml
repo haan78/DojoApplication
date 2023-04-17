@@ -49,6 +49,7 @@ dependencies:
   path_provider: ^2.0.14
   better_open_file: ^3.6.4
   d_chart: ^2.2.11
+  excel: ^2.1.0
 
 dev_dependencies:
   flutter_launcher_icons: "^0.12.0"

@@ -80,7 +80,7 @@ class _GrafiklerPage extends State<GrafiklerPage> with TickerProviderStateMixin 
             Expanded(
                 child: TabBarView(controller: tbc, children: [
               FBuilder<void>(
-                  future: rapor_gelirgider(api, listGelirGider),
+                  future: rapor_gelirgiderAylik(api, listGelirGider),
                   builder: (val) {
                     final int pageCount = (listGelirGider.length / limit).ceil();
                     final pList = <DropdownMenuItem<int>>[];

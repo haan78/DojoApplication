@@ -27,8 +27,8 @@ class _KyuSinaviPage extends State<KyuSinaviPage> {
   late Api api;
   final List<KyuOneri> list = [];
   DateTime tarih = DateTime.now();
-  final tbas = dateTimeSum(DateTime.now(), const Duration(days: 17), subtract: false);
-  final tbit = dateTimeSum(DateTime.now(), const Duration(days: 17), subtract: true);
+  final tbas = dateTimeSum(DateTime.now(), const Duration(days: 30), subtract: false);
+  final tbit = dateTimeSum(DateTime.now(), const Duration(days: 30), subtract: true);
   bool reload = true;
   late ScrollController _scrollController;
   double _offset = 0;

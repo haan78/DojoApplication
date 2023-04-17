@@ -13,7 +13,6 @@ enum MenuAction { load, filter, sort }
 enum FilterAction { debt, last, name }
 
 List<UyeListDetay> listData = [];
-final _araKey = GlobalKey<FormState>();
 
 class FirstPage extends StatefulWidget {
   final Store store;
@@ -26,6 +25,7 @@ class FirstPage extends StatefulWidget {
 }
 
 class _AdminPageState extends State<FirstPage> {
+  final _araKey = GlobalKey<FormState>();
   bool _reload = true;
   FilterAction _filterAction = FilterAction.name;
   int tahakkukId = 1;
@@ -148,53 +148,43 @@ class _AdminPageState extends State<FirstPage> {
               ),
             ),
             Expanded(
-                child: FutureBuilder<List<UyeListDetay>>(
-                    future: uyeler(activemembers, search, _filterAction, store, _reload),
-                    builder: (BuildContext context, AsyncSnapshot<List<UyeListDetay>> snapshot) {
-                      if (snapshot.connectionState == ConnectionState.done) {
-                        if (!snapshot.hasError && snapshot.data != null) {
-                          List<UyeListDetay> data = snapshot.data!;
-                          return ListView.builder(
-                            itemCount: data.length,
-                            itemBuilder: (context, index) {
-                              String info1 = "Aidat Borcu ${data[index].odenmemis_aidat_syisi}";
-                              String info2 = "Son Keiko: ${dateFormater(data[index].son_keiko, "dd.MM.yyyy")}";
-                              String info3 = "Son3Ay: ${data[index].son3Ay.toString()}";
-                              return Padding(
-                                  padding: appPading,
-                                  child: ListTile(
-                                    visualDensity: const VisualDensity(vertical: 4),
-                                    leading: CircleAvatar(radius: 30, backgroundImage: MemoryImage(data[index].image!)),
-                                    title: Text("${data[index].ad} / ${data[index].seviye}"),
-                                    subtitle: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                                      Text(info1, style: TextStyle(fontSize: 12, color: renkver(data[index].odenmemis_aidat_syisi))),
-                                      Row(children: [
-                                        Text(info2, style: TextStyle(fontSize: 12, color: renkver2(data[index].son_keiko))),
-                                        const SizedBox(width: 10),
-                                        Text(info3, style: TextStyle(fontSize: 12, color: renkver3(data[index].son3Ay)))
-                                      ])
-                                    ]),
-                                    tileColor: tileColorByIndex(index),
-                                    dense: true,
-                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                                    trailing: IconButton(
-                                      icon: const Icon(Icons.arrow_forward),
-                                      onPressed: () {
-                                        kendokaGetir(context, data[index].uye_id);
-                                      },
-                                    ),
-                                  ));
+                child: FBuilder<List<UyeListDetay>>(
+              future: uyeler(activemembers, search, _filterAction, store, _reload),
+              builder: (data) {
+                return ListView.builder(
+                  itemCount: data.length,
+                  itemBuilder: (context, index) {
+                    String info1 = "Aidat Borcu ${data[index].odenmemis_aidat_syisi}";
+                    String info2 = "Son Keiko: ${dateFormater(data[index].son_keiko, "dd.MM.yyyy")}";
+                    String info3 = "Son3Ay: ${data[index].son3Ay.toString()}";
+                    return Padding(
+                        padding: appPading,
+                        child: ListTile(
+                          visualDensity: const VisualDensity(vertical: 4),
+                          leading: CircleAvatar(radius: 30, backgroundImage: MemoryImage(data[index].image!)),
+                          title: Text("${data[index].ad} / ${data[index].seviye}"),
+                          subtitle: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                            Text(info1, style: TextStyle(fontSize: 12, color: renkver(data[index].odenmemis_aidat_syisi))),
+                            Row(children: [
+                              Text(info2, style: TextStyle(fontSize: 12, color: renkver2(data[index].son_keiko))),
+                              const SizedBox(width: 10),
+                              Text(info3, style: TextStyle(fontSize: 12, color: renkver3(data[index].son3Ay)))
+                            ])
+                          ]),
+                          tileColor: tileColorByIndex(index),
+                          dense: true,
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                          trailing: IconButton(
+                            icon: const Icon(Icons.arrow_forward),
+                            onPressed: () {
+                              kendokaGetir(context, data[index].uye_id);
                             },
-                          );
-                        } else {
-                          return const Text("No Data");
-                        }
-                      } else if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const Text("Loading...");
-                      } else {
-                        return const Text("Service Error");
-                      }
-                    }))
+                          ),
+                        ));
+                  },
+                );
+              },
+            ))
           ],
         ));
   }
@@ -205,7 +195,7 @@ class _AdminPageState extends State<FirstPage> {
       try {
         listData = await uye_listele(api, durumlar: active ? "active,admin,super-admin" : "passive,registered");
       } catch (err) {
-        errorAlert(context, err.toString());
+        return Future.error(err);
       }
     }
 

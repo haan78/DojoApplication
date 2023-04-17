@@ -187,6 +187,17 @@ class SeviyeBildirim {
   String aciklama = "";
 }
 
+class GelirGiderDetay {
+  DateTime tarih = DateTime.now();
+  String tanim = "";
+  String tur = "";
+  String ad = "";
+  double tutar = 0;
+  String kasa = "";
+  String tahsilatci = "";
+  String aciklama = "";
+}
+
 Future<Uint8List> uyeResim(Api api, {BoxFit fit = BoxFit.fill}) async {
   dynamic r = await api.call("/member/foto");
   String b64s = r["content"];
@@ -537,7 +548,7 @@ Future<void> kyuoneri(Api api, List<KyuOneri> list) async {
   }
 }
 
-Future<void> rapor_gelirgider(Api api, List<GelirGiderAylik> list) async {
+Future<void> rapor_gelirgiderAylik(Api api, List<GelirGiderAylik> list) async {
   list.clear();
   dynamic response;
   try {
@@ -652,6 +663,30 @@ Future<void> rapor_seviyebildirim(Api api, List<SeviyeBildirim> list) async {
     obj.ekfno = raw["ekfno"];
     obj.seviye = raw["seviye"];
     obj.tarih = DateTime.parse(raw["tarih"]);
+    list.add(obj);
+  }
+}
+
+Future<void> rapor_gelirgider_detay(Api api, DateTime baslangic, DateTime bitis, List<GelirGiderDetay> list) async {
+  list.clear();
+  dynamic response;
+  try {
+    final bas = dateFormater(baslangic, "yyyy-MM-dd");
+    final bit = dateFormater(bitis, "yyyy-MM-dd");
+    response = await api.call("/admin/rapor/gelirgiderdetay/$bas/$bit");
+  } catch (err) {
+    return Future.error(err);
+  }
+  for (final raw in response) {
+    final obj = GelirGiderDetay();
+    obj.aciklama = raw["aciklama"] ?? "";
+    obj.ad = raw["ad"] ?? "";
+    obj.kasa = raw["kasa"] ?? "";
+    obj.tahsilatci = raw["tahsilatci"] ?? "";
+    obj.tanim = raw["tanim"] ?? "";
+    obj.tarih = DateTime.parse(raw["tarih"]);
+    obj.tur = raw["tur"] ?? "";
+    obj.tutar = double.parse(raw["tutar"]);
     list.add(obj);
   }
 }

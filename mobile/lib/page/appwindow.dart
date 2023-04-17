@@ -16,6 +16,8 @@ ButtonStyle warnBtnStyle = ButtonStyle(backgroundColor: MaterialStateProperty.re
 
 enum AppWindow { harcamalar, uyeler, yoklamalar, ayarlar, raporlar }
 
+final buYil = DateTime.now().year;
+
 yesNoDialog(BuildContext context, {required String text, String title = "Onay", required Function() onYes, Function()? onNo}) {
   showDialog(
       context: context,
@@ -209,24 +211,26 @@ class FBuilder<T> extends StatelessWidget {
   final Future<T>? future;
   final Widget Function(T data) builder;
 
-  const FBuilder({super.key, this.future, required this.builder});
+  const FBuilder({super.key, required this.future, required this.builder});
 
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<T>(
         future: future,
         builder: (context, AsyncSnapshot<T> snapshot) {
-          if (snapshot.connectionState == ConnectionState.done && !snapshot.hasError) {
-            return builder(snapshot.data as T);
+          if (snapshot.connectionState == ConnectionState.done) {
+            if (!snapshot.hasError) {
+              return builder(snapshot.data as T);
+            } else {
+              return Center(
+                  child: Text(
+                "Hata Oluştu\n${snapshot.error.toString()}",
+                maxLines: 2,
+                style: TextStyle(color: Colors.red.shade700),
+              ));
+            }
           } else if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Center(
-                child: Text(
-              "Hata Oluştu\n${snapshot.error.toString()}",
-              maxLines: 2,
-              style: TextStyle(color: Colors.red.shade700),
-            ));
           } else {
             return const Center(child: Text("Bilinmeyen Durum"));
           }
@@ -288,5 +292,44 @@ class LoadingDialog {
   @mustCallSuper
   void dispose() {
     pop();
+  }
+}
+
+class FullDataTable extends StatelessWidget {
+  final List<Map<String, dynamic>> rows;
+  final DataColumn Function(String name)? customColumn;
+  final DataCell Function(String name, int rowIndex, Map<String, dynamic> row)? customCell;
+
+  const FullDataTable({super.key, required this.rows, this.customColumn, this.customCell});
+
+  List<DataColumn> createColumns() {
+    final l = <DataColumn>[];
+    if (rows.isNotEmpty) {
+      final fr = rows[0];
+      for (int ci = 0; ci < fr.keys.length; ci++) {
+        l.add(customColumn != null ? customColumn!(fr.keys.elementAt(ci)) : DataColumn(label: Text(fr.keys.elementAt(ci))));
+      }
+    }
+    return l;
+  }
+
+  List<DataRow> createRows() {
+    final l = <DataRow>[];
+    for (int i = 0; i < rows.length; i++) {
+      final drl = <DataCell>[];
+      for (final k in rows[i].keys) {
+        drl.add(customCell != null ? customCell!(k, i, rows[i]) : DataCell(Text(rows[i][k].toString())));
+      }
+      l.add(DataRow(cells: drl));
+    }
+    return l;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+        scrollDirection: Axis.vertical,
+        child: SingleChildScrollView(
+            scrollDirection: Axis.horizontal, child: DataTable(columns: createColumns(), rows: createRows(), border: TableBorder.all(color: Colors.black))));
   }
 }

@@ -7,8 +7,6 @@ import '../../api.dart';
 import '../../store.dart';
 import '../appwindow.dart';
 import '../widget/alert.dart';
-
-final _formKey = GlobalKey<FormState>();
 // ignore: camel_case_types
 
 class KendokaBase extends StatefulWidget {
@@ -33,6 +31,7 @@ class KendokaBase extends StatefulWidget {
 }
 
 class _KendokaBase extends State<KendokaBase> {
+  final _formKey = GlobalKey<FormState>();
   final tbas = DateTime(DateTime.now().year, 1, 1);
   final tbit = DateTime(DateTime.now().year - 10, 1, 1);
 
