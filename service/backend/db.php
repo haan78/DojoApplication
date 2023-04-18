@@ -695,45 +695,6 @@ function rapor_seviye() {
     }
 }
 
-function rapor_borclular() {
-    $sql = "SELECT ut.uye_id,u.ad,count(*) as sayi,sum(ut.borc) as borc FROM uye_tahakkuk ut inner join uye u on u.uye_id = ut.uye_id 
-    WHERE ut.muhasebe_id is NULL and u.durum in ('active','admin','super-admin')
-    group by ut.uye_id,u.ad order by sayi desc";
-    $err = "";
-    $mysqli = mysqlilink();
-    $result = mysqli_query($mysqli,$sql);
-    if ($result) {
-        $arr = resultToArray($result);
-        mysqli_free_result($result);
-        mysqli_close($mysqli);
-        return $arr;
-    } else {
-        $err = mysqli_error($mysqli);
-        mysqli_close($mysqli);
-        throw new Exception($err);
-    }
-}
-
-function rapor_gelmeyenler() {
-    $sql = "SELECT u.uye_id, u.ad, uy.tarih from uye u
-    left join uye_yoklama uy on uy.uye_id = u.uye_id 
-    left join uye_yoklama _uy on _uy.uye_id = uy.uye_id and _uy.tarih > uy.tarih 
-    WHERE u.durum in ('active') and _uy.uye_id is NULL and ( uy.uye_id is null or uy.tarih <= DATE_ADD(CURDATE(), INTERVAL -3 MONTH) )";
-    $err = "";
-    $mysqli = mysqlilink();
-    $result = mysqli_query($mysqli,$sql);
-    if ($result) {
-        $arr = resultToArray($result);
-        mysqli_free_result($result);
-        mysqli_close($mysqli);
-        return $arr;
-    } else {
-        $err = mysqli_error($mysqli);
-        mysqli_close($mysqli);
-        throw new Exception($err);
-    }
-}
-
 function rapor_seviyebildirim() {
     $sql = "SELECT u.ad, u.ekfno, u.dogum_tarih, us.seviye, us.tarih, us.aciklama FROM uye u inner join uye_seviye us on us.uye_id = u.uye_id 
     left join uye_seviye _us on _us.uye_id = us.uye_id and _us.tarih > us.tarih 
@@ -799,5 +760,30 @@ function rapor_gelirgider_detay(string $baslangic, string $bitis) {
         throw new Exception($err);
     }
     return $arr;
-    
+}
+
+function rapor_geneluyeraporu() {
+    $sql = "SELECT u.uye_id,u.ad,u.email,u.cinsiyet,u.dogum_tarih,u.ekfno,u.durum,t.tanim as tahakkuk
+    ,us.seviye, us.tarih as sinav_tarih,COALESCE(tah.borc,0) as borc_tutar,COALESCE(tah.sayi,0) borc_sayi,
+    COALESCE(yok.sayi,0) as devam_sayi,yok.ilk,yok.son
+    FROM uye u
+    left join tahakkuk t on t.tahakkuk_id = u.tahakkuk_id 
+    left join uye_seviye us on us.uye_id = u.uye_id 
+    left join uye_seviye _us on _us.uye_id = us.uye_id and _us.tarih > us.tarih
+    left join (select ut.uye_id,sum(borc) as borc, count(*) as sayi from uye_tahakkuk ut where ut.muhasebe_id is null group by ut.uye_id) tah on tah.uye_id = u.uye_id
+    left join (select uy.uye_id,max(uy.tarih) son,min(uy.tarih) ilk, count(*) sayi from uye_yoklama uy group by uy.uye_id) yok on yok.uye_id = u.uye_id
+    WHERE _us.uye_seviye_id is null and u.durum in ('active','admin','super-admin')";
+    $err = "";
+    $mysqli = mysqlilink();
+    $result = mysqli_query($mysqli,$sql);
+    if ($result) {
+        $arr = resultToArray($result);
+        mysqli_free_result($result);
+        mysqli_close($mysqli);
+        return $arr;
+    } else {
+        $err = mysqli_error($mysqli);
+        mysqli_close($mysqli);
+        throw new Exception($err);
+    }
 }

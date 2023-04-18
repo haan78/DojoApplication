@@ -165,17 +165,22 @@ class SeviyeRap {
   double genelOrt = 0;
 }
 
-class Borclu {
+class GenelRap {
   int uye_id = 0;
   String ad = "";
-  int sayi = 0;
-  double borc = 0;
-}
-
-class Gelmeyen {
-  int uye_id = 0;
-  String ad = "";
-  DateTime? tarih;
+  String email = "";
+  String cinsiyet = "";
+  DateTime dogum_tarih = DateTime.now();
+  String ekfno = "";
+  String durum = "";
+  String tahakkuk = "";
+  String seviye = "";
+  DateTime? sinav_tarih;
+  double borc_tutar = 0;
+  int borc_sayi = 0;
+  int devam_sayi = 0;
+  DateTime? ilk;
+  DateTime? son;
 }
 
 class SeviyeBildirim {
@@ -437,7 +442,6 @@ Future<List<UyeTahakkuk>> uyetahakkuklist(Api api, {required int uye_id}) async 
         ut.keikolar.add(DateTime.parse(keikot.trim()));
       }
     }
-
     l.add(ut);
   }
   return l;
@@ -610,43 +614,6 @@ Future<void> rapor_seviye(Api api, List<SeviyeRap> list) async {
   }
 }
 
-Future<void> rapor_borclular(Api api, List<Borclu> list) async {
-  list.clear();
-  dynamic response;
-  try {
-    response = await api.call("/admin/rapor/borclular");
-  } catch (err) {
-    return Future.error(err);
-  }
-  for (final raw in response) {
-    final obj = Borclu();
-    obj.ad = raw["ad"];
-    obj.borc = double.parse(raw["borc"]);
-    obj.sayi = int.parse(raw["sayi"]);
-    obj.uye_id = int.parse(raw["uye_id"]);
-    list.add(obj);
-  }
-}
-
-Future<void> rapor_gelmeyenler(Api api, List<Gelmeyen> list) async {
-  list.clear();
-  dynamic response;
-  try {
-    response = await api.call("/admin/rapor/gelmeyenler");
-  } catch (err) {
-    return Future.error(err);
-  }
-  for (final raw in response) {
-    final obj = Gelmeyen();
-    obj.ad = raw["ad"];
-    if (raw["tarih"] != null) {
-      obj.tarih = DateTime.parse(raw["tarih"]);
-    }
-    obj.uye_id = int.parse(raw["uye_id"]);
-    list.add(obj);
-  }
-}
-
 Future<void> rapor_seviyebildirim(Api api, List<SeviyeBildirim> list) async {
   list.clear();
   dynamic response;
@@ -658,10 +625,10 @@ Future<void> rapor_seviyebildirim(Api api, List<SeviyeBildirim> list) async {
   for (final raw in response) {
     final obj = SeviyeBildirim();
     obj.ad = raw["ad"];
-    obj.aciklama = raw["aciklama"];
+    obj.aciklama = raw["aciklama"] ?? "";
     obj.dogum_tarih = DateTime.parse(raw["dogum_tarih"]);
-    obj.ekfno = raw["ekfno"];
-    obj.seviye = raw["seviye"];
+    obj.ekfno = raw["ekfno"] ?? "";
+    obj.seviye = raw["seviye"] ?? "";
     obj.tarih = DateTime.parse(raw["tarih"]);
     list.add(obj);
   }
@@ -689,4 +656,33 @@ Future<void> rapor_gelirgider_detay(Api api, DateTime baslangic, DateTime bitis,
     obj.tutar = double.parse(raw["tutar"]);
     list.add(obj);
   }
+}
+
+Future<List<GenelRap>> rapor_geneluyeraporu(Api api) async {
+  List<GenelRap> list = [];
+  dynamic response;
+  try {
+    response = await api.call("/admin/rapor/geneluyeraporu");
+  } catch (err) {
+    return Future.error(err);
+  }
+  for (final raw in response) {
+    final obj = GenelRap();
+    obj.ad = raw["ad"];
+    obj.borc_sayi = int.parse(raw["borc_sayi"]);
+    obj.borc_tutar = double.parse(raw["borc_tutar"]);
+    obj.cinsiyet = raw["cinsiyet"];
+    obj.devam_sayi = int.parse(raw["devam_sayi"]);
+    obj.dogum_tarih = DateTime.parse(raw["dogum_tarih"]);
+    obj.durum = raw["durum"];
+    obj.ekfno = raw["ekfno"];
+    obj.ilk = raw["ilk"] != null ? DateTime.parse(raw["ilk"]) : null;
+    obj.son = raw["son"] != null ? DateTime.parse(raw["son"]) : null;
+    obj.seviye = raw["seviye"] ?? "";
+    obj.sinav_tarih = raw["sinav_tarih"] != null ? DateTime.parse(raw["sinav_tarih"]) : null;
+    obj.tahakkuk = raw["tahakkuk"] ?? "";
+    obj.uye_id = int.parse(raw["uye_id"]);
+    list.add(obj);
+  }
+  return list;
 }

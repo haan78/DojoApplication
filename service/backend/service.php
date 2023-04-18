@@ -174,10 +174,8 @@ $router->add("/admin/uye/seviye/sil/#uye_id", function (Request $req) {
 $router->add("/admin/uye/yoklama/#yoklama_id/#uye_id/@tarih", function (Request $req) {
     $yoklama_id = $req->param("yoklama_id");
     $uye_id = $req->param("uye_id");
-    $tarih = $req->param("tarih");
-    //var_dump([$yoklama_id,$uye_id,$tarih]);
+    $tarih = $req->param("tarih");    
     return uye_yoklama_eklesil($yoklama_id,$uye_id,$tarih);
-
 });
 
 $router->add("/admin/uye/tahakkuk/list/#uye_id",function(Request $req){
@@ -193,7 +191,6 @@ $router->add("/admin/uye/muhasebe/harcamalist/#uye_id",function(Request $req) {
     $uye_id = $req->param("uye_id");
     return uyeharcamalist($uye_id);
 });
-
 
 $router->add("/admin/muhasebe/aidatal",function(Request $req){
     $jdata = $req->json();
@@ -237,7 +234,6 @@ $router->add("/admin/muhasebe/duzelt",function(Request $req){
     $tahsilatci = $req->local()->ad ?? "";
     return  muhasebe_duzelt($muhasebe_id, $uye_id, $tarih, $tutar, $kasa, $muhasebe_tanim_id, $aciklama, $belge, $tahsilatci);
 });
-
 
 $router->add("/admin/yoklamalar", function (Request $req) {    
     return yoklamalar();
@@ -295,16 +291,12 @@ $router->add("/admin/rapor/seviye",function(Request $req){
     return rapor_seviye();
 });
 
-$router->add("/admin/rapor/borclular",function(Request $req){
-    return rapor_borclular();
-});
-
-$router->add("/admin/rapor/gelmeyenler",function(Request $req){
-    return rapor_gelmeyenler();
-});
-
 $router->add("/admin/rapor/seviyebildirim",function(Request $req){
     return rapor_seviyebildirim();
+});
+
+$router->add("/admin/rapor/geneluyeraporu",function(Request $req){
+    return rapor_geneluyeraporu();
 });
 
 $router->add("/member/password", function (Request $req) {
