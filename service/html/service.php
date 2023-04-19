@@ -8,7 +8,7 @@ ini_set('display_startup_errors', TRUE);
 require_once "vendor/autoload.php";
 require_once "./lib/Minmi.php";
 require_once "./db.php";
-require_once("./sendinblue.php.php");
+require_once("./sendinblue.php");
 
 use Minmi\Response;
 use Minmi\DefaultJsonRouter;

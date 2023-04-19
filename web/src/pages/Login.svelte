@@ -24,10 +24,6 @@
     let remember:boolean = false;
 
 
-    const serviceroot = import.meta.env.VITE_SERVICE_HOST+import.meta.env.VITE_AUTH_PAGE;
-    //console.log(serviceroot);
-
-
     function loginSucced(data:UserData) {
         if (data.token) {   
             if (remember) {
@@ -40,7 +36,6 @@
         } else {
             console.log("olmadi");
         }
-        
     }
 
     window.addEventListener("message",e=>{

@@ -108,7 +108,7 @@
     onMount(()=>{
         durum = getUserData().durum;
         module = "Loading";
-        JRequest<Uyebilgi>("/member/bilgi").then(response=>{
+        JRequest<Uyebilgi>("/service.php/member/bilgi").then(response=>{
             levels = response[1];
             if (levels[0]) {
                 level = levels[0];

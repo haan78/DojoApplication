@@ -64,7 +64,7 @@
             popup1.push({message:"Parolanın tekrarı hatalı", type:"bad"});
         } else {
             dispass = true;
-            JRequest<void>("/member/password",{"oldpass":oldpass, "newpass":newpass}).then(()=>{                
+            JRequest<void>("/service.php/member/password",{"oldpass":oldpass, "newpass":newpass}).then(()=>{                
                 popup1.push({message:"Prolanız başarıyla değiştirildi", type:"good"});                
                 dispass = false;
                 oldpass = "";
@@ -82,7 +82,7 @@
             popup2.push({message:"Lütfen geçerli bir eposta adresi girin", type:"bad"});            
         } else {
             disemail = true;
-            JRequest<void>("/member/email",{"email":newemail}).then(()=>{                
+            JRequest<void>("/service.php/member/email",{"email":newemail}).then(()=>{                
                 dlgemailshow = true;
                 dispass = false;
                 newemail = "";

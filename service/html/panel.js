@@ -18,6 +18,26 @@ function callback(data) {
     }
 }
 
+function entryButton() {
+    document.querySelectorAll("button.entry").forEach(elm=>{
+        var title = elm.innerHTML;
+        console.log(title);
+        elm.innerHTML = `<img src="loading.svg" style="width: 1.5em;height: 1.5em; vertical-align: middle; display: none;" />
+        <span>${title}</span>`;
+        elm.showLoading=function() {
+            this.disabled = true;
+            this.querySelector("img").style.display="inline-block";
+        };
+        elm.hideLoading=function() {
+            this.disabled = false;
+            this.querySelector("img").style.display="none";
+        };
+        elm.isLoading=function() {
+            return this.querySelector("img").style.display=="inline-block";
+        }
+    });
+}
+
 function resetformsubmit(btn) {
     if ( btn.getAttribute("data-loading") ) {
         return;
@@ -92,7 +112,7 @@ function emailformsubmit(btn) {
         raw.json().then(response => {
             if (response.success) {
                 window.location.href = "/?m=reset"
-            } else {                
+            } else {
                 raise(response.data.message, 4);
             }
         }).catch(err => {
@@ -104,53 +124,6 @@ function emailformsubmit(btn) {
     });
 }
 
-function loginformsubmit(btn) {
-    if ( btn.getAttribute("data-loading") ) {
-        return;
-    }
-    var user = document.querySelector("input[name=username]").value.trim();
-    var pass = document.querySelector("input[name=password]").value.trim();
-    var type = document.querySelector("input[name=type]").value.trim();
-
-    if (!isEmail(user)) {
-        console.log(user);
-        raise("E-Posta formatı doğru değil", 1);
-        return;
-    }
-
-    if (pass.length < 6) {
-        raise("Parola en az 6 karakter olmalı", 1);
-        return;
-    }
-
-    btn.setAttribute("data-loading","loading");
-    btn.querySelector("img").style.display = "inline-block";
-    fetch("service.php/token", {
-        method: "POST",
-        cache: 'no-cache',
-        body: JSON.stringify({
-            "type":type
-        }),
-        headers: {
-            "Content-Type": "application/json; charset=utf-8",
-            "authorization": "Basic " + btoa(user + ":" + pass)
-        }
-    }).then(raw => {
-        btn.setAttribute("data-loading","");
-        btn.querySelector("img").style.display = "none";
-        //console.log(raw.body);
-        raw.json().then(response => {
-            if (response.success) {
-                response.data.password = pass;
-                callback(response.data);
-            } else {                
-                raise(response.data.message, 4);
-            }
-        }).catch(err => {
-            raise(err, 3);
-        });
-    }).catch(err => {
-        btn.setAttribute("data-loading","");
-        raise(err, 2);
-    });
-}
+window.addEventListener("load", () => {
+    entryButton();
+});

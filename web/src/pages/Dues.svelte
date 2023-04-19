@@ -76,7 +76,7 @@
     onMount(()=>{
         popup = new Popup(container);
         loading = true;
-        JRequest<Array<Due>>("/member/tahakkuk/list").then( response=>{
+        JRequest<Array<Due>>("/service.php/member/tahakkuk/list").then( response=>{
             loading = false;
             dues = response;
         }).catch((err:JRequestError)=>{

@@ -1,4 +1,3 @@
-const serviceurl = import.meta.env.VITE_SERVICE_HOST+import.meta.env.VITE_SERVICE_SCRIPT;
 type RequestHeader = Record<string,string>;
 
 export class JRequestError extends Error {
@@ -28,7 +27,7 @@ export class JRequestError extends Error {
 export type JRequestReject = (error:JRequestError)=>void;
 
 export function JRequest<T>(uri:string,data:unknown = null) : Promise<T> {
-    const url = `${serviceurl}${uri}`;
+    const url = `${uri}`;
     let headers:RequestHeader = {
         "Content-Type":`application/json; charset=UTF-8`,
         "authorization": sessionStorage.getItem("authorization") || ""

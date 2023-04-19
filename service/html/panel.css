@@ -32,7 +32,7 @@ body {
     flex-direction: column;
     justify-content: center;
     justify-items: center;
-    align-items: stretch;
+    align-items: center;
     height: 100vh;
     background-color: white;
 }
@@ -50,22 +50,19 @@ body {
     flex-direction: row;
     flex-wrap: wrap;
     height: 100%;
-    width: 100%;
+    max-width: 30em;
     margin-left: auto;
     margin-right: auto;
 }
 
 .main > .body > .form {
     flex-grow: 1;
-    min-width: 300px;
-    width: 600px;
     
     margin: 1em;
 }
 
 .main > .body > .text {
     flex-grow: 1;
-    min-width: 300px;
     width: 100%;
     margin: 1em;
 }
@@ -189,3 +186,29 @@ body {
     box-shadow: none;
     transform: translateY(4px);
 }
+
+.entry {
+    min-width: 5em;
+    height: 3em;
+    display: inline-block;
+    border-radius: 15px;
+    box-shadow: 0 2px 2px black;
+    background-color: darkgrey;
+    color: darkblue;
+    border: none;
+}
+
+
+.entry:disabled {
+    color: black;
+    box-shadow: none;
+}
+
+.entry:hover:enabled{
+    color: blue;
+}
+.entry:active:enabled{
+    color: lightblue;
+}
+
+
