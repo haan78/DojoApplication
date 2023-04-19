@@ -77,7 +77,7 @@ $router->add("/reset", function (Request $request) {
     if ($code) {
         reset_password($code, $pass);
     } else {
-        throw new MinmiExeption("Activation is required", 400);
+        throw new MinmiExeption("Activation code is required", 400);
     }
 });
 
@@ -131,7 +131,7 @@ $router->add("/admin/uye/epostatest/#uye_id", function (Request $req) {
     if (uye_eposta_onkayit($uye_id, $ad, $email, $code, $err)) {
         sendinblue($email, 1, (object)[
             "AD" => $ad,
-            "URL" => $_ENV["SERVICE_ROOT"] . "/backend/index.php?m=activate&code=$code"
+            "URL" => $_ENV["SERVICE_ROOT"] . "/activate.php?code=$code"
         ]);
     } else {
         throw new Exception($err);

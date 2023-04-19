@@ -11,15 +11,15 @@
     "check": "svelte-check --tsconfig ./tsconfig.json"
   },
   "devDependencies": {
-    "@sveltejs/vite-plugin-svelte": "^1.1.0",
-    "@tsconfig/svelte": "^3.0.0",
-    "svelte": "^3.52.0",
-    "svelte-check": "^2.9.2",
-    "svelte-feather-icons": "^4.0.0",
-    "svelte-preprocess": "^4.10.7",
-    "tslib": "^2.4.0",
-    "typescript": "^4.9.5",
-    "vite": "^3.2.3"
+    "@sveltejs/vite-plugin-svelte": "*",
+    "@tsconfig/svelte": "*",
+    "svelte": "*",
+    "svelte-check": "*",
+    "svelte-feather-icons": "*",
+    "svelte-preprocess": "*",
+    "tslib": "*",
+    "typescript": "^5.0.4",
+    "vite": "*"
   },
   "dependencies": {
     "@types/feather-icons": "^4.7.0",

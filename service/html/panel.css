@@ -25,6 +25,22 @@ body {
     box-shadow: 0 4px 9px black;
 }
 
+.AlertSuccess {
+    z-index: 999;
+    position: fixed;
+    top: 5em;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: lightgoldenrodyellow;
+    background-color: darkgreen;
+    width: 10em;
+    height: 4em;
+    border-radius: .5em;
+    border: solid black .2em;
+    padding: .5em;
+    box-shadow: 0 4px 9px black;
+}
+
 .main {
     width: 100%;
     font-size: var(--fontsize);

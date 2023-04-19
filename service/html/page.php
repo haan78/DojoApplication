@@ -9,29 +9,6 @@ require_once "vendor/autoload.php";
 $dotenv = Dotenv\Dotenv::createImmutable("/etc", "dojo_service.env");
 $dotenv->load();
 
-
-
-$module = trim($_GET["m"] ?? "login");
-if ( $module == "activate" ) {
-    require_once "./db.php";
-    $code = $_GET["code"] ?? "";
-    $err = "";
-    if (!uye_eposta_onay($code,$err)) {
-        $GLOBALS["err"] = $err;
-    }
-} elseif ( !in_array($module,["login","email","reset"])) {
-    $module = "login";
-}
-
-function button(string $action, string $title) {
-    ?>
-    <button type="button" class="button" onclick="<?php echo $action; ?>(this)">
-    <img src="html/loading.svg" style="width: 1.5em;height: 1.5em; vertical-align: middle; display: none;" />
-    <span><?php echo $title; ?></span>
-    </button>
-    <?php
-}
-
 function page(callable $content) {
     ?><!DOCTYPE html>
 <html lang="tr">

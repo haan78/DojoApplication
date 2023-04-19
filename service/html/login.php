@@ -23,9 +23,8 @@ page(function () {
                 <button class="entry" onclick="login(this)">Giriş</button>
             </div>
             <div class="link">
-                <a href="?m=email">Şifremi Unuttum</a>
+                <a href="email.php">Şifremi Bilmiyorum</a>
             </div>
-
         </div>
     </div>
     <script>
@@ -48,36 +47,13 @@ page(function () {
                 raise("Parola en az 6 karakter olmalı", 1);
                 return;
             }
-            btn.showLoading();
 
-            fetch("service.php/token", {
-                method: "POST",
-                cache: 'no-cache',
-                body: JSON.stringify({
-                    "type": type
-                }),
-                headers: {
-                    "Content-Type": "application/json; charset=utf-8",
-                    "authorization": "Basic " + btoa(user + ":" + pass)
-                }
-            }).then(raw => {
-                btn.hideLoading();
-                raw.json().then(response => {
-                    if (response.success) {
-                        response.data.password = pass;
-                        callback(response.data);
-                    } else {
-                        raise(response.data.message, 4);
-                    }
-                }).catch(err => {
-                    raise(err, 3);
-                });
-            }).catch(err => {
-                btn.hideLoading();
-                raise(err, 2);
+            btn.send({url:"service.php/token",user:user,password:pass,data:{type:type}}).then(data=>{
+                data.password = pass;
+                callback(data);
+            }).catch(err=>{
+                raise(err.toString());
             });
-            
-            
         }
     </script>
 <?php
