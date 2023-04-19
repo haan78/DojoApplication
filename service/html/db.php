@@ -47,9 +47,11 @@ function reset_password(string $code, string $password) : void {
 
 function validate(string $username, string $password, string $type) {
     $uye_id = $ad = $durum = $dosya_id = $err = "";
-    $list = "'active','admin','super-admin'";
-    if ($type == "admin") {
+    $list = "'noone'";
+    if ($type == "mobile") {
         $list = "'admin','super-admin'";
+    } elseif ($type == "web") {
+        $list = "'active','admin','super-admin'";
     }
     //throw new Exception($list." - ".$type);
     $sql = "SELECT ad,durum,uye_id,dosya_id FROM uye

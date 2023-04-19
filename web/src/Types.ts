@@ -35,7 +35,8 @@ export interface MemberInfo {
     son3Ay:number,
     tahakkuk:string,
     tahakkuk_id:number,
-    file_type:string
+    file_type:string,
+    borcbilgi:string
 }
 
 export interface Level {

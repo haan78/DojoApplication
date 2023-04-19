@@ -1,19 +1,15 @@
 #!/bin/sh
-wd=/var/www/html
-bdir=$wd/backend/
-lock=$bdir/composer.lock
 echo "DEVELOPER RUNING..."
-if [ ! -f "$lock" ]
+cd /var/www/html
+if [ ! -f "./composer.lock" ]
 then
-    echo "COMPOSER INSTALL"
-	cd $bdir
+    echo "COMPOSER INSTALL"	
     composer install
-    if [ ! -f "$lock" ]
+    if [ ! -f "./composer.lock" ]
     then
         echo "Lock file could not create"
         exit 1
-    fi
-	cd ..
+    fi	
 else
     echo "Lock file is already exist"
 fi

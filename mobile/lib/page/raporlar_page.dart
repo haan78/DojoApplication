@@ -25,7 +25,6 @@ class RaporlarPage extends StatefulWidget {
 class _RaporlarPage extends State<RaporlarPage> with TickerProviderStateMixin {
   late TabController tbc;
   late Api api;
-  late LoadingDialog loadingdlg;
 
   List<GelirGiderDetay> listGelirGiderDetay = [];
   List<SeviyeBildirim> listSeviyeBildirim = [];
@@ -33,17 +32,19 @@ class _RaporlarPage extends State<RaporlarPage> with TickerProviderStateMixin {
   DateTime baslangic = DateTime.now().subtract(const Duration(days: 90));
   final minTar = DateTime(buYil - 3, 1, 1);
   final maxTar = DateTime(buYil + 2, 1, 1);
+  bool loading = false;
 
   @override
   void initState() {
     super.initState();
-    loadingdlg = LoadingDialog(context);
+
     tbc = TabController(length: 3, vsync: this, initialIndex: 0);
     api = Api(url: widget.store.ApiUrl, authorization: widget.store.ApiToken);
   }
 
   Future<void> openExcel(String reportName, Excel excel) async {
     Directory tempDir = await getTemporaryDirectory();
+
     final fname = "${tempDir.path}/$reportName${dateFormater(DateTime.now(), "yyyyMMddHHmmss")}.xlsx";
     final file = File(fname);
     await file.writeAsBytes(excel.save(fileName: fname)!);
@@ -141,34 +142,35 @@ class _RaporlarPage extends State<RaporlarPage> with TickerProviderStateMixin {
                                             }))))),
                             ElevatedButton(
                                 onPressed: () async {
+                                  if (loading) return;
+                                  loading = true;
                                   try {
                                     final excel = Excel.createExcel();
                                     final sheet = excel.sheets[excel.getDefaultSheet()!]!;
-                                    sheet.cell(CellIndex.indexByColumnRow(columnIndex: 1, rowIndex: 1)).value = "Ad";
-                                    sheet.cell(CellIndex.indexByColumnRow(columnIndex: 2, rowIndex: 1)).value = "Tarih";
-                                    sheet.cell(CellIndex.indexByColumnRow(columnIndex: 3, rowIndex: 1)).value = "Tanım";
-                                    sheet.cell(CellIndex.indexByColumnRow(columnIndex: 4, rowIndex: 1)).value = "Kasa";
-                                    sheet.cell(CellIndex.indexByColumnRow(columnIndex: 5, rowIndex: 1)).value = "Tutar";
-                                    sheet.cell(CellIndex.indexByColumnRow(columnIndex: 6, rowIndex: 1)).value = "Tür";
-                                    sheet.cell(CellIndex.indexByColumnRow(columnIndex: 7, rowIndex: 1)).value = "Tahsilatcı";
-                                    sheet.cell(CellIndex.indexByColumnRow(columnIndex: 8, rowIndex: 1)).value = "Açıklama";
+                                    sheet.cell(CellIndex.indexByColumnRow(columnIndex: 0, rowIndex: 0)).value = "Ad";
+                                    sheet.cell(CellIndex.indexByColumnRow(columnIndex: 1, rowIndex: 0)).value = "Tarih";
+                                    sheet.cell(CellIndex.indexByColumnRow(columnIndex: 2, rowIndex: 0)).value = "Tanım";
+                                    sheet.cell(CellIndex.indexByColumnRow(columnIndex: 3, rowIndex: 0)).value = "Kasa";
+                                    sheet.cell(CellIndex.indexByColumnRow(columnIndex: 4, rowIndex: 0)).value = "Tutar";
+                                    sheet.cell(CellIndex.indexByColumnRow(columnIndex: 5, rowIndex: 0)).value = "Tür";
+                                    sheet.cell(CellIndex.indexByColumnRow(columnIndex: 6, rowIndex: 0)).value = "Tahsilatcı";
+                                    sheet.cell(CellIndex.indexByColumnRow(columnIndex: 7, rowIndex: 0)).value = "Açıklama";
                                     for (int i = 0; i < listGelirGiderDetay.length; i++) {
                                       final row = listGelirGiderDetay[i];
-                                      sheet.cell(CellIndex.indexByColumnRow(columnIndex: 1, rowIndex: i + 2)).value = row.ad;
-                                      sheet.cell(CellIndex.indexByColumnRow(columnIndex: 2, rowIndex: i + 2)).value = row.tarih;
-                                      sheet.cell(CellIndex.indexByColumnRow(columnIndex: 3, rowIndex: i + 2)).value = row.tanim;
-                                      sheet.cell(CellIndex.indexByColumnRow(columnIndex: 4, rowIndex: i + 2)).value = row.kasa;
-                                      sheet.cell(CellIndex.indexByColumnRow(columnIndex: 5, rowIndex: i + 2)).value = row.tutar;
-                                      sheet.cell(CellIndex.indexByColumnRow(columnIndex: 6, rowIndex: i + 2)).value = row.tur;
-                                      sheet.cell(CellIndex.indexByColumnRow(columnIndex: 7, rowIndex: i + 2)).value = row.tahsilatci;
-                                      sheet.cell(CellIndex.indexByColumnRow(columnIndex: 8, rowIndex: i + 2)).value = row.aciklama;
+                                      sheet.cell(CellIndex.indexByColumnRow(columnIndex: 0, rowIndex: i + 1)).value = row.ad;
+                                      sheet.cell(CellIndex.indexByColumnRow(columnIndex: 1, rowIndex: i + 1)).value = dateFormater(row.tarih, "dd/MM/yyyy");
+                                      sheet.cell(CellIndex.indexByColumnRow(columnIndex: 2, rowIndex: i + 1)).value = row.tanim;
+                                      sheet.cell(CellIndex.indexByColumnRow(columnIndex: 3, rowIndex: i + 1)).value = row.kasa;
+                                      sheet.cell(CellIndex.indexByColumnRow(columnIndex: 4, rowIndex: i + 1)).value = row.tutar;
+                                      sheet.cell(CellIndex.indexByColumnRow(columnIndex: 5, rowIndex: i + 1)).value = row.tur;
+                                      sheet.cell(CellIndex.indexByColumnRow(columnIndex: 6, rowIndex: i + 1)).value = row.tahsilatci;
+                                      sheet.cell(CellIndex.indexByColumnRow(columnIndex: 7, rowIndex: i + 1)).value = row.aciklama;
                                     }
                                     openExcel("gelirgider", excel);
                                   } catch (err) {
                                     if (context.mounted) errorAlert(context, err.toString());
                                   }
-
-                                  ///data/user/0/com.example.dojoflu/cache/gelirgider20230417144247.xlsx
+                                  loading = false;
                                 },
                                 child: const Text("Excel Dökümanı .xlsx"))
                           ]));
@@ -207,28 +209,31 @@ class _RaporlarPage extends State<RaporlarPage> with TickerProviderStateMixin {
                                   )))),
                       ElevatedButton(
                           onPressed: () async {
+                            if (loading) return;
+                            loading = true;
                             try {
                               final excel = Excel.createExcel();
                               final sheet = excel.sheets[excel.getDefaultSheet()!]!;
-                              sheet.cell(CellIndex.indexByColumnRow(columnIndex: 1, rowIndex: 1)).value = "Ad";
-                              sheet.cell(CellIndex.indexByColumnRow(columnIndex: 2, rowIndex: 1)).value = "EkfNo";
-                              sheet.cell(CellIndex.indexByColumnRow(columnIndex: 3, rowIndex: 1)).value = "Doğum Tarihi";
-                              sheet.cell(CellIndex.indexByColumnRow(columnIndex: 4, rowIndex: 1)).value = "Seviye";
-                              sheet.cell(CellIndex.indexByColumnRow(columnIndex: 5, rowIndex: 1)).value = "Sınav Tarihi";
-                              sheet.cell(CellIndex.indexByColumnRow(columnIndex: 6, rowIndex: 1)).value = "Açıklama";
+                              sheet.cell(CellIndex.indexByColumnRow(columnIndex: 0, rowIndex: 0)).value = "Ad";
+                              sheet.cell(CellIndex.indexByColumnRow(columnIndex: 1, rowIndex: 0)).value = "EkfNo";
+                              sheet.cell(CellIndex.indexByColumnRow(columnIndex: 2, rowIndex: 0)).value = "Doğum Tarihi";
+                              sheet.cell(CellIndex.indexByColumnRow(columnIndex: 3, rowIndex: 0)).value = "Seviye";
+                              sheet.cell(CellIndex.indexByColumnRow(columnIndex: 4, rowIndex: 0)).value = "Sınav Tarihi";
+                              sheet.cell(CellIndex.indexByColumnRow(columnIndex: 5, rowIndex: 0)).value = "Açıklama";
                               for (int i = 0; i < listSeviyeBildirim.length; i++) {
                                 final sb = listSeviyeBildirim[i];
-                                sheet.cell(CellIndex.indexByColumnRow(columnIndex: 1, rowIndex: i + 2)).value = sb.ad;
-                                sheet.cell(CellIndex.indexByColumnRow(columnIndex: 2, rowIndex: i + 2)).value = sb.ekfno;
-                                sheet.cell(CellIndex.indexByColumnRow(columnIndex: 3, rowIndex: i + 2)).value = sb.dogum_tarih;
-                                sheet.cell(CellIndex.indexByColumnRow(columnIndex: 4, rowIndex: i + 2)).value = sb.seviye;
-                                sheet.cell(CellIndex.indexByColumnRow(columnIndex: 5, rowIndex: i + 2)).value = sb.tarih;
-                                sheet.cell(CellIndex.indexByColumnRow(columnIndex: 6, rowIndex: i + 2)).value = sb.aciklama;
+                                sheet.cell(CellIndex.indexByColumnRow(columnIndex: 0, rowIndex: i + 1)).value = sb.ad;
+                                sheet.cell(CellIndex.indexByColumnRow(columnIndex: 1, rowIndex: i + 1)).value = sb.ekfno;
+                                sheet.cell(CellIndex.indexByColumnRow(columnIndex: 2, rowIndex: i + 1)).value = dateFormater(sb.dogum_tarih, "dd/MM/yyyy");
+                                sheet.cell(CellIndex.indexByColumnRow(columnIndex: 3, rowIndex: i + 1)).value = sb.seviye;
+                                sheet.cell(CellIndex.indexByColumnRow(columnIndex: 4, rowIndex: i + 1)).value = dateFormater(sb.tarih, "dd/MM/yyyy");
+                                sheet.cell(CellIndex.indexByColumnRow(columnIndex: 5, rowIndex: i + 1)).value = sb.aciklama;
                               }
                               openExcel("gelirgider", excel);
                             } catch (err) {
                               if (context.mounted) errorAlert(context, err.toString());
                             }
+                            loading = false;
                           },
                           child: const Text("Excel Dökümanı .xlsx"))
                     ]);
@@ -237,47 +242,51 @@ class _RaporlarPage extends State<RaporlarPage> with TickerProviderStateMixin {
                 Center(
                     child: ElevatedButton(
                         onPressed: () async {
+                          if (loading) return;
+                          loading = true;
                           try {
                             final result = await rapor_geneluyeraporu(api);
                             final excel = Excel.createExcel();
                             final sheet = excel.sheets[excel.getDefaultSheet()!]!;
-                            sheet.cell(CellIndex.indexByColumnRow(columnIndex: 1, rowIndex: 1)).value = "Üye ID";
-                            sheet.cell(CellIndex.indexByColumnRow(columnIndex: 2, rowIndex: 1)).value = "Ad";
-                            sheet.cell(CellIndex.indexByColumnRow(columnIndex: 3, rowIndex: 1)).value = "Email";
-                            sheet.cell(CellIndex.indexByColumnRow(columnIndex: 4, rowIndex: 1)).value = "Cinsiyet";
-                            sheet.cell(CellIndex.indexByColumnRow(columnIndex: 5, rowIndex: 1)).value = "Doğum Tarihi";
-                            sheet.cell(CellIndex.indexByColumnRow(columnIndex: 6, rowIndex: 1)).value = "EkfNo";
-                            sheet.cell(CellIndex.indexByColumnRow(columnIndex: 7, rowIndex: 1)).value = "Durum";
-                            sheet.cell(CellIndex.indexByColumnRow(columnIndex: 8, rowIndex: 1)).value = "Tahakkuk";
-                            sheet.cell(CellIndex.indexByColumnRow(columnIndex: 9, rowIndex: 1)).value = "Seviye";
-                            sheet.cell(CellIndex.indexByColumnRow(columnIndex: 10, rowIndex: 1)).value = "Sınav Tarihi";
-                            sheet.cell(CellIndex.indexByColumnRow(columnIndex: 11, rowIndex: 1)).value = "Borç Tutarı";
-                            sheet.cell(CellIndex.indexByColumnRow(columnIndex: 12, rowIndex: 1)).value = "Borc Sayısı";
-                            sheet.cell(CellIndex.indexByColumnRow(columnIndex: 13, rowIndex: 1)).value = "Devam Sayısı";
-                            sheet.cell(CellIndex.indexByColumnRow(columnIndex: 14, rowIndex: 1)).value = "İlk Keiko";
-                            sheet.cell(CellIndex.indexByColumnRow(columnIndex: 15, rowIndex: 1)).value = "Son Seiko";
+                            sheet.cell(CellIndex.indexByColumnRow(columnIndex: 0, rowIndex: 0)).value = "Üye ID";
+                            sheet.cell(CellIndex.indexByColumnRow(columnIndex: 1, rowIndex: 0)).value = "Ad";
+                            sheet.cell(CellIndex.indexByColumnRow(columnIndex: 2, rowIndex: 0)).value = "Email";
+                            sheet.cell(CellIndex.indexByColumnRow(columnIndex: 3, rowIndex: 0)).value = "Cinsiyet";
+                            sheet.cell(CellIndex.indexByColumnRow(columnIndex: 4, rowIndex: 0)).value = "Doğum Tarihi";
+                            sheet.cell(CellIndex.indexByColumnRow(columnIndex: 5, rowIndex: 0)).value = "EkfNo";
+                            sheet.cell(CellIndex.indexByColumnRow(columnIndex: 6, rowIndex: 0)).value = "Durum";
+                            sheet.cell(CellIndex.indexByColumnRow(columnIndex: 7, rowIndex: 0)).value = "Tahakkuk";
+                            sheet.cell(CellIndex.indexByColumnRow(columnIndex: 8, rowIndex: 0)).value = "Seviye";
+                            sheet.cell(CellIndex.indexByColumnRow(columnIndex: 9, rowIndex: 0)).value = "Sınav Tarihi";
+                            sheet.cell(CellIndex.indexByColumnRow(columnIndex: 10, rowIndex: 0)).value = "Borç Tutarı";
+                            sheet.cell(CellIndex.indexByColumnRow(columnIndex: 11, rowIndex: 0)).value = "Borc Sayısı";
+                            sheet.cell(CellIndex.indexByColumnRow(columnIndex: 12, rowIndex: 0)).value = "Devam Sayısı";
+                            sheet.cell(CellIndex.indexByColumnRow(columnIndex: 13, rowIndex: 0)).value = "İlk Keiko";
+                            sheet.cell(CellIndex.indexByColumnRow(columnIndex: 14, rowIndex: 0)).value = "Son Seiko";
                             for (int i = 0; i < result.length; i++) {
                               final r = result[i];
-                              sheet.cell(CellIndex.indexByColumnRow(columnIndex: 1, rowIndex: i + 2)).value = r.uye_id;
-                              sheet.cell(CellIndex.indexByColumnRow(columnIndex: 2, rowIndex: i + 2)).value = r.ad;
-                              sheet.cell(CellIndex.indexByColumnRow(columnIndex: 3, rowIndex: i + 2)).value = r.email;
-                              sheet.cell(CellIndex.indexByColumnRow(columnIndex: 4, rowIndex: i + 2)).value = r.cinsiyet;
-                              sheet.cell(CellIndex.indexByColumnRow(columnIndex: 5, rowIndex: i + 2)).value = r.dogum_tarih;
-                              sheet.cell(CellIndex.indexByColumnRow(columnIndex: 6, rowIndex: i + 2)).value = r.ekfno;
-                              sheet.cell(CellIndex.indexByColumnRow(columnIndex: 7, rowIndex: i + 2)).value = r.durum;
-                              sheet.cell(CellIndex.indexByColumnRow(columnIndex: 8, rowIndex: i + 2)).value = r.tahakkuk;
-                              sheet.cell(CellIndex.indexByColumnRow(columnIndex: 9, rowIndex: i + 2)).value = r.seviye;
-                              sheet.cell(CellIndex.indexByColumnRow(columnIndex: 10, rowIndex: i + 2)).value = r.sinav_tarih;
-                              sheet.cell(CellIndex.indexByColumnRow(columnIndex: 11, rowIndex: i + 2)).value = r.borc_tutar;
-                              sheet.cell(CellIndex.indexByColumnRow(columnIndex: 12, rowIndex: i + 2)).value = r.borc_sayi;
-                              sheet.cell(CellIndex.indexByColumnRow(columnIndex: 13, rowIndex: i + 2)).value = r.devam_sayi;
-                              sheet.cell(CellIndex.indexByColumnRow(columnIndex: 14, rowIndex: i + 2)).value = r.ilk;
-                              sheet.cell(CellIndex.indexByColumnRow(columnIndex: 15, rowIndex: i + 2)).value = r.son;
+                              sheet.cell(CellIndex.indexByColumnRow(columnIndex: 0, rowIndex: i + 1)).value = r.uye_id;
+                              sheet.cell(CellIndex.indexByColumnRow(columnIndex: 1, rowIndex: i + 1)).value = r.ad;
+                              sheet.cell(CellIndex.indexByColumnRow(columnIndex: 2, rowIndex: i + 1)).value = r.email;
+                              sheet.cell(CellIndex.indexByColumnRow(columnIndex: 3, rowIndex: i + 1)).value = r.cinsiyet;
+                              sheet.cell(CellIndex.indexByColumnRow(columnIndex: 4, rowIndex: i + 1)).value = dateFormater(r.dogum_tarih, "dd/MM/yyyy");
+                              sheet.cell(CellIndex.indexByColumnRow(columnIndex: 5, rowIndex: i + 1)).value = r.ekfno;
+                              sheet.cell(CellIndex.indexByColumnRow(columnIndex: 6, rowIndex: i + 1)).value = r.durum;
+                              sheet.cell(CellIndex.indexByColumnRow(columnIndex: 7, rowIndex: i + 1)).value = r.tahakkuk;
+                              sheet.cell(CellIndex.indexByColumnRow(columnIndex: 8, rowIndex: i + 1)).value = r.seviye;
+                              sheet.cell(CellIndex.indexByColumnRow(columnIndex: 9, rowIndex: i + 1)).value =
+                                  r.sinav_tarih != null ? dateFormater(r.sinav_tarih!, "dd/MM/yyyy") : null;
+                              sheet.cell(CellIndex.indexByColumnRow(columnIndex: 10, rowIndex: i + 1)).value = r.borc_tutar;
+                              sheet.cell(CellIndex.indexByColumnRow(columnIndex: 11, rowIndex: i + 1)).value = r.borc_sayi;
+                              sheet.cell(CellIndex.indexByColumnRow(columnIndex: 12, rowIndex: i + 1)).value = r.devam_sayi;
+                              sheet.cell(CellIndex.indexByColumnRow(columnIndex: 13, rowIndex: i + 1)).value = r.ilk;
+                              sheet.cell(CellIndex.indexByColumnRow(columnIndex: 14, rowIndex: i + 1)).value = r.son;
                             }
                             openExcel("gelirgider", excel);
                           } catch (err) {
                             if (context.mounted) errorAlert(context, err.toString());
                           }
+                          loading = false;
                         },
                         child: const Text("Excel Dökümanı .xlsx")))
               ]))

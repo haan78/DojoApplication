@@ -6,7 +6,7 @@
     let popup: Popup;
     export let foregroundColor:string = "gold";
     export let backgroundColor:string = "black";
-    export let logo:string = "/logo.png"
+    export let logo:string = "./logo.png"
     export let title:string = "";
     const eventDispatcher = createEventDispatcher();
 

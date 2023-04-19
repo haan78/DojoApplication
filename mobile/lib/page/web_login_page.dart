@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:dojo_mobile/api.dart';
-import 'package:dojo_mobile/page/yoklama_page.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:webview_flutter/webview_flutter.dart';
@@ -11,32 +10,16 @@ import '../store.dart';
 
 import 'package:url_launcher/url_launcher.dart';
 
-class WebLoginPage extends StatefulWidget {
-  const WebLoginPage({super.key});
+class WebLoginPage extends StatelessWidget {
+  WebLoginPage({super.key});
 
-  @override
-  State<WebLoginPage> createState() {
-    return _WebLoginPageState();
-  }
-}
-
-class _WebLoginPageState extends State<WebLoginPage> {
   final TextEditingController _user = TextEditingController();
   final TextEditingController _pass = TextEditingController(text: "");
   late WebViewController _pageController;
   bool rememberme = false;
   bool first = true;
 
-  @override
-  void initState() {
-    first = true;
-    super.initState();
-    Store s = Provider.of<Store>(context, listen: false);
-    _pageController = wconn(s);
-    //if (Platform.isAndroid) WebView.platform = AndroidWebView();
-  }
-
-  WebViewController wconn(Store s) {
+  WebViewController wconn(BuildContext context, Store s) {
     WebViewController c = WebViewController();
     c.setJavaScriptMode(JavaScriptMode.unrestricted);
     c.setBackgroundColor(const Color(0x00000000));
@@ -57,9 +40,9 @@ class _WebLoginPageState extends State<WebLoginPage> {
       final api = Api(url: s.ApiUrl, authorization: s.ApiToken);
       s.sabitler = await sabitGetir(api);
       await writeSettings(s);
-      if (mounted) {
+      if (context.mounted) {
+        //Navigator.push(MaterialPageRoute(builder: (context) => FirstPage(store: s)));
         Navigator.push(context, MaterialPageRoute(builder: (context) => FirstPage(store: s)));
-        //Navigator.push(context, MaterialPageRoute(builder: (context) => YoklamaPage(store: s)));
       }
     });
     return c;
@@ -68,12 +51,12 @@ class _WebLoginPageState extends State<WebLoginPage> {
   @override
   Widget build(BuildContext context) {
     Store s = Provider.of<Store>(context, listen: false);
+    _pageController = wconn(context, s);
     if (first) {
       _user.text = s.ApiUser;
       _pass.text = s.ApiPassword;
       first = false;
     }
-
     return Scaffold(
         appBar: AppBar(
             automaticallyImplyLeading: false,
@@ -105,7 +88,7 @@ class _WebLoginPageState extends State<WebLoginPage> {
                     TextButton(
                         onPressed: () async {
                           await forgetSettings();
-                          _pageController.runJavaScript("setLoginData('','','admin')");
+                          _pageController.runJavaScript("setLoginData('','','mobile')");
                         },
                         child: const Text("Beni Unut")),
                     const Spacer(),

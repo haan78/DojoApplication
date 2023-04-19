@@ -12,10 +12,6 @@
         </div>
 
         <div class="item">
-            <div class="h-captcha" data-sitekey="<?php echo $HCAPTCHA_SITEKEY; ?>"></div>
-        </div>
-
-        <div class="item">
             <?php button("emailformsubmit","Doğrulama E-Postası Gönder") ?>
         </div>
         <div class="link">

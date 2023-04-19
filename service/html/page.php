@@ -1,8 +1,14 @@
-<?php require_once "vendor/autoload.php";
+<?php 
+date_default_timezone_set('Europe/Istanbul');
+error_reporting(E_ALL);
+ini_set('display_errors', TRUE);
+ini_set('display_startup_errors', TRUE);
+
+require_once "vendor/autoload.php";
+
 $dotenv = Dotenv\Dotenv::createImmutable("/etc", "dojo_service.env");
 $dotenv->load();
 
-$HCAPTCHA_SITEKEY = $_ENV["HCAPTCHA_SITEKEY"];
 
 
 $module = trim($_GET["m"] ?? "login");

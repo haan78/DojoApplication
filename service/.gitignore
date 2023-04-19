@@ -1,6 +1,6 @@
-backend/vendor
-backend/composer.lock
-backend/dhtml
+html/vendor
+html/composer.lock
+html/member
+
 dbinit/data*
-frontend
 dojo_service.env

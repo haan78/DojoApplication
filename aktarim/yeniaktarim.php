@@ -2,7 +2,6 @@
 if (PHP_SAPI != 'cli') {
   die("Works only CLI mode");
 }
-define("CONNS", "mongodb://root:dQu98KNmtF9@localhost");
 
 define("QUERY", array (
   0 => 

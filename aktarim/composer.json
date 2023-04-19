@@ -1,0 +1,8 @@
+{
+    "description": "dojo service",
+    "name":"dojo/service",
+
+    "require": {        
+        "mongodb/mongodb": "1.12.0"
+    }
+}

@@ -15,10 +15,6 @@
         </div>
 
         <div class="item">
-            <div class="h-captcha" data-sitekey="<?php echo $HCAPTCHA_SITEKEY; ?>"></div>
-        </div>
-
-        <div class="item">
             <?php button("loginformsubmit", "Giriş"); ?>
         </div>
         <div class="link">

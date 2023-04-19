@@ -1,7 +1,7 @@
 <main>
     <AppBar title="Ankara Kendo" />
     <div class="center">
-        <iframe class="frame" src={serviceroot} title="Giriş" bind:this={frame} on:load={fLoad}/>        
+        <iframe class="frame" src="/login.php" title="Giriş" bind:this={frame} on:load={fLoad}/>        
     </div>
     <div class="remember">
         <label>Beni Hatirla<input type="checkbox" bind:checked={remember} /></label>
@@ -51,7 +51,7 @@
         ankarakendo_login_user = Cookie.get("ankarakendo-login-user") || "";
         ankarakendo_login_pass = Cookie.get("ankarakendo-login-pass") || "";
         if (frame.contentWindow  && typeof frame.contentWindow.setLoginData == "function") {
-            frame.contentWindow.setLoginData(ankarakendo_login_user,ankarakendo_login_pass,"");
+            frame.contentWindow.setLoginData(ankarakendo_login_user,ankarakendo_login_pass,"web");
         }
     }
 

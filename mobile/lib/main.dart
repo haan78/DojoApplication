@@ -30,8 +30,8 @@ class MyApp extends StatelessWidget {
             if (!snapshot.hasError) {
               Store s = snapshot.data!;
               Provider.of<Store>(context).copy(s);
-              return const MaterialApp(
-                //theme: ,
+              return MaterialApp(
+                theme: ThemeData(),
                 home: WebLoginPage(),
               );
             } else {

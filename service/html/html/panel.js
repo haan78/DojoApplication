@@ -74,14 +74,8 @@ function emailformsubmit(btn) {
         return;
     }
     var email = document.querySelector("input[name=email]").value.trim();
-    var captcha = document.querySelector("[name=h-captcha-response]").value.trim();
     if (!isEmail(email)) {        
         raise("E-Posta formatı doğru değil", 1);
-        return;
-    }
-
-    if (!captcha) {
-        raise("Captcha doğrulaması gerekli", 1);
         return;
     }
 
@@ -91,7 +85,6 @@ function emailformsubmit(btn) {
     fetch("service.php/email",{method: "POST",
     cache: 'no-cache',
     body: JSON.stringify({
-        "captcha": captcha,
         "email":email
     })}).then(raw=>{
         btn.setAttribute("data-loading","");
@@ -117,7 +110,6 @@ function loginformsubmit(btn) {
     }
     var user = document.querySelector("input[name=username]").value.trim();
     var pass = document.querySelector("input[name=password]").value.trim();
-    var captcha = document.querySelector("[name=h-captcha-response]").value.trim();
     var type = document.querySelector("input[name=type]").value.trim();
 
     if (!isEmail(user)) {
@@ -131,19 +123,13 @@ function loginformsubmit(btn) {
         return;
     }
 
-    if (!captcha) {
-        raise("Captcha doğrulaması gerekli", 1);
-        return;
-    }
-
     btn.setAttribute("data-loading","loading");
     btn.querySelector("img").style.display = "inline-block";
     fetch("service.php/token", {
         method: "POST",
         cache: 'no-cache',
         body: JSON.stringify({
-            "type":type,
-            "captcha": captcha
+            "type":type
         }),
         headers: {
             "Content-Type": "application/json; charset=utf-8",
