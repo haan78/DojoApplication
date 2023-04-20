@@ -1,6 +1,6 @@
 <?php
 require_once "page.php";
-require_once "./db.php";
+require_once "./customized/db.php";
 $code = $_GET["code"] ?? "";
 if ( !$code ) {
     die("Invalid code");
