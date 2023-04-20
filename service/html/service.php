@@ -8,14 +8,21 @@ ini_set('display_startup_errors', TRUE);
 require_once "vendor/autoload.php";
 require_once "./lib/Minmi.php";
 require_once "./db.php";
-require_once("./sendinblue.php");
+require_once "./sendinblue.php";
+require_once "./customized/routerAdmin.php";
+require_once "./customized/routerMember.php";
+require_once "./customized/routerOpen.php";
 
 use Minmi\Response;
 use Minmi\DefaultJsonRouter;
 use Minmi\Request;
 use Minmi\MinmiExeption;
 
-function tokenPars(string &$token) {
+function tokenPars(Request $req, array $status) : bool {
+    $token = $req->getBearerToken();
+    if (empty($token)) {
+        return false;
+    }
     $payload = null;
     try {
         $payload = \Firebase\JWT\JWT::decode($token, $_ENV["JWT_KEY"], array('HS256'));
@@ -24,12 +31,18 @@ function tokenPars(string &$token) {
     }
 
     if (property_exists($payload, "exp") && property_exists($payload, "uye_id") && property_exists($payload, "durum")) {
-        $payload->exp = time() + $_ENV["TOKEN_TIME"];
-        $token = \Firebase\JWT\JWT::encode($payload, $_ENV["JWT_KEY"], 'HS256');
-        return [
-            "uye_id" => $payload->uye_id,
-            "durum" => $payload->durum
-        ];
+        //$payload->exp = time() + $_ENV["TOKEN_TIME"];
+        //$token = \Firebase\JWT\JWT::encode($payload, $_ENV["JWT_KEY"], 'HS256');
+        if ( in_array($payload->durum,$status) ) {
+            $req->setLocal((object)[
+                "uye_id" => $payload->uye_id,
+                "durum" => $payload->durum,
+                "ad" => $payload->ad ?? "?"
+            ]);
+            return true;
+        } else {
+            return false;
+        }
     } else {
         throw new MinmiExeption("Token does not contain necessary values");
     }
@@ -37,281 +50,25 @@ function tokenPars(string &$token) {
 
 $router = new DefaultJsonRouter("", function (Request $req, Response $res) {
     $urlpattern = $req->getUriPattern();
-    $token = $req->getBearerToken();
-
-    if ($token) {
-        $user = tokenPars($token);
-        $durum = $user["durum"];
-        if ($durum == "passive") {
-            throw new MinmiExeption("Membership is passive", 401);
+    if (str_starts_with($urlpattern,"/open")) {
+        if (in_array($urlpattern,["/open/email","/open/reset","/open/token"])) {
+            return;
         }
-        if (str_starts_with($urlpattern, "/admin") && !in_array($durum, ["admin", "super-admin"])) {
-            throw new MinmiExeption("Unauthorized request for admin action", 401);
+    } elseif (str_starts_with($urlpattern,"/member")) {
+        if(tokenPars($req,["active", "admin", "super-admin"])) {
+            return;
         }
-        $req->setLocal((object)$user);
-    } elseif (!in_array($urlpattern, ["/token", "/email", "/reset"])) {
-        throw new MinmiExeption("Unauthorized required", 401);
-    }
-});
-
-$router->add("/email", function (Request $request) {
-    $jdata = $request->json();
-    $captcha = $jdata->captcha ?? "";
-    $email = $jdata->email ?? "";
-
-    if ($captcha && $email) {
-        create_identity(0, $email, $ad, $code);
-        sendinblue($email, 3, (object)[
-            "AD" => $ad,
-            "URL" => $_ENV["SERVICE_ROOT"] . "/index.php?m=reset?code=$code"
-        ]);
-    } else {
-        throw new MinmiExeption("Email and captcha are required", 400);
-    }
-});
-
-$router->add("/reset", function (Request $request) {
-    $jdata = $request->json();
-    $code = $jdata->code ?? "";
-    $pass = $jdata->password ?? "";
-    if ($code) {
-        reset_password($code, $pass);
-    } else {
-        throw new MinmiExeption("Activation code is required", 400);
-    }
-});
-
-$router->add("/token", function (Request $request) {
-    $jdata = $request->json();
-    $type = $jdata->type ?? "";
-    $username = $password = "";
-    if ($request->hasBasicAuth($username, $password)) {
-        $user = validate(trim($username), trim($password), trim($type));
-        if (!is_null($user)) {
-            $payload = [
-                "exp" => time() + $_ENV["TOKEN_TIME"],
-                "durum" => $user["durum"],
-                "uye_id" => $user["uye_id"]
-            ];
-            $token = \Firebase\JWT\JWT::encode($payload, $_ENV["JWT_KEY"], 'HS256');
-            return [
-                "ad" => $user["ad"],
-                "uye_id" => $user["uye_id"],
-                "dosya_id" => $user["dosya_id"],
-                "email" => trim($username),
-                "durum" => $user["durum"],
-                "token" => $token
-            ];
-        } else {
-            throw new MinmiExeption("Username or password is wrong", 402);
+    } elseif (str_starts_with($urlpattern,"/admin")) {
+        if(tokenPars($req,["admin", "super-admin"])) {
+            return;
         }
-    } else {
-        throw new MinmiExeption("Username, password and captcha are required", 400);
     }
+    throw new MinmiExeption("Unauthorized request", 401);
 });
 
-$router->add("/admin/uye/#uye_id", function (Request $req) {
-    return uye($req->params()["uye_id"]);
-});
-
-$router->add("/admin/uyeler", function (Request $req) {
-    $jdata = $req->json();
-    return uye_listele($jdata->durumlar);
-});
-
-$router->add("/admin/uye/kayit/#uye_id", function (Request $req) {
-    $jdata = $req->json();
-    $uye_id = $req->params()["uye_id"];
-    return uye_eke($uye_id, $jdata->ad, $jdata->tahakkuk_id, $jdata->email, $jdata->cinsiyet, $jdata->dogum, $jdata->ekfno, $jdata->durum, $jdata->dosya, $jdata->file_type);
-});
-
-$router->add("/admin/uye/epostatest/#uye_id", function (Request $req) {
-    $uye_id = intval($req->param("uye_id"));
-    $ad = $email = $code = $err = "";
-    if (uye_eposta_onkayit($uye_id, $ad, $email, $code, $err)) {
-        sendinblue($email, 1, (object)[
-            "AD" => $ad,
-            "URL" => $_ENV["SERVICE_ROOT"] . "/activate.php?code=$code"
-        ]);
-    } else {
-        throw new Exception($err);
-    }
-});
-
-
-$router->add("/admin/uye/seviye/ekle/#uye_id", function (Request $req) {
-    $uye_id = $req->params()["uye_id"];
-    $jdata = $req->json();
-    if (!seviye_ekle($uye_id, $jdata->seviye, $jdata->tarih, $jdata->aciklama, $err)) {
-        throw new Exception($err);
-    }
-});
-
-$router->add("/admin/uye/seviye/sil/#uye_id", function (Request $req) {
-    $uye_id = $req->param("uye_id");
-    $jdata = $req->json();
-    if (!seviye_sil($uye_id, $jdata->seviye, $err)) {
-        throw new Exception($err);
-    }
-});
-
-$router->add("/admin/uye/yoklama/#yoklama_id/#uye_id/@tarih", function (Request $req) {
-    $yoklama_id = $req->param("yoklama_id");
-    $uye_id = $req->param("uye_id");
-    $tarih = $req->param("tarih");
-    return uye_yoklama_eklesil($yoklama_id, $uye_id, $tarih);
-});
-
-$router->add("/admin/uye/tahakkuk/list/#uye_id", function (Request $req) {
-    $uye_id = $req->param("uye_id");
-    return uyetahakkuklist($uye_id);
-});
-
-$router->add("/admin/uye/muhasebe/digerlist/#uye_id", function (Request $req) {
-    $uye_id = $req->param("uye_id");
-    return uyedigerodemelist($uye_id);
-});
-$router->add("/admin/uye/muhasebe/harcamalist/#uye_id", function (Request $req) {
-    $uye_id = $req->param("uye_id");
-    return uyeharcamalist($uye_id);
-});
-
-$router->add("/admin/muhasebe/aidatal", function (Request $req) {
-    $jdata = $req->json();
-    $uye_id = $jdata->uye_id ?? 0;
-    $tutar = $jdata->tutar ?? 0;
-    $tarih = $jdata->tarih ?? "";
-    $kasa = $jdata->kasa ?? "";
-    $aciklama = $jdata->aciklama ?? "";
-    $tahsilatci = $req->local()->ad ?? "";
-    $yoklama_id =  $jdata->yoklama_id ?? 0;
-    $yil = $jdata->yil ?? 0;
-    $ay = $jdata->ay ?? 0;
-    return aidat_odeme_al($uye_id, $yoklama_id, $tarih, $yil, $ay, $kasa, $tutar, $aciklama, $tahsilatci);
-});
-
-$router->add("/admin/muhasebe/aidatodemesil/#muhasebe_id", function (Request $req) {
-    $muhasebe_id = $req->param("muhasebe_id");
-    return aidat_odeme_sil($muhasebe_id);
-});
-
-$router->add("/admin/muhasebe/aidatsil/#uye_tahakkuk_id", function (Request $req) {
-    $uye_tahakkuk_id = $req->param("uye_tahakkuk_id");
-    return aidat_sil($uye_tahakkuk_id);
-});
-
-$router->add("/admin/muhasebe/sil/#muhasebe_id", function (Request $req) {
-    $muhasebe_id = $req->param("muhasebe_id");
-    return muhasebe_sil($muhasebe_id);
-});
-
-$router->add("/admin/muhasebe/duzelt", function (Request $req) {
-    $jdata = $req->json();
-    $muhasebe_id = $jdata->muhasebe_id ?? 0;
-    $uye_id = $jdata->uye_id ?? 0;
-    $tutar = $jdata->tutar ?? null;
-    $tarih = $jdata->tarih ?? "";
-    $kasa = $jdata->kasa ?? "";
-    $aciklama = $jdata->aciklama ?? "";
-    $muhasebe_tanim_id = $jdata->muhasebe_tanim_id ?? 0;
-    $belge = $jdata->belge ?? null;
-    $tahsilatci = $req->local()->ad ?? "";
-    return  muhasebe_duzelt($muhasebe_id, $uye_id, $tarih, $tutar, $kasa, $muhasebe_tanim_id, $aciklama, $belge, $tahsilatci);
-});
-
-$router->add("/admin/yoklamalar", function (Request $req) {
-    return yoklamalar();
-});
-
-$router->add("/admin/uye/yoklama/liste/#yoklama_id/@tarih", function (Request $req) {
-    $yoklama_id = $req->param("yoklama_id");
-    $tarih = $req->param("tarih");
-    return yoklamaliste($yoklama_id, $tarih);
-});
-
-$router->add("/admin/upload", function () {
-    if (!empty($_FILES)) {
-        $f = $_FILES[array_key_first($_FILES)];
-        if ($f["error"] == UPLOAD_ERR_OK) {
-            $file_type = mime_content_type($f["tmp_name"]);
-            $stream = fopen($f["tmp_name"], 'r');
-            if ($stream) {
-                $icerik = base64_encode(stream_get_contents($stream, -1, 0));
-                $dosya_id = upload($icerik, $file_type);
-                fclose($stream);
-                return $dosya_id;
-            } else {
-                throw new Exception("Upload file can't read");
-            }
-        } else {
-            throw new Exception("Upload error");
-        }
-    } else {
-        throw new Exception("No Upload file");
-    }
-});
-
-$router->add("admin/sabitler", function () {
-    return sabitler();
-});
-
-$router->add("/admin/kyu/oneri", function (Request $req) {
-    return kyu_oneri();
-});
-
-$router->add("/admin/rapor/gelirgider", function (Request $req) {
-    return rapor_gelirgider();
-});
-
-$router->add("/admin/rapor/gelirgiderdetay/@baslangic/@bitis", function (Request $req) {
-    return rapor_gelirgider_detay($req->param("baslangic"), $req->param("bitis"));
-});
-
-$router->add("/admin/rapor/aylikyoklama/#yoklama_id", function (Request $req) {
-    return rapor_aylikyoklama($req->param("yoklama_id"));
-});
-
-$router->add("/admin/rapor/seviye", function (Request $req) {
-    return rapor_seviye();
-});
-
-$router->add("/admin/rapor/seviyebildirim", function (Request $req) {
-    return rapor_seviyebildirim();
-});
-
-$router->add("/admin/rapor/geneluyeraporu", function (Request $req) {
-    return rapor_geneluyeraporu();
-});
-
-$router->add("/member/password", function (Request $req) {
-    $uye_id = $req->local()->uye_id;
-    $params = $req->json();
-    if (!password($uye_id, $params->oldpass, $params->newpass, $err)) {
-        throw new MinmiExeption($err, 401);
-    }
-});
-
-$router->add("/member/foto", function (Request $req) {
-    return download($req->local()->dosya_id);
-});
-
-$router->add("/member/bilgi", function (Request $req) {
-    return uye($req->local()->uye_id);
-});
-
-$router->add("/member/tahakkuk/list", function (Request $req) {
-    return uyetahakkuklist($req->local()->uye_id);
-});
-
-$router->add("/member/email", function (Request $req) {
-    $params = $req->json();
-    $email = $params->email;
-    create_identity($req->local()->uye_id, $email, $ad, $code);
-    sendinblue($email, 3, (object)[
-        "AD" => $ad,
-        "URL" => $_ENV["SERVICE_ROOT"] . "/backend/index.php?m=reset&code=$code"
-    ]);
-});
+routerOpen($router);
+routerAdmin($router);
+routerMember($router);
 
 (Dotenv\Dotenv::createImmutable("/etc", "dojo_service.env"))->load();
 $router->execute();

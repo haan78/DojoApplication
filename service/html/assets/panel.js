@@ -14,7 +14,7 @@ function raise(err, level,seconds) {
 function success(message,seconds) {
     var div = document.createElement("div");
     div.className = "AlertSuccess";
-    div.innerHTML = (typeof err === "string" ? err : err.toString() );    
+    div.innerHTML = message;    
     document.body.append(div);
     return new Promise((resolve,reject)=>{
         setTimeout(() => {
@@ -39,7 +39,7 @@ function entryButton() {
     document.querySelectorAll("button.entry").forEach(elm=>{
         var title = elm.innerHTML;
         console.log(title);
-        elm.innerHTML = `<img src="loading.svg" style="width: 1.5em;height: 1.5em; vertical-align: middle; display: none;" />
+        elm.innerHTML = `<img src="assets/loading.svg"/>
         <span>${title}</span>`;
         elm.showLoading=function() {
             this.disabled = true;
@@ -63,8 +63,8 @@ function entryButton() {
                 method:method,
                 headers:{
                     "Content-Type": "application/json; charset=utf-8"
-                }                
-            }
+                }
+            };
             if (auth) {
                 settings.headers["authorization"] = auth;
             }

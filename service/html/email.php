@@ -19,7 +19,7 @@ page(function () {
                 <button class="entry" onclick="emailformsubmit(this)">Doğrulama E-Postası Gönder</button>
             </div>
             <div class="link">
-                <a href="?m=login">Login</a>
+                <a href="login.php">Login</a>
             </div>
         </div>
     </div>
@@ -29,25 +29,23 @@ page(function () {
         }
 
         function emailformsubmit(btn) {
-
             var email = document.querySelector("input[name=email]").value.trim();
             if (!isEmail(email)) {
                 raise("E-Posta formatı doğru değil", 1);
-                return;
-            }
-
-            btn.send({
-                url: "service.php/email",
-                data: {
-                    "email": email
-                }
-            }).then(data => {
-                success("Aktivasyon e-postası eposta adresinize gönderildi").then(() => {
-                    window.location.href = "reset.php"
+            } else {
+                btn.send({
+                    url: "service.php/open/email",
+                    data: {
+                        "email": email
+                    }
+                }).then(data => {
+                    success("Aktivasyon e-postası eposta adresinize gönderildi").then(() => {
+                        window.location.href = "login.php"
+                    });
+                }).catch(err => {
+                    raise(err.toString())
                 });
-            }).catch(err => {
-                raise(err.toString())
-            });
+            }
         }
     </script>
 <?php

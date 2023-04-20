@@ -2,6 +2,9 @@
 require_once "page.php";
 require_once "./db.php";
 $code = $_GET["code"] ?? "";
+if ( !$code ) {
+    die("Invalid code");
+}
 $err = "";
 uye_eposta_onay($code, $err);
 page(function () {

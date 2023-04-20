@@ -33,27 +33,31 @@ page(function () {
             document.querySelector("input[name=password]").value = pass || "";
             document.querySelector("input[name=type]").value = type || "";
         }
-        function login(btn) {            
+
+        function login(btn) {
             var user = document.querySelector("input[name=username]").value.trim();
             var pass = document.querySelector("input[name=password]").value.trim();
             var type = document.querySelector("input[name=type]").value.trim();
             if (!isEmail(user)) {
                 console.log(user);
                 raise("E-Posta formatı doğru değil", 1);
-                return;
+            } else if (pass.length < 6 || pass.length > 20) {
+                raise("Parola en az 6 en fazla 20 karakter olmalı", 1);
+            } else {
+                btn.send({
+                    url: "service.php/open/token",
+                    user: user,
+                    password: pass,
+                    data: {
+                        type: type
+                    }
+                }).then(data => {
+                    data.password = pass;
+                    callback(data);
+                }).catch(err => {
+                    raise(err.toString());
+                });
             }
-
-            if (pass.length < 6) {
-                raise("Parola en az 6 karakter olmalı", 1);
-                return;
-            }
-
-            btn.send({url:"service.php/token",user:user,password:pass,data:{type:type}}).then(data=>{
-                data.password = pass;
-                callback(data);
-            }).catch(err=>{
-                raise(err.toString());
-            });
         }
     </script>
 <?php

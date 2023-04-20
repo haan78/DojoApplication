@@ -26,10 +26,12 @@ class WebLoginPage extends StatelessWidget {
     c.loadRequest(Uri.parse(s.LoginUrl));
     c.setNavigationDelegate(NavigationDelegate(
       onPageFinished: (url) {
-        c.runJavaScript(("setLoginData('${s.ApiUser}','${s.ApiPassword}','admin')"));
+        c.runJavaScript(
+            ("setLoginData('${s.ApiUser}','${s.ApiPassword}','mobile')"));
       },
     ));
-    c.addJavaScriptChannel("MobileApp", onMessageReceived: (JavaScriptMessage message) async {
+    c.addJavaScriptChannel("MobileApp",
+        onMessageReceived: (JavaScriptMessage message) async {
       final Map<String, dynamic> data = jsonDecode(message.message);
       s.id = data["uye_id"];
       s.UserStatus = data["durum"];
@@ -42,7 +44,8 @@ class WebLoginPage extends StatelessWidget {
       await writeSettings(s);
       if (context.mounted) {
         //Navigator.push(MaterialPageRoute(builder: (context) => FirstPage(store: s)));
-        Navigator.push(context, MaterialPageRoute(builder: (context) => FirstPage(store: s)));
+        Navigator.push(context,
+            MaterialPageRoute(builder: (context) => FirstPage(store: s)));
       }
     });
     return c;
@@ -88,7 +91,8 @@ class WebLoginPage extends StatelessWidget {
                     TextButton(
                         onPressed: () async {
                           await forgetSettings();
-                          _pageController.runJavaScript("setLoginData('','','mobile')");
+                          _pageController
+                              .runJavaScript("setLoginData('','','mobile')");
                         },
                         child: const Text("Beni Unut")),
                     const Spacer(),

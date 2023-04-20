@@ -4,7 +4,6 @@
 
     "require": {
         "firebase/php-jwt": "^5.2",
-        "mongodb/mongodb": "^1.8",
         "vlucas/phpdotenv": "^5.3"
     }
 }

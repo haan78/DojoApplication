@@ -1,7 +1,7 @@
 {
     "Name":"Ankara Kendo",
-    "Service":"/backend/service.php",
-    "Login":"/backend/index.php",
+    "Service":"/service.php",
+    "Login":"/login.php",
     "Host":"http://192.168.3.31:8002",
     "Web":"http://ankarakendo.com"    
 }
