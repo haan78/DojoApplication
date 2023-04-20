@@ -3,4 +3,5 @@ html/composer.lock
 html/member
 
 dbinit/data*
+html/settings.php
 dojo_service.env

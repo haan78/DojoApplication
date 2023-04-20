@@ -13,7 +13,6 @@ function page(callable $content) {
     $rnd = rand(1,99999);
     ?><!DOCTYPE html>
 <html lang="tr">
-
 <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon.png" />
