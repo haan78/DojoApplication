@@ -1,4 +1,5 @@
 <?php
+require_once "settings.php";
 require_once "page.php";
 require_once "./customized/db.php";
 $code = $_GET["code"] ?? "";
@@ -6,6 +7,7 @@ if ( !$code ) {
     die("Invalid code");
 }
 $err = "";
+initSecret();
 uye_eposta_onay($code, $err);
 page(function () {
     global $err;

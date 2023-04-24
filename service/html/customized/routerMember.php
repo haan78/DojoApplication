@@ -32,7 +32,7 @@ function routerMember(DefaultJsonRouter $router)
         create_identity($req->local()->uye_id, $email, $ad, $code);
         sendinblue($email, 3, (object)[
             "AD" => $ad,
-            "URL" => $_ENV["SERVICE_ROOT"] . "/reset.php?code=$code"
+            "URL" => $GLOBALS["SERVICE_ROOT"] . "/reset.php?code=$code"
         ]);
     });
 }

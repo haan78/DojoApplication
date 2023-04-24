@@ -36,7 +36,7 @@ RUN docker-php-ext-install zip
 RUN echo "upload_max_filesize = 100M" > $PHP_INI_DIR/conf.d/upload.ini
 
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
-COPY ./dojo_service.env /etc/dojo_service.env
+COPY ./secrets.json /root/.secrets/dojo.json
 WORKDIR /var/www/html
 
 FROM base as production

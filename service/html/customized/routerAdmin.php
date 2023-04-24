@@ -2,7 +2,6 @@
 
 use Minmi\DefaultJsonRouter;
 use Minmi\Request;
-use Minmi\MinmiExeption;
 
 function routerAdmin(DefaultJsonRouter $router)
 {
@@ -27,7 +26,7 @@ function routerAdmin(DefaultJsonRouter $router)
         if (uye_eposta_onkayit($uye_id, $ad, $email, $code, $err)) {
             sendinblue($email, 1, (object)[
                 "AD" => $ad,
-                "URL" => $_ENV["SERVICE_ROOT"] . "/activate.php?code=$code"
+                "URL" => $GLOBALS["SERVICE_ROOT"] . "/activate.php?code=$code"
             ]);
         } else {
             throw new Exception($err);

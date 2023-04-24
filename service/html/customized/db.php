@@ -3,13 +3,13 @@
 require_once "./lib/MySqlTool/MySqlToolCall.php";
 
 function mysqlilink(): mysqli {
-    $arr = explode('|', $_ENV["MYSQL_CONNECTION_STRING"]);
+
     $c = @mysqli_connect(
-        (isset($arr[0]) && trim($arr[0]) ? trim($arr[0]) : "localhost"),
-        (isset($arr[1]) && trim($arr[1]) ? trim($arr[1]) : "root"),
-        (isset($arr[2]) && trim($arr[2]) ? trim($arr[2]) : ""),
-        (isset($arr[3]) && trim($arr[3]) ? trim($arr[3]) : ""),
-        (isset($arr[4]) && trim($arr[4]) ? trim($arr[4]) : 3306)
+        $GLOBALS["MYSQL"]["host"] ?? "",
+        $GLOBALS["MYSQL"]["user"]?? "",
+        $GLOBALS["MYSQL"]["password"]?? "",
+        $GLOBALS["MYSQL"]["database"]?? "",
+        $GLOBALS["MYSQL"]["port"]?? ""
     );
     if ($c) {
         mysqli_report(MYSQLI_REPORT_STRICT);

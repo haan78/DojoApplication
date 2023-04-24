@@ -15,7 +15,7 @@ function sendinblue(string $email, int $id, object $params = null) {
         CURLOPT_CUSTOMREQUEST => "POST",
         CURLOPT_POSTFIELDS => "{ \"templateId\": $id, \"to\": [ { \"email\": \"$email\" } ], \"params\": " . json_encode($params) . "}",
         CURLOPT_HTTPHEADER => array(
-            "api-key: " . $_ENV["SENDINBLUE_APIKEY"],
+            "api-key: " . $GLOBALS["SENDINBLUE_APIKEY"],
             "Content-Type: application/json"
         )
     ));

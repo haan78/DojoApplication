@@ -13,7 +13,7 @@ function routerOpen(DefaultJsonRouter $router) {
             create_identity(0, $email, $ad, $code);
             sendinblue($email, 3, (object)[
                 "AD" => $ad,
-                "URL" => $_ENV["SERVICE_ROOT"] . "/reset.php?code=$code"
+                "URL" => $GLOBALS["SERVICE_ROOT"] . "/reset.php?code=$code"
             ]);
         } else {
             throw new MinmiExeption("Email is required", 400);
@@ -39,12 +39,12 @@ function routerOpen(DefaultJsonRouter $router) {
             $user = validate(trim($username), trim($password), trim($type));
             if (!is_null($user)) {
                 $payload = [
-                    "exp" => time() + $_ENV["TOKEN_TIME"],
+                    "exp" => time() + TOKEN_TIME,
                     "durum" => $user["durum"],
                     "uye_id" => $user["uye_id"],
                     "ad" => $user["ad"]
                 ];
-                $token = \Firebase\JWT\JWT::encode($payload, $_ENV["JWT_KEY"], 'HS256');
+                $token = \Firebase\JWT\JWT::encode($payload, $GLOBALS["JWT_KEY"], 'HS256');
                 return [
                     "ad" => $user["ad"],
                     "uye_id" => $user["uye_id"],
