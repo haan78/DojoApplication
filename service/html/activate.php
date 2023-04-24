@@ -17,13 +17,17 @@ page(function () {
             <div class="item">
                 <?php if (!$err) : ?>
                     <h1 style="color:darkgreen">E-Postanız Doğrulanmıştır</h1>
+                    <p>Artık bu şifreyle <a href="/">dojo.ankarakendo.com</a> adresine giriş yapabilirsiniz.</p>
                 <?php else : ?>
                     <h1 style="color:brown"><?php echo strip_tags($err); ?></h1>
+                    <p>Birşeyler yanlış gitti. Bu sayfaya yanlış bir anahtarla gelmiş olabilirsiniz veya aktifleştirme işlemini yapmakta geç kalınmış olabilir. Sorunun cözümü için lütfen dojo sistem yöneticisiyle görüşün.</p>
                 <?php endif; ?>
             </div>
 
             <div class="link">
-                <a href="login.php">Üye Girişi ve Şifre Alma</a>
+                <a href="/">
+                    Üye Girişi ve Şifre Alma<br/>
+                </a>
             </div>
 
         </div>
