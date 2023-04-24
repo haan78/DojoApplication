@@ -25,6 +25,7 @@ page(function () {
             <div class="link">
                 <a href="email.php">Şifremi Bilmiyorum</a>
             </div>
+            <input type="text" name="type12" value="" placeholder="Boş bırak" style="display: none;" />
         </div>
     </div>
     <script>
@@ -38,6 +39,10 @@ page(function () {
             var user = document.querySelector("input[name=username]").value.trim();
             var pass = document.querySelector("input[name=password]").value.trim();
             var type = document.querySelector("input[name=type]").value.trim();
+            var type12 = document.querySelector("input[name=type12]").value.trim();
+            if (type12 || !type) {                
+                return;
+            }
             if (!isEmail(user)) {
                 console.log(user);
                 raise("E-Posta formatı doğru değil", 1);
