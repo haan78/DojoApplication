@@ -70,7 +70,8 @@ dev_dependencies:
 flutter:
   assets:
     - assets/logo.png
-    - assets/defaults.json
+    - assets/defaults.debug.json
+    - assets/defaults.release.json
     - assets/kendoka.jpg
     - assets/bilgiimg.jpg
   fonts:

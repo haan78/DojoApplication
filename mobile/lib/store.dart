@@ -1,5 +1,6 @@
 // ignore_for_file: non_constant_identifier_names
 import 'package:dojo_mobile/service.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'dart:convert';
 
@@ -36,7 +37,9 @@ class Store {
 
 Future<Store> LoadStore() async {
   Store s = Store();
-  String jdata = await rootBundle.loadString("assets/defaults.json");
+  String jdata = await rootBundle
+      .loadString("assets/defaults.${kDebugMode ? "debug" : "release"}.json");
+
   final Map<String, dynamic> data = jsonDecode(jdata);
   s.HostUrl = data["Host"].toString();
   s.AppName = data["Name"].toString();
