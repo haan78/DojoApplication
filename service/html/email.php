@@ -1,5 +1,6 @@
 <?php
 require_once "page.php";
+setSessionAttempt();
 page(function () {
 ?>
     <div class="body">
@@ -20,6 +21,9 @@ page(function () {
             </div>
             <div class="link">
                 <a href="login.php">Login</a>
+            </div>
+            <div class="link">
+                <a href="mailto:<?php echo INFO_EMAIL; ?>"><?php echo INFO_EMAIL; ?></a>
             </div>
         </div>
     </div>

@@ -1,5 +1,4 @@
 <?php
-require_once "settings.php";
 require_once "page.php";
 require_once "./customized/db.php";
 $code = $_GET["code"] ?? "";
@@ -7,6 +6,7 @@ if ( !$code ) {
     die("Invalid code");
 }
 $err = "";
+setSessionAttempt();
 initSecret();
 uye_eposta_onay($code, $err);
 page(function () {
@@ -28,6 +28,9 @@ page(function () {
                 <a href="/">
                     Üye Girişi ve Şifre Alma<br/>
                 </a>
+            </div>
+            <div class="link">
+                <a href="mailto:<?php echo INFO_EMAIL; ?>"><?php echo INFO_EMAIL; ?></a>
             </div>
 
         </div>

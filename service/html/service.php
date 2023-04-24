@@ -3,7 +3,7 @@ require_once "./settings.php";
 require_once "vendor/autoload.php";
 require_once "./lib/Minmi.php";
 require_once "./customized/db.php";
-require_once "./sendinblue.php";
+require_once "./customized/sendinblue.php";
 require_once "./customized/routerAdmin.php";
 require_once "./customized/routerMember.php";
 require_once "./customized/routerOpen.php";

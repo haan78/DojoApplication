@@ -1,6 +1,6 @@
 <?php
 require_once "page.php";
-
+setSessionAttempt();
 page(function () {
 ?>
     <div class="body">
@@ -24,6 +24,9 @@ page(function () {
             </div>
             <div class="link">
                 <a href="email.php">Şifremi Bilmiyorum</a>
+            </div>
+            <div class="link">
+                <a href="mailto:<?php echo INFO_EMAIL; ?>"><?php echo INFO_EMAIL; ?></a>
             </div>
             <input type="text" name="type12" value="" placeholder="Boş bırak" style="display: none;" />
         </div>

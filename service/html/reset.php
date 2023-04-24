@@ -4,6 +4,7 @@ $code = $_GET["code"] ?? "";
 if ( !$code ) {
     die("Invalid code");
 }
+setSessionAttempt();
 page(function () {
     global $code;
 ?>
@@ -25,6 +26,9 @@ page(function () {
 
             <div class="item">
                 <button class="entry" onclick="resetformsubmit(this)">Değiştir</button>
+            </div>
+            <div class="link">
+                <a href="mailto:<?php echo INFO_EMAIL; ?>"><?php echo INFO_EMAIL; ?></a>
             </div>
         </div>
     </div>

@@ -1,4 +1,11 @@
 <?php
+require_once "./settings.php";
+
+function setSessionAttempt() {
+    session_start();
+    $_SESSION['attemtp'] = $_SESSION['attemtp'] ?? 0;
+}
+
 function page(callable $content) {
     $rnd = rand(1,99999);
     ?><!DOCTYPE html>
@@ -7,7 +14,6 @@ function page(callable $content) {
     <meta charset="UTF-8" />
     <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
     <script src="/assets/panel.js?rnd=<?php echo $rnd; ?>"></script>
     <link rel="stylesheet" href="/assets/panel.css?rnd=<?php echo $rnd; ?>" />
     <title>Ankara Kendo</title>

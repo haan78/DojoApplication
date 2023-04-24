@@ -4,8 +4,25 @@ use Minmi\DefaultJsonRouter;
 use Minmi\Request;
 use Minmi\MinmiExeption;
 
+function testAttemtp() : int {
+    session_start();
+    if (isset($_SESSION["attemtp"])) {
+        $attempt = intval($_SESSION["attemtp"]);
+        if ($attempt < MAX_LOGIN_ATTEMPT)  {
+            $newnum = $attempt + 1;
+            $_SESSION["attemtp"] = $newnum;
+            return $newnum;
+        } else {
+            throw new MinmiExeption("Too many attempt in session time",401);    
+        }
+    } else {
+        throw new MinmiExeption("No valid session!",401);
+    }
+}
+
 function routerOpen(DefaultJsonRouter $router) {
     $router->add("/open/email", function (Request $request) {
+        $num = testAttemtp();
         $jdata = $request->json();
         $email = $jdata->email ?? "";
     
@@ -21,6 +38,7 @@ function routerOpen(DefaultJsonRouter $router) {
     });
     
     $router->add("/open/reset", function (Request $request) {
+        $num = testAttemtp();
         $jdata = $request->json();
         $code = $jdata->code ?? "";
         $pass = $jdata->password ?? "";
@@ -32,6 +50,7 @@ function routerOpen(DefaultJsonRouter $router) {
     });
     
     $router->add("/open/token", function (Request $request) {
+        $num = testAttemtp();
         $jdata = $request->json();
         $type = $jdata->type ?? "";
         $username = $password = "";
@@ -54,7 +73,7 @@ function routerOpen(DefaultJsonRouter $router) {
                     "token" => $token
                 ];
             } else {
-                throw new MinmiExeption("Username or password is wrong $type", 402);
+                throw new MinmiExeption("Username or password is wrong ($num)", 402);
             }
         } else {
             throw new MinmiExeption("Username, password and captcha are required", 400);
