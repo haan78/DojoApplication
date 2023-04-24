@@ -1,5 +1,4 @@
 <?php
-
 require_once "./lib/MySqlTool/MySqlToolCall.php";
 
 function mysqlilink(): mysqli {

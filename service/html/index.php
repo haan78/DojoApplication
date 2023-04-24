@@ -1,1 +1,1 @@
-<? header("Location: /member");
+<?php header("Location: /member");

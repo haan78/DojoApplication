@@ -1,5 +1,5 @@
 {
-    "workbench.colorTheme": "Visual Studio Dark",
+    "workbench.colorTheme": "GitHub Light Default",
     "intelephense.stubs": [
         "apache",
         "bcmath",

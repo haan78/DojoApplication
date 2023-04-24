@@ -17,5 +17,5 @@ function page(callable $content) {
         <?php $content(); ?>
     </div>
 </body>
-</html><?
+</html><?php
 }
