@@ -2,6 +2,7 @@
 import 'package:dojo_mobile/service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:safe_device/safe_device.dart';
 import 'dart:convert';
 
 import 'package:flutter/services.dart';
@@ -37,8 +38,17 @@ class Store {
 
 Future<Store> LoadStore() async {
   Store s = Store();
-  String jdata = await rootBundle
-      .loadString("assets/defaults.${kDebugMode ? "debug" : "release"}.json");
+  String jdata;
+  if (kDebugMode) {
+    bool real = await SafeDevice.isRealDevice;
+    if (real) {
+      jdata = await rootBundle.loadString("assets/defaults.device.json");
+    } else {
+      jdata = await rootBundle.loadString("assets/defaults.emulator.json");
+    }
+  } else {
+    jdata = await rootBundle.loadString("assets/defaults.release.json");
+  }
 
   final Map<String, dynamic> data = jsonDecode(jdata);
   s.HostUrl = data["Host"].toString();

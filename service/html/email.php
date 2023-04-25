@@ -5,10 +5,10 @@ page(function () {
 ?>
     <div class="body">
         <div class="form">
-            <div class="text">
+            <div class="text" ondblclick="setZero()">
                 Sistemde kayıtlı olan e-postanızı bilmiyorsanız veya değiştirmek istiyorsanız. Lütfen dojo yöneticinizle görüşünüz.
             </div>
-            <hr />
+            <hr/>
             <div class="item">
                 <label style="width: 100%">
                     <span>E-Posta</span>
@@ -30,6 +30,13 @@ page(function () {
     <script>
         function setLoginData(email) {
             document.querySelector("input[name=email]").value = email || "";
+        }
+
+        function setZero() {
+            document.cookie = "PHPSESSID=;Path=/;expires=Thu, 01 Jan 1970 00:00:01 GMT;";
+            raise("Set Zero :(").then(()=>{
+                window.location.reload();
+            });
         }
 
         function emailformsubmit(btn) {

@@ -17,7 +17,8 @@ class GrafiklerPage extends StatefulWidget {
   }
 }
 
-class _GrafiklerPage extends State<GrafiklerPage> with TickerProviderStateMixin {
+class _GrafiklerPage extends State<GrafiklerPage>
+    with TickerProviderStateMixin {
   late TabController tbc;
   late Api api;
   int page = 1;
@@ -53,7 +54,8 @@ class _GrafiklerPage extends State<GrafiklerPage> with TickerProviderStateMixin 
 
     tbc = TabController(length: 3, vsync: this, initialIndex: 0);
     api = Api(url: widget.store.ApiUrl, authorization: widget.store.ApiToken);
-    yoklamaItems = yoklamaMenuItems(widget.store.sabitler.yoklamalar, bosSecenek: false);
+    yoklamaItems =
+        yoklamaMenuItems(widget.store.sabitler.yoklamalar, bosSecenek: false);
   }
 
   @override
@@ -66,8 +68,7 @@ class _GrafiklerPage extends State<GrafiklerPage> with TickerProviderStateMixin 
           child: Column(children: [
             TabBar(
               onTap: (value) {},
-              //labelStyle: const TextStyle(fontSize: 12),
-              labelColor: Colors.black,
+              labelColor: Colors.blueAccent.shade700,
               controller: tbc,
               tabs: const [
                 Tab(text: "Mali Durum"),
@@ -82,21 +83,28 @@ class _GrafiklerPage extends State<GrafiklerPage> with TickerProviderStateMixin 
               FBuilder<void>(
                   future: rapor_gelirgiderAylik(api, listGelirGider),
                   builder: (val) {
-                    final int pageCount = (listGelirGider.length / limit).ceil();
+                    final int pageCount =
+                        (listGelirGider.length / limit).ceil();
                     final pList = <DropdownMenuItem<int>>[];
                     for (int p = 1; p <= pageCount; p++) {
-                      pList.add(DropdownMenuItem(value: p, child: Text("Sayfa $p")));
+                      pList.add(
+                          DropdownMenuItem(value: p, child: Text("Sayfa $p")));
                     }
                     List<Map<String, dynamic>> dGelir = [];
                     List<Map<String, dynamic>> dGider = [];
                     List<Map<String, dynamic>> dAidat = [];
 
-                    int bas = listGelirGider.length - (page * limit) > 0 ? listGelirGider.length - (page * limit) : 0;
-                    int bit = listGelirGider.length > bas + limit ? bas + limit : listGelirGider.length;
+                    int bas = listGelirGider.length - (page * limit) > 0
+                        ? listGelirGider.length - (page * limit)
+                        : 0;
+                    int bit = listGelirGider.length > bas + limit
+                        ? bas + limit
+                        : listGelirGider.length;
 
                     for (int i = bit - 1; i >= bas; i--) {
                       final row = listGelirGider[i];
-                      final label = "${row.yil.toString().substring(2, 4)}/${row.ay.toString().padLeft(2, '0')}";
+                      final label =
+                          "${row.yil.toString().substring(2, 4)}/${row.ay.toString().padLeft(2, '0')}";
                       dGelir.add({'domain': label, 'measure': row.gelir});
                       dAidat.add({'domain': label, 'measure': row.aidat});
                       dGider.add({'domain': label, 'measure': row.gider * -1});
@@ -114,11 +122,14 @@ class _GrafiklerPage extends State<GrafiklerPage> with TickerProviderStateMixin 
                             },
                             value: page),
                         const Spacer(),
-                        Text("Gelir", style: TextStyle(color: Colors.green.shade800)),
+                        Text("Gelir",
+                            style: TextStyle(color: Colors.green.shade800)),
                         const SizedBox(width: 10),
-                        Text("Gider", style: TextStyle(color: Colors.red.shade800)),
+                        Text("Gider",
+                            style: TextStyle(color: Colors.red.shade800)),
                         const SizedBox(width: 10),
-                        Text("Aidat", style: TextStyle(color: Colors.blue.shade800)),
+                        Text("Aidat",
+                            style: TextStyle(color: Colors.blue.shade800)),
                       ]),
                       Expanded(
                           child: DChartBar(
@@ -162,17 +173,23 @@ class _GrafiklerPage extends State<GrafiklerPage> with TickerProviderStateMixin 
                   final int pageCount = (listYoklama.length / limit).ceil();
                   final pList = <DropdownMenuItem<int>>[];
                   for (int p = 1; p <= pageCount; p++) {
-                    pList.add(DropdownMenuItem(value: p, child: Text("Sayfa $p")));
+                    pList.add(
+                        DropdownMenuItem(value: p, child: Text("Sayfa $p")));
                   }
                   List<Map<String, dynamic>> dOrt = [];
                   List<Map<String, dynamic>> dMax = [];
                   List<Map<String, dynamic>> dMin = [];
 
-                  int bas = listYoklama.length - (pageY * limit) > 0 ? listYoklama.length - (pageY * limit) : 0;
-                  int bit = listYoklama.length > bas + limit ? bas + limit : listYoklama.length;
+                  int bas = listYoklama.length - (pageY * limit) > 0
+                      ? listYoklama.length - (pageY * limit)
+                      : 0;
+                  int bit = listYoklama.length > bas + limit
+                      ? bas + limit
+                      : listYoklama.length;
                   for (int i = bit - 1; i >= bas; i--) {
                     final row = listYoklama[i];
-                    final label = "${row.yil.toString().substring(2, 4)}/${row.ay.toString().padLeft(2, '0')}\n${row.keiko} Keiko";
+                    final label =
+                        "${row.yil.toString().substring(2, 4)}/${row.ay.toString().padLeft(2, '0')}\n${row.keiko} Keiko";
                     dOrt.add({'domain': label, 'measure': row.ortalama});
                     dMax.add({'domain': label, 'measure': row.ust});
                     dMin.add({'domain': label, 'measure': row.alt});
@@ -202,7 +219,8 @@ class _GrafiklerPage extends State<GrafiklerPage> with TickerProviderStateMixin 
                             }
                           }),
                       const Spacer(),
-                      Text("Max", style: TextStyle(color: Colors.green.shade800)),
+                      Text("Max",
+                          style: TextStyle(color: Colors.green.shade800)),
                       const SizedBox(width: 10),
                       Text("Min", style: TextStyle(color: Colors.red.shade800)),
                       const SizedBox(width: 10),
@@ -244,7 +262,8 @@ class _GrafiklerPage extends State<GrafiklerPage> with TickerProviderStateMixin 
                     final int pageCount = (listSeviye.length / limit).ceil();
                     final pList = <DropdownMenuItem<int>>[];
                     for (int p = 1; p <= pageCount; p++) {
-                      pList.add(DropdownMenuItem(value: p, child: Text("Sayfa $p")));
+                      pList.add(
+                          DropdownMenuItem(value: p, child: Text("Sayfa $p")));
                     }
                     List<Map<String, dynamic>> dGenel = [];
                     List<Map<String, dynamic>> dKadin = [];
@@ -252,17 +271,32 @@ class _GrafiklerPage extends State<GrafiklerPage> with TickerProviderStateMixin 
 
                     for (int i = 0; i < listSeviye.length; i++) {
                       final row = listSeviye[i];
-                      if (listSeviyeOptions.any((element) => (element.name == row.seviye) && (element.checked == true))) {
-                        dGenel.add({'domain': row.seviye, 'measure': row.genelSayi, 'ort': row.genelOrt});
-                        dKadin.add({'domain': row.seviye, 'measure': row.kadinSayi, 'ort': row.kadinOrt});
-                        dErkek.add({'domain': row.seviye, 'measure': row.erkekSayi, 'ort': row.erkekOrt});
+                      if (listSeviyeOptions.any((element) =>
+                          (element.name == row.seviye) &&
+                          (element.checked == true))) {
+                        dGenel.add({
+                          'domain': row.seviye,
+                          'measure': row.genelSayi,
+                          'ort': row.genelOrt
+                        });
+                        dKadin.add({
+                          'domain': row.seviye,
+                          'measure': row.kadinSayi,
+                          'ort': row.kadinOrt
+                        });
+                        dErkek.add({
+                          'domain': row.seviye,
+                          'measure': row.erkekSayi,
+                          'ort': row.erkekOrt
+                        });
                       }
                     }
                     return Column(children: [
                       Row(children: [
                         ElevatedButton(
                             onPressed: () {
-                              multiSelectDialog(context, list: listSeviyeOptions, onOk: (options) {
+                              multiSelectDialog(context,
+                                  list: listSeviyeOptions, onOk: (options) {
                                 setState(() {
                                   listSeviyeOptions = options;
                                 });
@@ -270,11 +304,14 @@ class _GrafiklerPage extends State<GrafiklerPage> with TickerProviderStateMixin 
                             },
                             child: const Text("Seviyeler")),
                         const Spacer(),
-                        Text("Genel", style: TextStyle(color: Colors.green.shade800)),
+                        Text("Genel",
+                            style: TextStyle(color: Colors.green.shade800)),
                         const SizedBox(width: 10),
-                        Text("Kadın", style: TextStyle(color: Colors.red.shade800)),
+                        Text("Kadın",
+                            style: TextStyle(color: Colors.red.shade800)),
                         const SizedBox(width: 10),
-                        Text("Erkek", style: TextStyle(color: Colors.blue.shade800))
+                        Text("Erkek",
+                            style: TextStyle(color: Colors.blue.shade800))
                       ]),
                       Expanded(
                           child: DChartBar(
@@ -300,7 +337,8 @@ class _GrafiklerPage extends State<GrafiklerPage> with TickerProviderStateMixin 
                               barValuePosition: BarValuePosition.inside,
                               barValueAnchor: BarValueAnchor.end,
                               barValue: (barData, index) {
-                                final text = "${barData['measure']} / ${barData['ort']}";
+                                final text =
+                                    "${barData['measure']} / ${barData['ort']}";
                                 return text;
                               }))
                     ]);

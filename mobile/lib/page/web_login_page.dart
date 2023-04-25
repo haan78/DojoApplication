@@ -13,16 +13,13 @@ import 'package:url_launcher/url_launcher.dart';
 class WebLoginPage extends StatelessWidget {
   WebLoginPage({super.key});
 
-  final TextEditingController _user = TextEditingController();
-  final TextEditingController _pass = TextEditingController(text: "");
   late WebViewController _pageController;
   bool rememberme = false;
-  bool first = true;
 
   WebViewController wconn(BuildContext context, Store s) {
     WebViewController c = WebViewController();
     c.setJavaScriptMode(JavaScriptMode.unrestricted);
-    c.setBackgroundColor(const Color(0x00000000));
+    //c.setBackgroundColor(const Color(0x00000000));
     c.loadRequest(Uri.parse(s.LoginUrl));
     c.setNavigationDelegate(NavigationDelegate(
       onPageFinished: (url) {
@@ -55,11 +52,11 @@ class WebLoginPage extends StatelessWidget {
   Widget build(BuildContext context) {
     Store s = Provider.of<Store>(context, listen: false);
     _pageController = wconn(context, s);
-    if (first) {
+/*    if (first) {
       _user.text = s.ApiUser;
       _pass.text = s.ApiPassword;
       first = false;
-    }
+    }*/
     return Scaffold(
         appBar: AppBar(
             automaticallyImplyLeading: false,
@@ -80,10 +77,12 @@ class WebLoginPage extends StatelessWidget {
             padding: const EdgeInsets.all(10),
             child: Column(
               children: [
-                AspectRatio(
-                  aspectRatio: 1,
-                  child: WebViewWidget(controller: _pageController),
-                ),
+                Container(
+                    constraints: const BoxConstraints(maxHeight: 400),
+                    child: ClipRRect(
+                        borderRadius:
+                            const BorderRadius.all(Radius.circular(20)),
+                        child: WebViewWidget(controller: _pageController))),
                 const SizedBox(height: 10),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,

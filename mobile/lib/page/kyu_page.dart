@@ -27,8 +27,10 @@ class _KyuSinaviPage extends State<KyuSinaviPage> {
   late Api api;
   final List<KyuOneri> list = [];
   DateTime tarih = DateTime.now();
-  final tbas = dateTimeSum(DateTime.now(), const Duration(days: 30), subtract: false);
-  final tbit = dateTimeSum(DateTime.now(), const Duration(days: 30), subtract: true);
+  final tbas =
+      dateTimeSum(DateTime.now(), const Duration(days: 30), subtract: false);
+  final tbit =
+      dateTimeSum(DateTime.now(), const Duration(days: 30), subtract: true);
   bool reload = true;
   late ScrollController _scrollController;
   double _offset = 0;
@@ -43,7 +45,8 @@ class _KyuSinaviPage extends State<KyuSinaviPage> {
 
   @override
   Widget build(BuildContext context) {
-    _scrollController = ScrollController(keepScrollOffset: true, initialScrollOffset: _offset);
+    _scrollController =
+        ScrollController(keepScrollOffset: true, initialScrollOffset: _offset);
     return Scaffold(
       drawer: appDrawer(context),
       appBar: AppBar(title: appTitle(text: "Kyu Sınavı"), actions: [
@@ -67,16 +70,21 @@ class _KyuSinaviPage extends State<KyuSinaviPage> {
                       child: ListView.builder(
                           controller: _scrollController,
                           itemBuilder: (context, index) {
-                            Color c = list[index].sayi >= 12 ? Colors.green.shade900 : Colors.red.shade400;
+                            Color c = list[index].sayi >= 12
+                                ? Colors.green.shade600
+                                : Colors.red.shade400;
                             return Padding(
                                 padding: appPading,
                                 child: ListTile(
                                   title: Text(
                                     "${list[index].sinav} ${list[index].ad} ",
-                                    style: TextStyle(fontWeight: FontWeight.bold, color: c),
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold, color: c),
                                   ),
                                   subtitle: Text(
-                                    list[index].sayi >= 12 ? "Son üç ayda keiko sayısı ${list[index].sayi}" : "Son üç ayda ${12 - list[index].sayi} keiko eksiği var",
+                                    list[index].sayi >= 12
+                                        ? "Son üç ayda keiko sayısı ${list[index].sayi}"
+                                        : "Son üç ayda ${12 - list[index].sayi} keiko eksiği var",
                                     style: TextStyle(color: c),
                                   ),
                                   tileColor: tileColorByIndex(index),
@@ -97,7 +105,11 @@ class _KyuSinaviPage extends State<KyuSinaviPage> {
                   Row(children: [
                     ElevatedButton(
                         onPressed: () async {
-                          final dt = await showDatePicker(context: context, initialDate: tarih, firstDate: tbas, lastDate: tbit);
+                          final dt = await showDatePicker(
+                              context: context,
+                              initialDate: tarih,
+                              firstDate: tbas,
+                              lastDate: tbit);
                           if (dt != null) {
                             setState(() {
                               tarih = dt;
@@ -111,14 +123,20 @@ class _KyuSinaviPage extends State<KyuSinaviPage> {
                             onPressed: () async {
                               final pdf = pw.Document();
                               //final font = await PdfGoogleFonts.
-                              final font = pw.Font.ttf(await rootBundle.load("fonts/turkish_times_new_roman.ttf"));
+                              final font = pw.Font.ttf(await rootBundle
+                                  .load("fonts/turkish_times_new_roman.ttf"));
 
-                              pdf.addPage(
-                                  pw.Page(build: (context) => pw.Theme(data: pw.ThemeData(defaultTextStyle: pw.TextStyle(font: font, fontSize: 12)), child: uret())));
+                              pdf.addPage(pw.Page(
+                                  build: (context) => pw.Theme(
+                                      data: pw.ThemeData(
+                                          defaultTextStyle: pw.TextStyle(
+                                              font: font, fontSize: 12)),
+                                      child: uret())));
 
                               Directory tempDir = await getTemporaryDirectory();
 
-                              final file = File("${tempDir.path}/kyu${dateFormater(DateTime.now(), "yyyyMMddHHmmss")}.pdf");
+                              final file = File(
+                                  "${tempDir.path}/kyu${dateFormater(DateTime.now(), "yyyyMMddHHmmss")}.pdf");
                               await file.writeAsBytes(await pdf.save());
                               await OpenFile.open(file.path);
                             },
@@ -132,7 +150,9 @@ class _KyuSinaviPage extends State<KyuSinaviPage> {
   pw.Column uret() {
     List<pw.Widget> l = [];
 
-    l.add(pw.Text("${widget.store.AppName} Kyu Sınvı Listesi ${dateFormater(tarih, "dd.MM.yyyy")}", style: const pw.TextStyle(fontSize: 20)));
+    l.add(pw.Text(
+        "${widget.store.AppName} Kyu Sınvı Listesi ${dateFormater(tarih, "dd.MM.yyyy")}",
+        style: const pw.TextStyle(fontSize: 20)));
     int tind = 0;
     if (list.isNotEmpty) {
       String sinav = "";
@@ -145,17 +165,26 @@ class _KyuSinaviPage extends State<KyuSinaviPage> {
             num1 = int.parse(sinav.split(" ")[0].trim()) * 100;
             num2 = 0;
             l.add(pw.SizedBox(height: 20));
-            l.add(pw.Text(sinav, style: pw.TextStyle(fontSize: 14, fontBold: pw.Font.timesBold())));
-            l.add(pw.Table(border: pw.TableBorder.all(style: const pw.BorderStyle()), tableWidth: pw.TableWidth.max, children: []));
+            l.add(pw.Text(sinav,
+                style:
+                    pw.TextStyle(fontSize: 14, fontBold: pw.Font.timesBold())));
+            l.add(pw.Table(
+                border: pw.TableBorder.all(style: const pw.BorderStyle()),
+                tableWidth: pw.TableWidth.max,
+                children: []));
             tind += 3;
           }
           num2 += 1;
-          (l[tind] as pw.Table).children.add(pw.TableRow(verticalAlignment: pw.TableCellVerticalAlignment.middle, children: [
-                pw.SizedBox(
-                  height: 22,
-                  child: pw.Container(child: pw.Text(" ${num1 + num2} ${list[i].ad}"), alignment: pw.Alignment.centerLeft),
-                )
-              ]));
+          (l[tind] as pw.Table).children.add(pw.TableRow(
+                  verticalAlignment: pw.TableCellVerticalAlignment.middle,
+                  children: [
+                    pw.SizedBox(
+                      height: 22,
+                      child: pw.Container(
+                          child: pw.Text(" ${num1 + num2} ${list[i].ad}"),
+                          alignment: pw.Alignment.centerLeft),
+                    )
+                  ]));
         }
       }
     }

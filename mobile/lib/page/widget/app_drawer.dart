@@ -30,7 +30,11 @@ appDrawer(BuildContext context) {
                 const SizedBox(
                   width: 5,
                 ),
-                Text(store.AppName, style: TextStyle(color: Colors.yellow.shade700, fontWeight: FontWeight.bold, fontSize: 30))
+                Text(store.AppName,
+                    style: TextStyle(
+                        color: Colors.yellow.shade700,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 30))
               ],
             ),
           )),
@@ -47,77 +51,76 @@ appDrawer(BuildContext context) {
               leading: Icon(
                 Icons.supervisor_account,
                 size: 32,
-                color: Colors.black,
               ),
               title: Text("Üyeler"))),
       TextButton(
           onPressed: () {
             //scaffoldKey.currentState?.openEndDrawer();
             //Navigator.push(context, MaterialPageRoute(builder: (context) => const YoklamaPage()));
-            Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => YoklamaPage(store: store)));
+            Navigator.of(context).pushReplacement(MaterialPageRoute(
+                builder: (context) => YoklamaPage(store: store)));
             //callback(AppWindow.yoklamalar);
           },
           child: const ListTile(
               leading: Icon(
                 Icons.view_list,
                 size: 32,
-                color: Colors.black,
               ),
               title: Text("Yoklamalar"))),
       TextButton(
           onPressed: () {
-            Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => KyuSinaviPage(store: store)));
+            Navigator.of(context).pushReplacement(MaterialPageRoute(
+                builder: (context) => KyuSinaviPage(store: store)));
           },
           child: const ListTile(
               leading: Icon(
                 Icons.history_edu,
                 size: 32,
-                color: Colors.black,
               ),
               title: Text("Kyu Sınavı"))),
       TextButton(
           onPressed: () {
-            Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => GrafiklerPage(store: store)));
+            Navigator.of(context).pushReplacement(MaterialPageRoute(
+                builder: (context) => GrafiklerPage(store: store)));
           },
           child: const ListTile(
               leading: Icon(
                 Icons.bar_chart, //Icons.summarize,
                 size: 32,
-                color: Colors.black,
               ),
               title: Text("Grafikler"))),
       TextButton(
           onPressed: () {
-            Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => RaporlarPage(store: store)));
+            Navigator.of(context).pushReplacement(MaterialPageRoute(
+                builder: (context) => RaporlarPage(store: store)));
           },
           child: const ListTile(
               leading: Icon(
                 Icons.summarize,
                 size: 32,
-                color: Colors.black,
               ),
               title: Text("Raporlar"))),
       TextButton(
           onPressed: () {
-            Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => BilgiPage(store: store)));
+            Navigator.of(context).pushReplacement(MaterialPageRoute(
+                builder: (context) => BilgiPage(store: store)));
           },
           child: const ListTile(
               leading: Icon(
                 Icons.help,
                 size: 32,
-                color: Colors.black,
               ),
               title: Text("Yardım"))),
       TextButton(
           onPressed: () {
             //scaffoldKey.currentState?.openEndDrawer();
-            Navigator.push(context, MaterialPageRoute(builder: (context) => WebLoginPage()));
+            Navigator.push(context,
+                MaterialPageRoute(builder: (context) => WebLoginPage()));
           },
           child: const ListTile(
               leading: Icon(
                 Icons.exit_to_app,
                 size: 32,
-                color: Colors.black,
               ),
               title: Text("Çıkış")))
     ],
