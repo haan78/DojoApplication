@@ -25,21 +25,16 @@
 
 
     function loginSucced(data:UserData) {
-        if (data.token) {   
-            if (remember) {
-                Cookie.set("ankarakendo-login-user", ankarakendo_login_user, 2);
-                Cookie.set("ankarakendo-login-pass", ankarakendo_login_pass, 2);
-            }
-            sessionStorage.setItem("authorization",`Bearer ${data.token}`);
-            store_user.set(data);
-            push("/welcome");
-        } else {
-            console.log("olmadi");
+        if (remember) {
+            Cookie.set("ankarakendo-login-user", ankarakendo_login_user, 2);
+            Cookie.set("ankarakendo-login-pass", ankarakendo_login_pass, 2);
         }
+        store_user.set(data);
+        push("/welcome");
     }
 
     window.addEventListener("message",e=>{
-        loginSucced(e.data);        
+        loginSucced(e.data);
     })
 
     function fLoad() {        

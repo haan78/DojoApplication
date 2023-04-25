@@ -64,7 +64,7 @@
 
     function bilgi(due:Due) {
         tarihler = [];
-        dlgtitle = `${due.yoklama} ${due.yil} / ${Aylar[due.ay-1]}`;
+        dlgtitle = `Ay içinde katıdığınız keikolar ${due.yoklama} ${due.yil} / ${Aylar[due.ay-1]}`;
         due.keikolar.split(",").forEach((value,ind)=>{
             const d = new Date(value);
             tarihler.push(d);

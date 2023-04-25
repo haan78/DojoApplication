@@ -2,6 +2,33 @@
 
 use Minmi\DefaultJsonRouter;
 use Minmi\Request;
+use Minmi\MinmiExeption;
+
+function authAdmin(Request $req): void
+{
+    $token = $req->getBearerToken();
+    if (empty($token)) {
+        throw new MinmiExeption("Token is required",401);
+    }
+    $payload = null;
+    try {
+        $payload = \Firebase\JWT\JWT::decode($token, $GLOBALS["JWT_KEY"], array('HS256'));
+    } catch (Exception $ex) {
+        throw new MinmiExeption($ex->getMessage(), 401);
+    }
+
+    if (property_exists($payload, "exp") && property_exists($payload, "uye_id") && property_exists($payload, "durum")) {
+        //$payload->exp = time() + $GLOBALS["TOKEN_TIME"];
+        //$token = \Firebase\JWT\JWT::encode($payload, $GLOBALS["JWT_KEY"], 'HS256');
+        $req->setLocal((object)[
+            "uye_id" => $payload->uye_id,
+            "durum" => $payload->durum,
+            "ad" => $payload->ad
+        ]);
+    } else {
+        throw new MinmiExeption("Token does not contain necessary values",401);
+    }
+}
 
 function routerAdmin(DefaultJsonRouter $router)
 {
@@ -122,28 +149,6 @@ function routerAdmin(DefaultJsonRouter $router)
         $yoklama_id = $req->param("yoklama_id");
         $tarih = $req->param("tarih");
         return yoklamaliste($yoklama_id, $tarih);
-    });
-
-    $router->add("/admin/upload", function () {
-        if (!empty($_FILES)) {
-            $f = $_FILES[array_key_first($_FILES)];
-            if ($f["error"] == UPLOAD_ERR_OK) {
-                $file_type = mime_content_type($f["tmp_name"]);
-                $stream = fopen($f["tmp_name"], 'r');
-                if ($stream) {
-                    $icerik = base64_encode(stream_get_contents($stream, -1, 0));
-                    $dosya_id = upload($icerik, $file_type);
-                    fclose($stream);
-                    return $dosya_id;
-                } else {
-                    throw new Exception("Upload file can't read");
-                }
-            } else {
-                throw new Exception("Upload error");
-            }
-        } else {
-            throw new Exception("No Upload file");
-        }
     });
 
     $router->add("admin/sabitler", function () {

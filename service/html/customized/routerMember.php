@@ -4,6 +4,20 @@ use Minmi\DefaultJsonRouter;
 use Minmi\Request;
 use Minmi\MinmiExeption;
 
+function authMember(Request $req) : void {
+    session_start();
+    $uye_id = $_SESSION["uye_id"] ?? 0;
+    if ($uye_id) {
+        $req->setLocal((object)[
+            "uye_id" => $uye_id,
+            "durum" => $_SESSION["durum"] ?? "",
+            "ad" => $_SESSION["ad"] ?? ""
+        ]);        
+    } else {
+        throw new MinmiExeption("Unauthorized request", 401);
+    }
+}
+
 function routerMember(DefaultJsonRouter $router)
 {
     $router->add("/member/password", function (Request $req) {
@@ -12,10 +26,6 @@ function routerMember(DefaultJsonRouter $router)
         if (!password($uye_id, $params->oldpass, $params->newpass, $err)) {
             throw new MinmiExeption($err, 401);
         }
-    });
-
-    $router->add("/member/foto", function (Request $req) {
-        return download($req->local()->dosya_id);
     });
 
     $router->add("/member/bilgi", function (Request $req) {
@@ -34,5 +44,10 @@ function routerMember(DefaultJsonRouter $router)
             "AD" => $ad,
             "URL" => $GLOBALS["SERVICE_ROOT"] . "/reset.php?code=$code"
         ]);
+    });
+
+    $router->add("/member/logout", function (Request $req) {
+        session_unset();
+        return "OK";
     });
 }

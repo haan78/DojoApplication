@@ -26,8 +26,6 @@ function getUserDataFromLocal() : UserData {
         };
     }
 }
-
-
 export const store_user = writable(getUserDataFromLocal());
 
 

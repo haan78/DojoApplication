@@ -12,7 +12,7 @@
   },
   "devDependencies": {
     "@sveltejs/vite-plugin-svelte": "*",
-    "@tsconfig/svelte": "*",
+    "@tsconfig/svelte": "^4.0.1",
     "svelte": "*",
     "svelte-check": "*",
     "svelte-feather-icons": "*",

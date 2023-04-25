@@ -203,24 +203,24 @@ class GelirGiderDetay {
   String aciklama = "";
 }
 
-Future<Uint8List> uyeResim(Api api, {BoxFit fit = BoxFit.fill}) async {
-  dynamic r = await api.call("/member/foto");
-  String b64s = r["content"];
-  return base64Decode(b64s);
-}
-
-Future<List<UyeListDetay>> uye_listele(Api api, {required String durumlar}) async {
-  dynamic r = await api.call("/admin/uyeler", data: {"durumlar": durumlar}, tryit: 5);
+Future<List<UyeListDetay>> uye_listele(Api api,
+    {required String durumlar}) async {
+  dynamic r =
+      await api.call("/admin/uyeler", data: {"durumlar": durumlar}, tryit: 5);
 
   List<UyeListDetay> l = [];
   for (final urd in r) {
     UyeListDetay uld = UyeListDetay();
     uld.ad = urd["ad"];
     uld.dosya_id = int.parse(urd["dosya_id"].toString());
-    uld.odenmemis_aidat_borcu = double.parse(urd["odenmemis_aidat_borcu"].toString());
-    uld.odenmemis_aidat_syisi = int.parse(urd["odenmemis_aidat_syisi"].toString());
+    uld.odenmemis_aidat_borcu =
+        double.parse(urd["odenmemis_aidat_borcu"].toString());
+    uld.odenmemis_aidat_syisi =
+        int.parse(urd["odenmemis_aidat_syisi"].toString());
     uld.seviye = urd["seviye"];
-    uld.son_keiko = urd["son_keiko"] == null ? DateTime.now() : DateTime.parse(urd["son_keiko"].toString());
+    uld.son_keiko = urd["son_keiko"] == null
+        ? DateTime.now()
+        : DateTime.parse(urd["son_keiko"].toString());
     uld.son3Ay = int.parse(urd["son3Ay"].toString());
     uld.uye_id = int.parse(urd["uye_id"].toString());
     uld.image_type = urd["image_type"] ?? "";
@@ -249,8 +249,11 @@ Future<UyeBilgi> uyeBilgi(Api api, {int uye_id = 0}) async {
   ub.ad = r[0][0]["ad"];
   ub.email = r[0][0]["email"];
   ub.cinsiyet = r[0][0]["cinsiyet"];
-  ub.dogum_tarih = (r[0][0]["dogum_tarih"] == null ? DateTime.now() : DateTime.parse(r[0][0]["dogum_tarih"]));
-  ub.dosya_id = r[0][0]["dosya_id"] == null ? 0 : int.parse(r[0][0]["dosya_id"]);
+  ub.dogum_tarih = (r[0][0]["dogum_tarih"] == null
+      ? DateTime.now()
+      : DateTime.parse(r[0][0]["dogum_tarih"]));
+  ub.dosya_id =
+      r[0][0]["dosya_id"] == null ? 0 : int.parse(r[0][0]["dosya_id"]);
   ub.durum = r[0][0]["durum"];
   ub.ekfno = r[0][0]["ekfno"] ?? "";
   ub.son3Ay = int.parse(r[0][0]["son3Ay"] ?? "0");
@@ -281,9 +284,11 @@ Future<UyeBilgi> uyeBilgi(Api api, {int uye_id = 0}) async {
   return ub;
 }
 
-Future<void> parolaDegistir(Api api, {required String oldpass, required String newpass}) async {
+Future<void> parolaDegistir(Api api,
+    {required String oldpass, required String newpass}) async {
   //String json = jsonEncode({oldpass,newpass});
-  await api.call("/member/password", data: {"oldpass": oldpass, "newpass": newpass});
+  await api
+      .call("/member/password", data: {"oldpass": oldpass, "newpass": newpass});
 }
 
 Future<Sabitler> sabitGetir(Api api) async {
@@ -319,11 +324,17 @@ Future<Sabitler> sabitGetir(Api api) async {
   return sabitler;
 }
 
-Future<void> uyeSeviyeEkle(Api api, {required int uye_id, required UyeSeviye us}) async {
-  await api.call("/admin/uye/seviye/ekle/$uye_id", data: {"seviye": us.seviye, "tarih": dateFormater(us.tarih, "yyyy-MM-dd"), "aciklama": us.aciklama});
+Future<void> uyeSeviyeEkle(Api api,
+    {required int uye_id, required UyeSeviye us}) async {
+  await api.call("/admin/uye/seviye/ekle/$uye_id", data: {
+    "seviye": us.seviye,
+    "tarih": dateFormater(us.tarih, "yyyy-MM-dd"),
+    "aciklama": us.aciklama
+  });
 }
 
-Future<void> uyeSeviyeSil(Api api, {required int uye_id, required UyeSeviye us}) async {
+Future<void> uyeSeviyeSil(Api api,
+    {required int uye_id, required UyeSeviye us}) async {
   await api.call("/admin/uye/seviye/sil/$uye_id", data: {"seviye": us.seviye});
 }
 
@@ -350,8 +361,12 @@ Future<int> uyeKayit(Api api, {required UyeBilgi ub}) async {
   return uye_id;
 }
 
-Future<int> uyeYoklama(Api api, {required int yoklama_id, required int uye_id, required DateTime tarih}) async {
-  dynamic response = await api.call("/admin/uye/yoklama/$yoklama_id/$uye_id/${dateFormater(tarih, "yyyy-MM-dd")}");
+Future<int> uyeYoklama(Api api,
+    {required int yoklama_id,
+    required int uye_id,
+    required DateTime tarih}) async {
+  dynamic response = await api.call(
+      "/admin/uye/yoklama/$yoklama_id/$uye_id/${dateFormater(tarih, "yyyy-MM-dd")}");
   final int result = int.parse(response[0][0]["result"] as String);
   return result;
 }
@@ -376,11 +391,13 @@ Future<List<Keiko>> yoklamalar(Api api) async {
   return l;
 }
 
-Future<KeikoListe> yoklamaliste(Api api, {required int yoklama_id, required DateTime tarih}) async {
+Future<KeikoListe> yoklamaliste(Api api,
+    {required int yoklama_id, required DateTime tarih}) async {
   List<KeikoKendoka> l = [];
   dynamic response;
   try {
-    response = await api.call("/admin/uye/yoklama/liste/$yoklama_id/${dateFormater(tarih, "yyyy-MM-dd")}");
+    response = await api.call(
+        "/admin/uye/yoklama/liste/$yoklama_id/${dateFormater(tarih, "yyyy-MM-dd")}");
   } catch (err) {
     return Future.error(err);
   }
@@ -393,7 +410,8 @@ Future<KeikoListe> yoklamaliste(Api api, {required int yoklama_id, required Date
       kendoka.file_type = kk["file_type"];
       kendoka.image = base64Decode(kk["image"]);
     } else {
-      kendoka.image = (await rootBundle.load("assets/kendoka.jpg")).buffer.asUint8List();
+      kendoka.image =
+          (await rootBundle.load("assets/kendoka.jpg")).buffer.asUint8List();
       kendoka.file_type = "image/jpeg";
     }
 
@@ -410,7 +428,8 @@ Future<KeikoListe> yoklamaliste(Api api, {required int yoklama_id, required Date
   return kl;
 }
 
-Future<List<UyeTahakkuk>> uyetahakkuklist(Api api, {required int uye_id}) async {
+Future<List<UyeTahakkuk>> uyetahakkuklist(Api api,
+    {required int uye_id}) async {
   List<UyeTahakkuk> l = [];
   dynamic response;
   try {
@@ -425,7 +444,8 @@ Future<List<UyeTahakkuk>> uyetahakkuklist(Api api, {required int uye_id}) async 
     ut.kasa = raw["kasa"] ?? "";
     ut.muhasebe_id = int.parse(raw["muhasebe_id"] ?? "0");
     ut.odenen = double.parse(raw["odeme_tutar"] ?? "0");
-    ut.odeme_tarih = raw["odeme_tarih"] == null ? null : DateTime.parse(raw["odeme_tarih"]);
+    ut.odeme_tarih =
+        raw["odeme_tarih"] == null ? null : DateTime.parse(raw["odeme_tarih"]);
     ut.tahakkuk_tarih = DateTime.parse(raw["tahakkuk_tarih"]);
     ut.tahsilatci = raw["tahsilatci"] ?? "";
     ut.tanim = raw["tanim"] ?? "--";
@@ -461,7 +481,8 @@ Future<int> aidatodemeal(Api api, UyeTahakkuk ut, int uye_id) async {
   return result as int;
 }
 
-Future<int> digerodemeal(Api api, MuhasebeDiger muh, int uye_id, {bool negative = false}) async {
+Future<int> digerodemeal(Api api, MuhasebeDiger muh, int uye_id,
+    {bool negative = false}) async {
   final result = await api.call("/admin/muhasebe/duzelt", data: {
     "uye_id": uye_id,
     "tutar": negative ? -1 * muh.tutar : muh.tutar,
@@ -573,7 +594,8 @@ Future<void> rapor_gelirgiderAylik(Api api, List<GelirGiderAylik> list) async {
   }
 }
 
-Future<void> rapor_aylikyoklama(Api api, int yoklama_id, List<YoklamaAylik> list) async {
+Future<void> rapor_aylikyoklama(
+    Api api, int yoklama_id, List<YoklamaAylik> list) async {
   list.clear();
   dynamic response;
   try {
@@ -634,7 +656,8 @@ Future<void> rapor_seviyebildirim(Api api, List<SeviyeBildirim> list) async {
   }
 }
 
-Future<void> rapor_gelirgider_detay(Api api, DateTime baslangic, DateTime bitis, List<GelirGiderDetay> list) async {
+Future<void> rapor_gelirgider_detay(Api api, DateTime baslangic, DateTime bitis,
+    List<GelirGiderDetay> list) async {
   list.clear();
   dynamic response;
   try {
@@ -679,7 +702,8 @@ Future<List<GenelRap>> rapor_geneluyeraporu(Api api) async {
     obj.ilk = raw["ilk"] != null ? DateTime.parse(raw["ilk"]) : null;
     obj.son = raw["son"] != null ? DateTime.parse(raw["son"]) : null;
     obj.seviye = raw["seviye"] ?? "";
-    obj.sinav_tarih = raw["sinav_tarih"] != null ? DateTime.parse(raw["sinav_tarih"]) : null;
+    obj.sinav_tarih =
+        raw["sinav_tarih"] != null ? DateTime.parse(raw["sinav_tarih"]) : null;
     obj.tahakkuk = raw["tahakkuk"] ?? "";
     obj.uye_id = int.parse(raw["uye_id"]);
     list.add(obj);

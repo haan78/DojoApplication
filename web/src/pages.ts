@@ -6,11 +6,12 @@ export default {
         return import("./pages/Login.svelte");        
     }}),
     "/welcome":wrap({asyncComponent: () =>{
-        if (sessionStorage.getItem("authorization")) {
+        return import("./pages/Welcome.svelte");
+        /*if (sessionStorage.getItem("authorization")) {
             return import("./pages/Welcome.svelte");
         } else {
             return import("./pages/Login.svelte");
-        }        
+        }*/        
     }}),
     "*":NotFound
 }

@@ -47,7 +47,6 @@ page(function () {
                 return;
             }
             if (!isEmail(user)) {
-                console.log(user);
                 raise("E-Posta formatı doğru değil", 1);
             } else if (pass.length < 6 || pass.length > 20) {
                 raise("Parola en az 6 en fazla 20 karakter olmalı", 1);
@@ -59,8 +58,7 @@ page(function () {
                     data: {
                         type: type
                     }
-                }).then(data => {
-                    data.password = pass;
+                }).then(data => {                    
                     callback(data);
                 }).catch(err => {
                     raise(err.toString());

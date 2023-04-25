@@ -1,5 +1,5 @@
 <main>
-    <AppBar title="Ankara Kendo" on:exit={()=>{ push("/") }}>
+    <AppBar title="Ankara Kendo" on:exit={exit}>
         <span slot="exit"></span>
     </AppBar>
     <div class="container">
@@ -89,9 +89,6 @@
         uye_seviye_id:0
     }
 
-    let duesum_total:number = 0;
-    let duesum_count:number = 0;
-
 
     let module:string = "";
     let detail:string = "";
@@ -105,7 +102,14 @@
         }
     }
 
+    function exit() {
+        JRequest<void>("/service.php/member/logout").then(()=>{
+            push("/");
+        });
+    }
+
     onMount(()=>{
+        console.log("Girdi--");
         durum = getUserData().durum;
         module = "Loading";
         JRequest<Uyebilgi>("/service.php/member/bilgi").then(response=>{

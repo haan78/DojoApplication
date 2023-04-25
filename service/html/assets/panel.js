@@ -38,7 +38,6 @@ function callback(data) {
 function entryButton() {
     document.querySelectorAll("button.entry").forEach(elm=>{
         var title = elm.innerHTML;
-        console.log(title);
         elm.innerHTML = `<img src="assets/loading.svg"/>
         <span>${title}</span>`;
         elm.showLoading=function() {

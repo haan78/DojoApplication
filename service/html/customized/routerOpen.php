@@ -4,14 +4,16 @@ use Minmi\DefaultJsonRouter;
 use Minmi\Request;
 use Minmi\MinmiExeption;
 
-function testAttemtp() : int {
+function authOpen(Request $req) : void {
     session_start();
     if (isset($_SESSION["attemtp"])) {
         $attempt = intval($_SESSION["attemtp"]);
         if ($attempt < MAX_LOGIN_ATTEMPT)  {
             $newnum = $attempt + 1;
             $_SESSION["attemtp"] = $newnum;
-            return $newnum;
+            $req->setLocal((object)[
+                "attemtp" => $newnum
+            ]);
         } else {
             throw new MinmiExeption("Too many attempt in session time",401);    
         }
@@ -22,7 +24,6 @@ function testAttemtp() : int {
 
 function routerOpen(DefaultJsonRouter $router) {
     $router->add("/open/email", function (Request $request) {
-        $num = testAttemtp();
         $jdata = $request->json();
         $email = $jdata->email ?? "";
     
@@ -38,7 +39,6 @@ function routerOpen(DefaultJsonRouter $router) {
     });
     
     $router->add("/open/reset", function (Request $request) {
-        $num = testAttemtp();
         $jdata = $request->json();
         $code = $jdata->code ?? "";
         $pass = $jdata->password ?? "";
@@ -50,20 +50,28 @@ function routerOpen(DefaultJsonRouter $router) {
     });
     
     $router->add("/open/token", function (Request $request) {
-        $num = testAttemtp();
         $jdata = $request->json();
+        $num = $request->local()->attempt ?? 0;
         $type = $jdata->type ?? "";
         $username = $password = "";
         if ($request->hasBasicAuth($username, $password)) {
-            $user = validate(trim($username), trim($password), trim($type));
+            $user = validate(trim($username), trim($password), $type);
             if (!is_null($user)) {
-                $payload = [
-                    "exp" => time() + TOKEN_TIME,
-                    "durum" => $user["durum"],
-                    "uye_id" => $user["uye_id"],
-                    "ad" => $user["ad"]
-                ];
-                $token = \Firebase\JWT\JWT::encode($payload, $GLOBALS["JWT_KEY"], 'HS256');
+                $token = "";
+                if ($type == "mobile") {
+                    $payload = [
+                        "exp" => time() + TOKEN_TIME,
+                        "durum" => $user["durum"],
+                        "uye_id" => $user["uye_id"],
+                        "ad" => $user["ad"]
+                    ];
+                    $token = \Firebase\JWT\JWT::encode($payload, $GLOBALS["JWT_KEY"], 'HS256');
+                    session_unset();
+                } else { // type == "web"
+                    $_SESSION["uye_id"] = $user["uye_id"];
+                    $_SESSION["ad"] = $user["ad"];
+                    $_SESSION["durum"] = $user["durum"];
+                }
                 return [
                     "ad" => $user["ad"],
                     "uye_id" => $user["uye_id"],
