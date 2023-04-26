@@ -53,16 +53,16 @@
 
 <script lang="ts">
     // @ts-strict
-    import { KeyIcon, UserIcon, CreditCardIcon, LogOutIcon } from 'svelte-feather-icons';
+    import { KeyIcon, UserIcon, CreditCardIcon } from 'svelte-feather-icons';
     import { push } from "svelte-spa-router";
     import PasswordChange from './PasswordChange.svelte';
     import Dues from './Dues.svelte';    
-    import { onMount } from "svelte";
+    import { onDestroy, onMount } from "svelte";
     import {JRequest } from "../lib/JRequest";
     import type { JRequestError } from "../lib/JRequest";
     import { type Due, type MemberInfo, type Level, type UyeYoklama, type Uyebilgi, trDate } from "../Types";
     import AppBar from "./comp/AppBar.svelte";
-    import { getUserData } from '../store';
+    import { getUserData,store_status } from '../store';
 
     let durum:string;
     let duelist:Array<Due> = [];
@@ -92,6 +92,11 @@
 
     let module:string = "";
     let detail:string = "";
+    let isLoggedIn:boolean = true;
+
+    const loginSubscribe = store_status.subscribe(val=>{
+        isLoggedIn = val;
+    });
 
     function borcbilgiparse(borcbilgi:string,part:number):number {
         const arr = borcbilgi.split(" ");
@@ -105,11 +110,15 @@
     function exit() {
         JRequest<void>("/service.php/member/logout").then(()=>{
             push("/");
+            store_status.set(false);
         });
     }
 
     onMount(()=>{
-        console.log("Girdi--");
+        if (!isLoggedIn) {
+            console.log("hatalı giriş");
+            push("/");
+        }
         durum = getUserData().durum;
         module = "Loading";
         JRequest<Uyebilgi>("/service.php/member/bilgi").then(response=>{

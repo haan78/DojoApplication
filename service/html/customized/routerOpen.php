@@ -6,13 +6,13 @@ use Minmi\MinmiExeption;
 
 function authOpen(Request $req) : void {
     session_start();
-    if (isset($_SESSION["attemtp"])) {
-        $attempt = intval($_SESSION["attemtp"]);
+    if (isset($_SESSION["attempt"])) {
+        $attempt = intval($_SESSION["attempt"] ?? 0);
         if ($attempt < MAX_LOGIN_ATTEMPT)  {
             $newnum = $attempt + 1;
-            $_SESSION["attemtp"] = $newnum;
+            $_SESSION["attempt"] = $newnum;
             $req->setLocal((object)[
-                "attemtp" => $newnum
+                "attempt" => $newnum
             ]);
         } else {
             throw new MinmiExeption("Too many attempt in session time",401);    
@@ -51,37 +51,40 @@ function routerOpen(DefaultJsonRouter $router) {
     
     $router->add("/open/token", function (Request $request) {
         $jdata = $request->json();
-        $num = $request->local()->attempt ?? 0;
+        $num = ($request->local())->attempt ?? -1;        
         $type = $jdata->type ?? "";
         $username = $password = "";
         if ($request->hasBasicAuth($username, $password)) {
             $user = validate(trim($username), trim($password), $type);
             if (!is_null($user)) {
                 $token = "";
+                $uye_id = 0;
                 if ($type == "mobile") {
+                    $uye_id = intval($user["uye_id"] ?? 0);
                     $payload = [
                         "exp" => time() + TOKEN_TIME,
                         "durum" => $user["durum"],
-                        "uye_id" => $user["uye_id"],
+                        "uye_id" => $uye_id,
                         "ad" => $user["ad"]
                     ];
                     $token = \Firebase\JWT\JWT::encode($payload, $GLOBALS["JWT_KEY"], 'HS256');
                     session_unset();
                 } else { // type == "web"
+                    unset($_SESSION["attempt"]);
                     $_SESSION["uye_id"] = $user["uye_id"];
                     $_SESSION["ad"] = $user["ad"];
                     $_SESSION["durum"] = $user["durum"];
                 }
                 return [
                     "ad" => $user["ad"],
-                    "uye_id" => $user["uye_id"],
+                    "uye_id" => $uye_id,
                     "dosya_id" => $user["dosya_id"],
                     "email" => trim($username),
                     "durum" => $user["durum"],
                     "token" => $token
                 ];
             } else {
-                throw new MinmiExeption("Username or password is wrong ($num)", 402);
+                throw new MinmiExeption("Username or password is wrong (".$num.")", 402);
             }
         } else {
             throw new MinmiExeption("Username, password and captcha are required", 400);

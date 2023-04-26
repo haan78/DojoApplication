@@ -12,7 +12,7 @@
 </main>
 <script lang="ts">
     import { onMount } from 'svelte';
-    import { store_user } from '../store';
+    import { store_user,store_status,isLoggedIn } from '../store';
     import type {UserData} from '../store';
     import { push } from 'svelte-spa-router';
     import AppBar from './comp/AppBar.svelte';
@@ -29,7 +29,10 @@
             Cookie.set("ankarakendo-login-user", ankarakendo_login_user, 2);
             Cookie.set("ankarakendo-login-pass", ankarakendo_login_pass, 2);
         }
+
         store_user.set(data);
+        store_status.update(v=>true);
+        console.log([isLoggedIn(),"login"]);
         push("/welcome");
     }
 

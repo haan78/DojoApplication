@@ -4,8 +4,6 @@ export interface UserData {
     ad:string;
     email:string;
     durum:string;
-    token:string;
-    uye_id:number;
 }
 
 export function getUserData() : UserData {
@@ -20,13 +18,16 @@ function getUserDataFromLocal() : UserData {
         return <UserData>{
             ad:"",
             email:"",
-            durum:"",
-            token:"",
-            uye_id:0
+            durum:""            
         };
     }
 }
 export const store_user = writable(getUserDataFromLocal());
+export const store_status = writable(false);
+export function isLoggedIn():boolean {
+    console.log(store_status);
+    return <boolean>get(store_status);
+}
 
 
 store_user.subscribe(value=>{

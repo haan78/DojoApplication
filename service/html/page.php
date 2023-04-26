@@ -3,7 +3,7 @@ require_once "./settings.php";
 
 function setSessionAttempt() {
     session_start();
-    $_SESSION['attemtp'] = $_SESSION['attemtp'] ?? 0;
+    $_SESSION['attempt'] = $_SESSION['attempt'] ?? 0;
 }
 
 function page(callable $content) {
