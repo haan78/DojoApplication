@@ -2,7 +2,7 @@
     {#if loading}
     <span>Loading...</span>
     {:else}
-    <table id="tbl1" style="width: 100%;">
+    <table id="tbl1">
         <thead>
             <tr>
                 <th></th>
@@ -100,9 +100,28 @@
         border-collapse: collapse;
     }
 
-    #tbl1 th {
+    #tbl1 > thead {
+        display: block;
+        padding-right: 1rem;
+    }
+
+    #tbl1 > thead > tr > th {
         text-align: left;
         border-bottom: solid 1px black;
+    }
+
+    #tbl1 > thead > tr, #tbl1 > tbody > tr {
+        display: table;
+        width: 100%;
+        table-layout: fixed;/* even columns width , fix width of table too*/
+    }
+
+    #tbl1 > tbody {
+        max-height: 80vh;
+        overflow-y: scroll;
+        overflow-x: hidden;
+        display: block;
+        width: 100%;
     }
 
     #tbl1 > tbody > tr {

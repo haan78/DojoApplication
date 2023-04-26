@@ -23,11 +23,6 @@ function getUserDataFromLocal() : UserData {
     }
 }
 export const store_user = writable(getUserDataFromLocal());
-export const store_status = writable(false);
-export function isLoggedIn():boolean {
-    console.log(store_status);
-    return <boolean>get(store_status);
-}
 
 
 store_user.subscribe(value=>{
