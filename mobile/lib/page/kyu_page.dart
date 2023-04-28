@@ -70,9 +70,7 @@ class _KyuSinaviPage extends State<KyuSinaviPage> {
                       child: ListView.builder(
                           controller: _scrollController,
                           itemBuilder: (context, index) {
-                            Color c = list[index].sayi >= 12
-                                ? Colors.green.shade600
-                                : Colors.red.shade400;
+                            Color c = renkver(-1 * list[index].sayi, -18, -12);
                             return Padding(
                                 padding: appPading,
                                 child: ListTile(
@@ -82,9 +80,7 @@ class _KyuSinaviPage extends State<KyuSinaviPage> {
                                         fontWeight: FontWeight.bold, color: c),
                                   ),
                                   subtitle: Text(
-                                    list[index].sayi >= 12
-                                        ? "Son üç ayda keiko sayısı ${list[index].sayi}"
-                                        : "Son üç ayda ${12 - list[index].sayi} keiko eksiği var",
+                                    "Son üç ayda keiko sayısı ${list[index].sayi}",
                                     style: TextStyle(color: c),
                                   ),
                                   tileColor: tileColorByIndex(index),

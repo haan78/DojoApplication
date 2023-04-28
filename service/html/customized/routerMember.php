@@ -23,8 +23,12 @@ function routerMember(DefaultJsonRouter $router)
     $router->add("/member/password", function (Request $req) {
         $uye_id = $req->local()->uye_id;
         $params = $req->json();
-        if (!password($uye_id, $params->oldpass, $params->newpass, $err)) {
-            throw new MinmiExeption($err, 401);
+        $old = trim($params->oldpass);
+        $new = trim($params->newpass);
+        if (strlen($new)>=6 && $old != $new) {
+            password($uye_id, $old, $new);    
+        } else {
+            throw new MinmiExeption("Old and new passwords are not the same", 400);
         }
     });
 

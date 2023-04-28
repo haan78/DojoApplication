@@ -1,5 +1,6 @@
 'strict'
 export const ssr = false;
+import "./AlertDlg.css";
 abstract class Alert {
     private container: HTMLElement;
     private divid: string;
@@ -44,10 +45,6 @@ abstract class Alert {
 
 }
 
-/*function parseHTML<T>(html: string): T {
-    return <T>((new DOMParser()).parseFromString(html, "text/html").body.firstChild);
-}*/
-
 export let AlertDefaults = {
     zIndex: 999,
     timeout:3000,
@@ -81,10 +78,11 @@ export class Popup extends Alert {
         const frame = this.getFrame();
         const div = (<HTMLDivElement>frame.parentElement);
         const msgdiv = document.createElement("div");
-        const to = properties.timeout || AlertDefaults.timeout;
+        const to = typeof properties.timeout == "undefined" ? AlertDefaults.timeout : properties.timeout;
         msgdiv.append(properties.message);
         msgdiv.classList.add("message");
-        frame.classList.add(properties.type|| "default");
+        frame.classList.add("popup");
+        frame.classList.add(properties.type || "default");
         frame.appendChild(msgdiv);
 
         div.style.position = "fixed";
@@ -123,7 +121,7 @@ export class Popup extends Alert {
             div.style.left = "auto";
             div.style.paddingRight = "1rem";
         } else {
-            div.style.top = "50%";
+            div.style.top = "40%";
             div.style.left = "50%";
             div.style.transform = "translate(-50%, 50%)";
         }
@@ -162,14 +160,13 @@ export class Confirm extends Alert {
     public async push(properties: ConfirmProperties):Promise<'yes' | 'no'> {
         const frame = this.getFrame();
         const div = (<HTMLDivElement>frame.parentElement);
-
+        frame.classList.add("confirm");
         if (properties.title) {
             const titlediv = document.createElement("div");
             titlediv.innerHTML = properties.title;
             titlediv.classList.add("title");
             frame.appendChild(titlediv);
         }
-
 
         const msgdiv = document.createElement("div");
         msgdiv.append(properties.message);
@@ -232,6 +229,7 @@ export class Loading extends Alert {
     public on(properties:LoadingProperties = {}): void {
         this._active = true;
         this.frame = this.getFrame();
+        this.frame.classList.add("loading");
         this.frame.innerHTML = (properties.icon || AlertDefaults.iconLoading);
         const div = <HTMLDivElement>this.frame.parentElement;
         div.style.display = "block";

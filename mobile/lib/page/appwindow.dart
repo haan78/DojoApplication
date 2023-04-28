@@ -110,13 +110,6 @@ void multiSelectDialog(BuildContext context,
       });
 }
 
-Color tileColorByIndex(int index) {
-  //return index % 2 == 1 ? const Color.fromARGB(255, 208, 224, 233) : const Color.fromARGB(255, 229, 233, 208);
-  return index % 2 == 1
-      ? Color.fromARGB(255, 70, 101, 119)
-      : Color.fromARGB(255, 70, 130, 165);
-}
-
 String trAy(int ayint) {
   final ind = ayint - 1;
   return [
@@ -440,4 +433,21 @@ class FullDataTable extends StatelessWidget {
                 rows: createRows(),
                 border: TableBorder.all(color: Colors.black))));
   }
+}
+
+Color renkver(int val, double min, double max) {
+  if (val < min) {
+    return const Color.fromARGB(255, 17, 105, 20);
+  } else if (val < max) {
+    return const Color.fromARGB(255, 226, 213, 30);
+  } else {
+    return const Color.fromARGB(255, 206, 32, 19);
+  }
+}
+
+Color tileColorByIndex(int index) {
+  //return index % 2 == 1 ? const Color.fromARGB(255, 208, 224, 233) : const Color.fromARGB(255, 229, 233, 208);
+  return index % 2 == 1
+      ? const Color.fromARGB(255, 8, 121, 182)
+      : const Color.fromARGB(255, 87, 152, 190);
 }

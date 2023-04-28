@@ -8,7 +8,6 @@ require_once "./customized/routerAdmin.php";
 require_once "./customized/routerMember.php";
 require_once "./customized/routerOpen.php";
 
-use Minmi\Response;
 use Minmi\DefaultJsonRouter;
 use Minmi\Request;
 use Minmi\MinmiExeption;

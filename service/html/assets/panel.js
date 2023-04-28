@@ -74,7 +74,7 @@ function entryButton() {
             return new Promise((resolve,reject)=>{
                 elm.showLoading();
                 fetch(url,settings).then((raw)=>{
-                    elm.hideLoading();
+                    elm.hideLoading();                    
                     raw.json().then((response=>{
                         if (response.success) {
                             resolve(response.data);

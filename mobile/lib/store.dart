@@ -20,7 +20,6 @@ class Store {
   String HostUrl = "";
   Sabitler sabitler = Sabitler();
 
-  int id = 0;
   void copy(Store s) {
     AppName = s.AppName;
     ApiUser = s.ApiUser;
@@ -32,7 +31,6 @@ class Store {
     UserStatus = s.UserStatus;
     UserName = s.UserName;
     HostUrl = s.HostUrl;
-    id = s.id;
   }
 }
 

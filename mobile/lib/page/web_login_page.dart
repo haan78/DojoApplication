@@ -30,12 +30,10 @@ class WebLoginPage extends StatelessWidget {
     c.addJavaScriptChannel("MobileApp",
         onMessageReceived: (JavaScriptMessage message) async {
       final Map<String, dynamic> data = jsonDecode(message.message);
-      s.id = data["uye_id"];
       s.UserStatus = data["durum"];
       s.UserName = data["ad"];
       s.ApiToken = "Bearer ${data["token"]}";
       s.ApiUser = data["email"];
-      s.ApiPassword = data["password"];
       final api = Api(url: s.ApiUrl, authorization: s.ApiToken);
       s.sabitler = await sabitGetir(api);
       await writeSettings(s);

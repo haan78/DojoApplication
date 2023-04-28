@@ -1,5 +1,9 @@
 <?php
+
+use MySqlTool\MySqlStmt;
+
 require_once "./lib/MySqlTool/MySqlToolCall.php";
+require_once "./lib/MySqlTool/MySqlStmt.php";
 
 function mysqlilink(): mysqli {
 
@@ -45,50 +49,24 @@ function reset_password(string $code, string $password) : void {
 }
 
 function validate(string $username, string $password, string $type) {
-    $uye_id = $ad = $durum = $dosya_id = $err = "";
     $list = "'noone'";
     if ($type == "mobile") {
         $list = "'admin','super-admin'";
     } elseif ($type == "web") {
         $list = "'active','admin','super-admin'";
     }
-    //throw new Exception($list." - ".$type);
+    $mysqli = mysqlilink();
     $sql = "SELECT ad,durum,uye_id,dosya_id FROM uye
                 WHERE durum IN ($list) AND
                     email = ? AND parola = IF(LENGTH(parola)<=6,?, MD5(?) )";
-    $mysqli = mysqlilink();
-    $stmt = mysqli_prepare($mysqli, $sql);
-    if ($stmt) {
-        if (mysqli_stmt_bind_param($stmt, "sss", $username, $password, $password)) {
-            if (mysqli_stmt_execute($stmt)) {
-                mysqli_stmt_bind_result($stmt, $ad, $durum, $uye_id,$dosya_id);
-                mysqli_stmt_fetch($stmt);
-            } else {
-                $err = mysqli_stmt_error($stmt);
-            }
-        } else {
-            $err = "Bind param / " . mysqli_stmt_error($stmt);
-        }
-        mysqli_stmt_close($stmt);
-    } else {
-        $err = "STMT / " . mysqli_error($mysqli);
+    try {
+        return MySqlStmt::queryOne($mysqli,$sql,[$username,$password,$password]);    
+    } catch (\Exception $err) {
+        throw $err;
+    } finally {
+        $mysqli->close();
     }
-    mysqli_close($mysqli);
-    if (!$err) {
-        if ($uye_id) {
-            return [
-                "uye_id" => intval($uye_id),
-                "dosya_id" => intval($dosya_id),
-                "ad" => $ad,
-                "durum" => $durum,
-                "email" => $username
-            ];
-        } else {
-            return null;
-        }
-    } else {
-        throw new Exception($err);
-    }
+    
 }
 
 function uye(int $uye_id) {
@@ -97,9 +75,7 @@ function uye(int $uye_id) {
 }
 
 function uye_listele(string $durumlar) : array {
-    $err = "";
-    $list = [];
-    
+        
     $sql = "SELECT u.uye_id,u.ad,u.dosya_id,(SELECT seviye FROM uye_seviye WHERE uye_id = u.uye_id ORDER BY tarih DESC LIMIT 1) as seviye
     ,SUM(IF(ut.uye_tahakkuk_id is NULL,0,1)) as odenmemis_aidat_syisi,
     SUM( COALESCE(ut.borc,0) ) as odenmemis_aidat_borcu,
@@ -113,42 +89,14 @@ function uye_listele(string $durumlar) : array {
     GROUP BY u.uye_id,u.ad,u.cinsiyet,u.dosya_id,u.durum,u.ekfno,u.email,seviye";
     
     $mysqli = mysqlilink();
-    $stmt = mysqli_prepare($mysqli, $sql);
-    if ($stmt) {
-        //var_dump([$durumlar,$tahakkuk_id]);
-        if (mysqli_stmt_bind_param($stmt, "s", $durumlar)) {
-            if (mysqli_stmt_execute($stmt)) {
-                mysqli_stmt_bind_result($stmt, $uye_id,$ad,$dosya_id,$seviye,$odenmemis_aidat_syisi,$odenmemis_aidat_borcu,$son_keiko,$son3Ay,$image,$image_type);
-                while (mysqli_stmt_fetch($stmt)) {
-                    array_push($list,(object)[
-                        "uye_id"=> $uye_id,
-                        "ad" => $ad,                    
-                        "dosya_id" => $dosya_id,                
-                        "seviye" => $seviye,
-                        "odenmemis_aidat_syisi" => $odenmemis_aidat_syisi,
-                        "odenmemis_aidat_borcu" => $odenmemis_aidat_borcu,
-                        "son_keiko" => $son_keiko,
-                        "son3Ay" => intval($son3Ay),
-                        "image" => $image,
-                        "image_type" => $image_type
-                    ]);
-                }
-            } else {
-                $err = mysqli_stmt_error($stmt);
-            }
-            //var_dump($list);
-        } else {
-            $err = mysqli_stmt_error($stmt);
-        }
-        mysqli_stmt_close($stmt);
-    } else {
-        $err = mysqli_error($mysqli);
-    }    
-    mysqli_close($mysqli);
-    if ($err) {
-        throw new Exception($err);
+    try {
+        return MySqlStmt::query($mysqli,$sql,[$durumlar]);
+    } catch (Exception $err) {
+        throw $err;
+    } finally {
+        $mysqli->close();
     }
-    return $list;
+    
 }
 
 function sabitler() {
@@ -156,11 +104,7 @@ function sabitler() {
     mysqli_multi_query($mysqli,
         "SELECT tahakkuk_id,tanim,tutar FROM tahakkuk;
         SELECT yoklama_id,tanim FROM yoklama;
-        SELECT muhasebe_tanim_id,tanim,tur FROM muhasebe_tanim
-        ",
-        
-
-    );
+        SELECT muhasebe_tanim_id,tanim,tur FROM muhasebe_tanim");
 
     $result_tahakkuklar = mysqli_store_result($mysqli);
     mysqli_next_result($mysqli);
@@ -169,51 +113,26 @@ function sabitler() {
     $result_muhasebe_tanim = mysqli_store_result($mysqli);
 
     $data = [
-        "tahakkuklar"=>resultToArray($result_tahakkuklar),
-        "yoklamalar" =>resultToArray($result_yoklamalar),
-        "muhasebe_tanimlar" => resultToArray($result_muhasebe_tanim)
+        "tahakkuklar"=>MySqlStmt::resultToArray($result_tahakkuklar),
+        "yoklamalar" =>MySqlStmt::resultToArray($result_yoklamalar),
+        "muhasebe_tanimlar" => MySqlStmt::resultToArray($result_muhasebe_tanim)
     ];
-    mysqli_free_result($result_tahakkuklar);
-    mysqli_free_result($result_yoklamalar);
     mysqli_close($mysqli);
-    
-
     return $data;
 }
 
-function password(int $uye_id, string $old, string $new, &$err): bool {
-    $err = "";
-    $pn = trim($new);
-    $po = trim($old);
-    if (strlen($pn) >= 6) {
-        if ($pn != $po) {
-            $mysqli = mysqlilink();
-            $sql = "UPDATE uye SET parola = MD5(?) WHERE parola =  IF(LENGTH(parola)<=6,?, MD5(?) ) AND uye_id = ?";
-            $stmt = mysqli_prepare($mysqli, $sql);
-            if ($stmt) {
-                if (mysqli_stmt_bind_param($stmt, "sssi", $pn, $po, $po, $uye_id)) {
-                    if (mysqli_stmt_execute($stmt)) {
-                        if (!mysqli_stmt_affected_rows($stmt)) {
-                            $err = "Old password doesn't match with given";
-                        }
-                    } else {
-                        $err = mysqli_stmt_error($stmt);
-                    }
-                } else {
-                    $err = mysqli_stmt_error($stmt);
-                }
-                mysqli_stmt_close($stmt);
-            } else {
-                $err = mysqli_error($mysqli);
-            }
-            mysqli_close($mysqli);
-        } else {
-            $err = "New password can't be same with old one";
+function password(int $uye_id, string $old, string $new): void {    
+    $sql = "UPDATE uye SET parola = MD5(?) WHERE parola =  IF(LENGTH(parola)<=6,?, MD5(?) ) AND uye_id = ?";
+    $mysqli = mysqlilink();
+    try {
+        if (MySqlStmt::execute($mysqli,$sql,[$new,$old,$old,$uye_id])<1) {
+            throw new Exception("Eski parola hatalı");
         }
-    } else {
-        $err = "Password must be at least 6 characters";
+    } catch (Exception $err) {
+        throw $err;
+    } finally {
+        $mysqli->close();
     }
-    return (!$err ? true : false);
 }
 
 function seviye_ekle($uye_id,string $seviye, string $tarih, string $aciklama,&$err) : bool {

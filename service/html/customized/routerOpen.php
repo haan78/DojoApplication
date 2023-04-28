@@ -17,7 +17,7 @@ function authOpen(Request $req) : void {
         } else {
             throw new MinmiExeption("Too many attempt in session time",401);    
         }
-    } else {
+    } else {        
         throw new MinmiExeption("No valid session!",401);
     }
 }
@@ -58,29 +58,26 @@ function routerOpen(DefaultJsonRouter $router) {
             $user = validate(trim($username), trim($password), $type);
             if (!is_null($user)) {
                 $token = "";
-                $uye_id = 0;
                 if ($type == "mobile") {
-                    $uye_id = intval($user["uye_id"] ?? 0);
+                    $uye_id = intval($user->uye_id ?? 0);
                     $payload = [
                         "exp" => time() + TOKEN_TIME,
-                        "durum" => $user["durum"],
+                        "durum" => $user->durum,
                         "uye_id" => $uye_id,
-                        "ad" => $user["ad"]
+                        "ad" => $user->ad
                     ];
                     $token = \Firebase\JWT\JWT::encode($payload, $GLOBALS["JWT_KEY"], 'HS256');
                     session_unset();
                 } else { // type == "web"
-                    unset($_SESSION["attempt"]);
-                    $_SESSION["uye_id"] = $user["uye_id"];
-                    $_SESSION["ad"] = $user["ad"];
-                    $_SESSION["durum"] = $user["durum"];
+                    $_SESSION["attempt"] = 0;
+                    $_SESSION["uye_id"] = $user->uye_id;
+                    $_SESSION["ad"] = $user->ad;
+                    $_SESSION["durum"] = $user->durum;
                 }
                 return [
-                    "ad" => $user["ad"],
-                    "uye_id" => $uye_id,
-                    "dosya_id" => $user["dosya_id"],
+                    "ad" => $user->ad,
                     "email" => trim($username),
-                    "durum" => $user["durum"],
+                    "durum" => $user->durum,
                     "token" => $token
                 ];
             } else {

@@ -33,7 +33,7 @@
         </p>
     </Dialog>
 </main>
-<script lang="ts">
+<script lang="ts">    
     import { onMount } from "svelte";
     import { JRequest } from "../lib/JRequest";
     import validate from "../lib/Vaildate";
@@ -57,7 +57,7 @@
 
     function validatepass() {
         if (oldpass.trim().length < 1) {
-            popup1.push( { message:"Eski parolayı girmeniz gerekiyor.", type: "bad" } );
+            popup1.push( { message:"Eski parolayı girmeniz gerekiyor", type: "bad" } );
         } else if (newpass.trim().length < 6) {
             popup1.push({message:"Yeni parola en az 6 karakterden oluşmalı", type:"bad"});
         } else if (repatpass != newpass) {
@@ -94,7 +94,6 @@
     }
 </script>
 <style>
-
     .form {
         display: flex;
         flex-direction: column;
