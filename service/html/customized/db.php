@@ -98,7 +98,6 @@ function uye_listele(string $durumlar) : array {
         $mysqli->close();
     }
     return $result;
-    
 }
 
 function sabitler() {
@@ -150,8 +149,8 @@ function seviye_ekle($uye_id,string $seviye, string $tarih, string $aciklama) : 
 }
 
 function seviye_sil($uye_id,string $seviye) : void {
-    $mysqli = mysqlilink();
-    $sql = "DELETE FROM uye_seviye WHERE uye_id = ? AND seviye = ?";    
+    $sql = "DELETE FROM uye_seviye WHERE uye_id = ? AND seviye = ?";  
+    $mysqli = mysqlilink();      
     try {
         MySqlStmt::execute($mysqli,$sql,[$uye_id,$seviye]);
     } catch (Exception $err) {
@@ -259,60 +258,51 @@ function uyetahakkuklist(int $uye_id) {
     LEFT JOIN `tahakkuk` t ON t.`tahakkuk_id` = ut.`tahakkuk_id`
     LEFT JOIN `muhasebe` m ON m.`muhasebe_id` = ut.`muhasebe_id`
     LEFT JOIN yoklama y on y.yoklama_id = ut.yoklama_id 
-	    WHERE ut.`uye_id` = $uye_id ORDER BY tahakkuk_tarih DESC";
-    $err = "";
+	    WHERE ut.`uye_id` = ? ORDER BY tahakkuk_tarih DESC";
     $mysqli = mysqlilink();
-    $result = mysqli_query($mysqli,$sql);
-    if ($result) {
-        $arr = resultToArray($result);
-        mysqli_free_result($result);
-        mysqli_close($mysqli);
-        return $arr;
-    } else {
-        $err = mysqli_error($mysqli);
-        mysqli_close($mysqli);
-        throw new Exception($err);
+    $result = [];
+    try {
+        $result = MySqlStmt::query($mysqli,$sql,[$uye_id]);
+    } catch (Exception $err) {
+        throw $err;
+    } finally {
+        $mysqli->close();
     }
+    return $result;
 }
 
 function uyedigerodemelist(int $uye_id) {
     $sql = "SELECT m.muhasebe_id, m.tarih, m.kasa, mt.tanim, m.muhasebe_tanim_id, m.aciklama, m.tutar, m.belge
             FROM muhasebe m LEFT JOIN uye_tahakkuk ut ON ut.muhasebe_id = m.muhasebe_id
             INNER JOIN muhasebe_tanim mt ON mt.muhasebe_tanim_id = m.muhasebe_tanim_id AND mt.tur = 'GELIR' and mt.muhasebe_tanim_id <> 9
-            WHERE m.uye_id = $uye_id AND ut.uye_tahakkuk_id  IS NULL ORDER BY m.tarih DESC";
-    $err = "";
+            WHERE m.uye_id = ? AND ut.uye_tahakkuk_id  IS NULL ORDER BY m.tarih DESC";    
     $mysqli = mysqlilink();
-    $result = mysqli_query($mysqli,$sql);
-    if ($result) {
-        $arr = resultToArray($result);
-        mysqli_free_result($result);
-        mysqli_close($mysqli);
-        return $arr;
-    } else {
-        $err = mysqli_error($mysqli);
-        mysqli_close($mysqli);
-        throw new Exception($err);
+    $result = [];
+    try {
+        $result = MySqlStmt::query($mysqli,$sql,[$uye_id]);
+    } catch (Exception $err) {
+        throw $err;
+    } finally {
+        $mysqli->close();
     }
+    return $result;
 }
 
 function uyeharcamalist(int $uye_id) {
     $sql = "SELECT m.muhasebe_id, m.tarih, m.kasa, mt.tanim, m.muhasebe_tanim_id, m.aciklama, m.tutar, m.belge 
             FROM muhasebe m LEFT JOIN uye_tahakkuk ut ON ut.muhasebe_id = m.muhasebe_id
             INNER JOIN muhasebe_tanim mt ON mt.muhasebe_tanim_id = m.muhasebe_tanim_id AND mt.tur = 'GIDER'
-            WHERE m.uye_id = $uye_id AND ut.uye_tahakkuk_id  IS NULL ORDER BY m.tarih DESC";
-    $err = "";
+            WHERE m.uye_id = ? AND ut.uye_tahakkuk_id  IS NULL ORDER BY m.tarih DESC";    
     $mysqli = mysqlilink();
-    $result = mysqli_query($mysqli,$sql);
-    if ($result) {
-        $arr = resultToArray($result);
-        mysqli_free_result($result);
-        mysqli_close($mysqli);
-        return $arr;
-    } else {
-        $err = mysqli_error($mysqli);
-        mysqli_close($mysqli);
-        throw new Exception($err);
+    $result = [];
+    try {
+        $result = MySqlStmt::query($mysqli,$sql,[$uye_id]);
+    } catch (Exception $err) {
+        throw $err;
+    } finally {
+        $mysqli->close();
     }
+    return $result;
 }
 
 function aidat_odeme_al(int $uye_id, int $yoklama_id, string $tarih, int $yil, int $ay, string $kasa, float $tutar, string $aciklama, string $tahsilatci) {

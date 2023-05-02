@@ -439,22 +439,22 @@ Future<List<UyeTahakkuk>> uyetahakkuklist(Api api,
   }
   for (final raw in response) {
     UyeTahakkuk ut = UyeTahakkuk();
-    ut.ay = int.parse(raw["ay"] ?? "0");
+    ut.ay = raw["ay"] as int;
     ut.borc = double.parse(raw["borc"] ?? "0");
     ut.kasa = raw["kasa"] ?? "";
-    ut.muhasebe_id = int.parse(raw["muhasebe_id"] ?? "0");
+    ut.muhasebe_id = raw["muhasebe_id"] != null ? raw["muhasebe_id"] as int : 0;
     ut.odenen = double.parse(raw["odeme_tutar"] ?? "0");
     ut.odeme_tarih =
         raw["odeme_tarih"] == null ? null : DateTime.parse(raw["odeme_tarih"]);
     ut.tahakkuk_tarih = DateTime.parse(raw["tahakkuk_tarih"]);
     ut.tahsilatci = raw["tahsilatci"] ?? "";
     ut.tanim = raw["tanim"] ?? "--";
-    ut.uye_tahakkuk_id = int.parse(raw["uye_tahakkuk_id"]);
-    ut.yil = int.parse(raw["yil"] ?? "0");
+    ut.uye_tahakkuk_id = raw["uye_tahakkuk_id"] as int;
+    ut.yil = raw["yil"] as int;
     ut.yoklama = raw["yoklama"] ?? "";
-    ut.yoklama_id = int.parse(raw["yoklama_id"] ?? "0");
+    ut.yoklama_id = raw["yoklama_id"] as int;
     ut.aciklama = raw["aciklama"] ?? "";
-    ut.tahakkuk_id = int.parse(raw["tahakkuk_id"] ?? "0");
+    ut.tahakkuk_id = raw["tahakkuk_id"] as int;
     if (raw["keikolar"] != null) {
       String keikolar = raw["keikolar"] as String;
       final keikolarlist = keikolar.split(",");
@@ -519,11 +519,11 @@ Future<List<MuhasebeDiger>> uyedigerodemelist(Api api, int uye_id) async {
 
   for (final mdr in response) {
     final md = MuhasebeDiger();
-    md.muhasebe_id = int.parse(mdr["muhasebe_id"]);
+    md.muhasebe_id = mdr["muhasebe_id"] as int;
     md.aciklama = mdr["aciklama"];
     md.kasa = mdr["kasa"];
     md.tanim = mdr["tanim"];
-    md.muhasebe_tanim_id = int.parse(mdr["muhasebe_tanim_id"]);
+    md.muhasebe_tanim_id = mdr["muhasebe_tanim_id"] as int;
     md.tarih = DateTime.parse(mdr["tarih"]);
     md.tutar = double.parse(mdr["tutar"] ?? "0");
     md.belge = mdr["tutar"] ?? "";
@@ -542,11 +542,12 @@ Future<List<MuhasebeDiger>> uyeharcamalist(Api api, int uye_id) async {
   }
   for (final mdr in response) {
     final md = MuhasebeDiger();
-    md.muhasebe_id = int.parse(mdr["muhasebe_id"]);
+    md.muhasebe_id = mdr["muhasebe_id"] != null ? mdr["muhasebe_id"] as int : 0;
     md.aciklama = mdr["aciklama"] ?? "";
     md.kasa = mdr["kasa"] ?? "";
     md.tanim = mdr["tanim"];
-    md.muhasebe_tanim_id = int.parse(mdr["muhasebe_tanim_id"]);
+    md.muhasebe_tanim_id =
+        mdr["muhasebe_tanim_id"] != null ? mdr["muhasebe_tanim_id"] as int : 0;
     md.tarih = DateTime.parse(mdr["tarih"]);
     md.tutar = -1 * double.parse(mdr["tutar"] ?? "0");
     md.belge = mdr["belge"] ?? "";
