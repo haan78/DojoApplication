@@ -384,7 +384,7 @@ Future<List<Keiko>> yoklamalar(Api api) async {
     Keiko keiok = Keiko();
     keiok.yoklama_id = int.parse(k["yoklama_id"]);
     keiok.tanim = k["tanim"];
-    keiok.sayi = int.parse(k["sayi"]);
+    keiok.sayi = k["sayi"] as int;
     keiok.tarih = DateTime.parse(k["tarih"]!);
     l.add(keiok);
   }
@@ -406,9 +406,9 @@ Future<KeikoListe> yoklamaliste(Api api,
   for (final kk in response) {
     KeikoKendoka kendoka = KeikoKendoka();
     kendoka.ad = kk["ad"];
-    if (kk["image"] != null && kk["file_type"] != null) {
+    if (kk["icerik"] != null && kk["file_type"] != null) {
       kendoka.file_type = kk["file_type"];
-      kendoka.image = base64Decode(kk["image"]);
+      kendoka.image = base64Decode(kk["icerik"]);
     } else {
       kendoka.image =
           (await rootBundle.load("assets/kendoka.jpg")).buffer.asUint8List();

@@ -8,7 +8,12 @@ if ( !$code ) {
 $err = "";
 setSessionAttempt();
 initSecret();
-uye_eposta_onay($code, $err);
+try {
+    uye_eposta_onay($code);
+} catch(Exception $ex) {
+    $err = $ex->getMessage();
+}
+
 page(function () {
     global $err;
 ?>

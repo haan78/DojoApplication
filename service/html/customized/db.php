@@ -59,14 +59,15 @@ function validate(string $username, string $password, string $type) {
     $sql = "SELECT ad,durum,uye_id,dosya_id FROM uye
                 WHERE durum IN ($list) AND
                     email = ? AND parola = IF(LENGTH(parola)<=6,?, MD5(?) )";
+    $result = null;
     try {
-        return MySqlStmt::queryOne($mysqli,$sql,[$username,$password,$password]);    
+        $result = MySqlStmt::queryOne($mysqli,$sql,[$username,$password,$password]);    
     } catch (\Exception $err) {
         throw $err;
     } finally {
         $mysqli->close();
     }
-    
+    return $result;    
 }
 
 function uye(int $uye_id) {
@@ -74,8 +75,7 @@ function uye(int $uye_id) {
     return $p->procedure("uye_bilgi")->in($uye_id)->call()->result("queries");
 }
 
-function uye_listele(string $durumlar) : array {
-        
+function uye_listele(string $durumlar) : array {        
     $sql = "SELECT u.uye_id,u.ad,u.dosya_id,(SELECT seviye FROM uye_seviye WHERE uye_id = u.uye_id ORDER BY tarih DESC LIMIT 1) as seviye
     ,SUM(IF(ut.uye_tahakkuk_id is NULL,0,1)) as odenmemis_aidat_syisi,
     SUM( COALESCE(ut.borc,0) ) as odenmemis_aidat_borcu,
@@ -89,13 +89,15 @@ function uye_listele(string $durumlar) : array {
     GROUP BY u.uye_id,u.ad,u.cinsiyet,u.dosya_id,u.durum,u.ekfno,u.email,seviye";
     
     $mysqli = mysqlilink();
+    $result = [];
     try {
-        return MySqlStmt::query($mysqli,$sql,[$durumlar]);
+        $result = MySqlStmt::query($mysqli,$sql,[$durumlar]);
     } catch (Exception $err) {
         throw $err;
     } finally {
         $mysqli->close();
     }
+    return $result;
     
 }
 
@@ -135,46 +137,28 @@ function password(int $uye_id, string $old, string $new): void {
     }
 }
 
-function seviye_ekle($uye_id,string $seviye, string $tarih, string $aciklama,&$err) : bool {
-    $err = "";
-    $mysqli = mysqlilink();
+function seviye_ekle($uye_id,string $seviye, string $tarih, string $aciklama) : void {
     $sql = "INSERT INTO uye_seviye ( uye_id,tarih,aciklama, seviye ) VALUES (?,?,?,?) ON DUPLICATE KEY UPDATE tarih = VALUES(tarih), aciklama = VALUES(aciklama)";
-    $stmt = mysqli_prepare($mysqli, $sql);
-    if ($stmt) {
-        if (mysqli_stmt_bind_param($stmt, "isss", $uye_id,$tarih,$aciklama,$seviye)) {
-            if (!mysqli_stmt_execute($stmt)) {
-                $err = mysqli_stmt_error($stmt);    
-            }
-        } else {
-            $err = mysqli_stmt_error($stmt);
-        }
-        mysqli_stmt_close($stmt);
-    } else {
-        $err = mysqli_error($mysqli);
+    $mysqli = mysqlilink();    
+    try {
+        MySqlStmt::execute($mysqli,$sql,[$uye_id,$tarih,$aciklama,$seviye]);
+    } catch (Exception $err) {
+        throw $err;
+    } finally {
+        $mysqli->close();
     }
-    mysqli_close($mysqli);
-    return !$err;
 }
 
-function seviye_sil($uye_id,string $seviye,&$err) : bool {
-    $err = "";
+function seviye_sil($uye_id,string $seviye) : void {
     $mysqli = mysqlilink();
     $sql = "DELETE FROM uye_seviye WHERE uye_id = ? AND seviye = ?";    
-    $stmt = mysqli_prepare($mysqli, $sql);
-    if ($stmt) {
-        if (mysqli_stmt_bind_param($stmt, "is", $uye_id,$seviye)) {
-            if (!mysqli_stmt_execute($stmt)) {
-                $err = mysqli_stmt_error($stmt);    
-            }
-        } else {
-            $err = mysqli_stmt_error($stmt);
-        }
-        mysqli_stmt_close($stmt);
-    } else {
-        $err = mysqli_error($mysqli);
+    try {
+        MySqlStmt::execute($mysqli,$sql,[$uye_id,$seviye]);
+    } catch (Exception $err) {
+        throw $err;
+    } finally {
+        $mysqli->close();
     }
-    mysqli_close($mysqli);
-    return !$err;
 }
 
 function uye_eke($uye_id,$ad,$tahakkuk_id,$email,$cinsiyet,$dogum,$ekfno,$durum,$dosya,$file_type) {
@@ -184,64 +168,44 @@ function uye_eke($uye_id,$ad,$tahakkuk_id,$email,$cinsiyet,$dogum,$ekfno,$durum,
     return $outs["uye_id"];
 }
 
-function uye_eposta_onkayit(int $uye_id,string &$ad,string &$email,string &$code,string &$err):bool {
-    $err = "";
+function uye_eposta_onkayit(int $uye_id,string &$ad,string &$email,string &$code,string &$parola):void {
+    $sqlSel = "SELECT ad,email,parola FROM uye WHERE uye_id = ?";
+    $sqlIns = "INSERT INTO uye_kimlik_degisim (uye_id,anahtar,email) VALUES (?,?,?) ON DUPLICATE KEY UPDATE anahtar = VALUES(anahtar), email = values(email)";
     $mysqli = mysqlilink();
-    $sql = "SELECT ad,email FROM uye WHERE uye_id = $uye_id";
-    $result = mysqli_query($mysqli,$sql);
-    if ($result) {
-        $row = mysqli_fetch_assoc($result);
+    try {
+        $row = MySqlStmt::queryOne($mysqli,$sqlSel,[$uye_id]);
         if ($row) {
             $code = uniqid(date('ymdHis'));
-            $email = $row["email"];
-            $ad = $row["ad"];
-            $sql = "INSERT INTO uye_kimlik_degisim (uye_id,anahtar,email) VALUES ($uye_id,'$code','$email') ON DUPLICATE KEY UPDATE anahtar = VALUES(anahtar), email = values(email)";
-            if ( !mysqli_query($mysqli,$sql) ) {
-                echo $sql.PHP_EOL;
-                $err = mysqli_error($mysqli);
-                
-            }
+            $email = $row->email;
+            $ad = $row->ad;     
+            $parola = $row->parola;       
+            MySqlStmt::execute($mysqli,$sqlIns,[$uye_id,$code,$email]);            
         } else {
-            $err = mysqli_error($mysqli);
+            throw new Exception("On Kayit bulunamadi");
         }
-    } else {
-        $err = mysqli_error($mysqli);
+    } catch (Exception $err) {
+        throw $err;
+    } finally {
+        $mysqli->close();
     }
-    mysqli_close($mysqli);
-    return empty($err);
 }
 
-function uye_eposta_onay(string $code,&$err) : bool {
-    $err = "";
+function uye_eposta_onay(string $code) : void {    
+    $sqlSel = "SELECT uye_id FROM uye_kimlik_degisim WHERE anahtar = ? AND TIME_TO_SEC(TIMEDIFF(NOW(), COALESCE(olusma,degisme))) <= 86400";
+    $sqlUp = "UPDATE uye SET durum = 'active' WHERE durum = 'registered' AND uye_id = ?";
     $mysqli = mysqlilink();
-    $sql = "SELECT uye_id FROM uye_kimlik_degisim WHERE anahtar = ? AND TIME_TO_SEC(TIMEDIFF(NOW(), COALESCE(olusma,degisme))) <= 86400";
-    $stmt = mysqli_prepare($mysqli, $sql);
-    if ($stmt) {
-        if (mysqli_stmt_bind_param($stmt, "s", $code)) {
-            if (mysqli_stmt_execute($stmt)) {
-                mysqli_stmt_bind_result($stmt,$uye_id);
-                if (mysqli_stmt_fetch($stmt)) {
-                    $mysqli2 = mysqlilink();
-                    $sqlupdate = "UPDATE uye SET durum = 'active' WHERE durum = 'registered' AND uye_id = $uye_id";
-                    if ( !mysqli_query($mysqli2,$sqlupdate) ) {
-                        $err = mysqli_error($mysqli);
-                    }
-                    mysqli_close($mysqli2);
-                } else {
-                    $err = "Kayit bulunamadi";
-                }
-            } else {
-                $err = mysqli_stmt_error($stmt);    
-            }
+    try {
+        $row = MySqlStmt::queryOne($mysqli,$sqlSel,[$code]);
+        if ($row) {
+            MySqlStmt::execute($mysqli,$sqlUp,[$row->uye_id]);
         } else {
-            $err = mysqli_stmt_error($stmt);
-        }    
-        mysqli_stmt_close($stmt);
-    } else {
-        $err = mysqli_error($mysqli);
+            throw new Exception("Kayit bulunamadi");
+        }
+    } catch(Exception $err) {
+        throw $err;
+    } finally {
+        $mysqli->close();
     }
-    mysqli_close($mysqli);
-    return empty($err);
 }
 
 function uye_yoklama_eklesil(int $yoklama_id, int $uye_id, string $tarih) {
@@ -255,59 +219,32 @@ function yoklamalar() {
 	WHERE uy.tarih >= DATE_ADD(CURRENT_DATE(), INTERVAL -10 YEAR)
 	GROUP BY uy.tarih,uy.yoklama_id,y.tanim ORDER BY uy.tarih DESC";
     $mysqli = mysqlilink();
-    $result = mysqli_query($mysqli,$sql);
-    $arr = [];
-    if ( $result ) {
-        $arr = resultToArray($result);
-        mysqli_free_result($result);
-        mysqli_close($mysqli);
-    } else {
-        $err = mysqli_error($mysqli);
-        mysqli_close($mysqli);
-        throw new Exception($err);
+    $result = [];
+    try {
+         $result = MySqlStmt::query($mysqli,$sql);
+    } catch (Exception $err) {
+        throw $err;
+    } finally {
+        $mysqli->close();
     }
-    
-    return $arr;
+    return $result;
 }
 
 function yoklamaliste(int $yoklama_id, string $tarih) {
     $sql = "SELECT u.uye_id,u.ad,d.icerik,d.file_type,IF(uy.yoklama_id IS NOT NULL,1,0) as katilim FROM uye u 
     LEFT JOIN dosya d ON u.dosya_id = d.dosya_id
     LEFT JOIN uye_yoklama uy ON uy.uye_id = u.uye_id and uy.yoklama_id = ? AND uy.tarih = ? 
-    WHERE (u.durum NOT IN ('passive','registered') OR uy.yoklama_id IS NOT NULL) ORDER BY u.ad ASC";
-    $err = "";
+    WHERE (u.durum NOT IN ('passive','registered') OR uy.yoklama_id IS NOT NULL) ORDER BY u.ad ASC";    
     $mysqli = mysqlilink();
-    $stmt = mysqli_prepare($mysqli, $sql);
-    $list = [];
-    if ($stmt) {
-        //echo "$yoklama_id,$tarih";
-        if (mysqli_stmt_bind_param($stmt, "is", $yoklama_id,$tarih)) {
-            if (mysqli_stmt_execute($stmt)) {
-                mysqli_stmt_bind_result($stmt,$uye_id,$ad,$icerik,$file_type,$katilim);
-                while ( mysqli_stmt_fetch($stmt) ) {
-                    array_push($list,[
-                        "uye_id" => $uye_id,
-                        "ad" => $ad,
-                        "image" => $icerik,
-                        "file_type" => $file_type,
-                        "katilim" => $katilim
-                    ]);
-                }
-            } else {
-                $err = mysqli_stmt_error($stmt);    
-            }
-        } else {
-            $err = mysqli_stmt_error($stmt);
-        }
-        mysqli_stmt_close($stmt);
-    } else {
-        $err = mysqli_error($mysqli);
-    }    
-    mysqli_close($mysqli);
-    if (!empty($err)) {
-        throw new Exception($err);
+    $result = [];
+    try {
+        $result = MySqlStmt::query($mysqli,$sql,[$yoklama_id,$tarih]);
+    } catch(Exception $err) {
+        throw $err;
+    } finally {
+        $mysqli->close();
     }
-    return $list;
+    return $result;
 }
 
 function uyetahakkuklist(int $uye_id) {

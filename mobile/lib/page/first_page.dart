@@ -1,6 +1,5 @@
 import 'package:dojo_mobile/page/kendoka.dart';
-import 'package:dojo_mobile/page/widget/ListItems.dart';
-import 'package:dojo_mobile/page/widget/alert.dart';
+import 'package:dojo_mobile/page/widget/list_items.dart';
 import 'package:dojo_mobile/page/widget/app_drawer.dart';
 import '../api.dart';
 import '../service.dart';
@@ -25,12 +24,14 @@ class FirstPage extends StatefulWidget {
   }
 }
 
+enum ListType { active, passive, registerd }
+
 class _AdminPageState extends State<FirstPage> {
   final _araKey = GlobalKey<FormState>();
   bool _reload = true;
   FilterAction _filterAction = FilterAction.name;
   int tahakkukId = 1;
-  bool activemembers = true;
+  ListType listType = ListType.active;
   late Api api;
 
   String search = "";
@@ -58,7 +59,7 @@ class _AdminPageState extends State<FirstPage> {
                       child: TextButton(
                           onPressed: () {
                             setState(() {
-                              activemembers = true;
+                              listType = ListType.active;
                               _reload = true;
                             });
                           },
@@ -72,14 +73,28 @@ class _AdminPageState extends State<FirstPage> {
                       child: TextButton(
                           onPressed: () {
                             setState(() {
-                              activemembers = false;
+                              listType = ListType.passive;
                               _reload = true;
                             });
                           },
                           child: Row(
                             children: const [
-                              Icon(Icons.person_off),
+                              Icon(Icons.group_off),
                               Text("Pasif Üyeler")
+                            ],
+                          ))),
+                  PopupMenuItem(
+                      child: TextButton(
+                          onPressed: () {
+                            setState(() {
+                              listType = ListType.registerd;
+                              _reload = true;
+                            });
+                          },
+                          child: Row(
+                            children: const [
+                              Icon(Icons.group_add),
+                              Text("Bekleyenler")
                             ],
                           )))
                 ];
@@ -166,8 +181,7 @@ class _AdminPageState extends State<FirstPage> {
             ),
             Expanded(
                 child: FBuilder<List<UyeListDetay>>(
-              future:
-                  uyeler(activemembers, search, _filterAction, store, _reload),
+              future: uyeler(listType, search, _filterAction, store, _reload),
               builder: (data) {
                 return ListView.builder(
                   itemCount: data.length,
@@ -183,14 +197,18 @@ class _AdminPageState extends State<FirstPage> {
         ));
   }
 
-  Future<List<UyeListDetay>> uyeler(bool active, String search, FilterAction fa,
-      Store store, bool reload) async {
+  Future<List<UyeListDetay>> uyeler(ListType type, String search,
+      FilterAction fa, Store store, bool reload) async {
     List<UyeListDetay> data = [];
+    String durumlar = "active,admin,super-admin";
+    if (type == ListType.registerd) {
+      durumlar = "registered";
+    } else if (type == ListType.passive) {
+      durumlar = "passive";
+    }
     if (reload) {
       try {
-        listData = await uye_listele(api,
-            durumlar:
-                active ? "active,admin,super-admin" : "passive,registered");
+        listData = await uye_listele(api, durumlar: durumlar);
       } catch (err) {
         return Future.error(err);
       }

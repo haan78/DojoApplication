@@ -78,6 +78,7 @@ CREATE PROCEDURE `dojo`.`uye_ekle`(
         IN `p_ad` VARCHAR(255),
         IN `p_email` VARCHAR(255),
         IN `p_dosya` LONGBLOB,
+        IN  p_ft varchar(20),
         IN `p_cinsiyet` ENUM('ERKEK','KADIN'),
         IN `p_dogum_tarih` DATE,
         IN `p_ekfno` VARCHAR(20),
@@ -85,14 +86,14 @@ CREATE PROCEDURE `dojo`.`uye_ekle`(
     )
 BEGIN
 	START TRANSACTION;
-    if p_uye_id is null then
+    if coalesce(p_uye_id,0) = 0 then
     
-    	INSERT INTO dosya ( tablo,tablo_id,icerik ) VALUES ('UYE',0,p_dosya);
+    	INSERT INTO dosya ( icerik,file_type ) VALUES (p_dosya,p_ft);
     	SET @did = LAST_INSERT_ID();
     	
     	SET @_pass = parola_uret(6);
-    	INSERT INTO uye ( `ad`,`durum`,`cinsiyet`,dogum_tarih,`dosya_id`,`ekfno`,`email`,`email`, `tahakkuk_id`, parola )
-    		VALUES ( p_ad, p_durum, p_cinsiyet,p_dogum_tarih, @did, p_ekfno, p_email, p_tahakkuk_id,MD5(@_pass) );
+    	INSERT INTO uye ( `ad`,`durum`,`cinsiyet`,dogum_tarih,`dosya_id`,`ekfno`,`email`, `tahakkuk_id`, parola )
+    		VALUES ( p_ad, p_durum, p_cinsiyet,p_dogum_tarih, @did, p_ekfno, p_email, p_tahakkuk_id,@_pass );
         set p_uye_id = LAST_INSERT_ID();
         
        	#uye seviye ekle 7 kyu        

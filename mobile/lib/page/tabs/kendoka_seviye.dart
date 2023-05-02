@@ -12,7 +12,12 @@ class KendokaSeviye extends StatefulWidget {
   final Sabitler sabitler;
   final String uyeAd;
 
-  const KendokaSeviye({super.key, required this.sabitler, required this.bilgi, required this.store, required this.uyeAd});
+  const KendokaSeviye(
+      {super.key,
+      required this.sabitler,
+      required this.bilgi,
+      required this.store,
+      required this.uyeAd});
 
   @override
   State<StatefulWidget> createState() {
@@ -40,7 +45,9 @@ class _KendokaSeviye extends State<KendokaSeviye> {
       children: [
         Container(
           alignment: Alignment.topLeft,
-          decoration: const BoxDecoration(border: Border(bottom: BorderSide(width: 3, color: Colors.black))),
+          decoration: const BoxDecoration(
+              border:
+                  Border(bottom: BorderSide(width: 3, color: Colors.black))),
           child: Padding(
               padding: const EdgeInsets.all(5),
               child: Column(children: [
@@ -62,9 +69,14 @@ class _KendokaSeviye extends State<KendokaSeviye> {
                   const SizedBox(width: 10),
                   Expanded(
                     child: ElevatedButton(
-                      child: Text("Tarih ${dateFormater(seviye.tarih, "dd.MM.yyyy")}"),
+                      child: Text(
+                          "Tarih ${dateFormater(seviye.tarih, "dd.MM.yyyy")}"),
                       onPressed: () async {
-                        DateTime? t = await showDatePicker(context: context, initialDate: seviye.tarih, firstDate: DateTime(yil - 80, 1, 1), lastDate: DateTime.now());
+                        DateTime? t = await showDatePicker(
+                            context: context,
+                            initialDate: seviye.tarih,
+                            firstDate: DateTime(yil - 80, 1, 1),
+                            lastDate: DateTime.now());
                         if (t != null) {
                           setState(() {
                             seviye.tarih = t;
@@ -101,25 +113,32 @@ class _KendokaSeviye extends State<KendokaSeviye> {
                   ElevatedButton(
                       onPressed: () async {
                         if (seviye.seviye.isEmpty) {
-                          errorAlert(context, "Bir seviye değeri gerekli", caption: "Giriş Hatası");
+                          errorAlert(context, "Bir seviye değeri gerekli",
+                              caption: "Giriş Hatası");
                           return;
                         }
                         try {
                           loadingdlg.push();
-                          await uyeSeviyeEkle(api, uye_id: widget.bilgi.uye_id, us: seviye);
+                          await uyeSeviyeEkle(api,
+                              uye_id: widget.bilgi.uye_id, us: seviye);
                           loadingdlg.pop();
-                          final ind = widget.bilgi.seviyeler.indexWhere((element) {
+                          final ind =
+                              widget.bilgi.seviyeler.indexWhere((element) {
                             if (element.seviye == seviye.seviye) {
                               return true;
                             } else {
                               return false;
                             }
                           });
-                          if (ind > -1) {
-                            widget.bilgi.seviyeler[ind] = seviye;
-                          } else {
-                            widget.bilgi.seviyeler.add(seviye);
-                          }
+                          setState(() {
+                            if (ind > -1) {
+                              widget.bilgi.seviyeler[ind] = seviye;
+                            } else {
+                              widget.bilgi.seviyeler.add(seviye);
+                              widget.bilgi.seviyeler.sort(
+                                  (a, b) => -1 * a.tarih.compareTo(b.tarih));
+                            }
+                          });
                         } catch (err) {
                           errorAlert(context, err.toString());
                         } finally {
@@ -134,12 +153,18 @@ class _KendokaSeviye extends State<KendokaSeviye> {
                         if (seviye.seviye.isEmpty) {
                           return;
                         }
-                        yesNoDialog(context, text: "Bu kaydı silmek istediğinizden emin misiniz?", onYes: (() async {
+                        yesNoDialog(context,
+                            text:
+                                "Bu kaydı silmek istediğinizden emin misiniz?",
+                            onYes: (() async {
                           try {
                             loadingdlg.push();
-                            await uyeSeviyeSil(api, uye_id: widget.bilgi.uye_id, us: seviye);
+                            await uyeSeviyeSil(api,
+                                uye_id: widget.bilgi.uye_id, us: seviye);
                             loadingdlg.pop();
-                            widget.bilgi.seviyeler.remove(seviye);
+                            setState(() {
+                              widget.bilgi.seviyeler.remove(seviye);
+                            });
                             seviye = UyeSeviye();
                           } catch (err) {
                             if (loadingdlg.started) loadingdlg.pop();
@@ -158,23 +183,23 @@ class _KendokaSeviye extends State<KendokaSeviye> {
           itemBuilder: (context, index) {
             return Padding(
                 padding: const EdgeInsets.all(5),
-                child: Container(
-                    decoration: BoxDecoration(border: Border.all(color: Colors.black, width: 2), borderRadius: BorderRadius.circular(20)),
-                    child: ListTile(
-                      tileColor: tileColorByIndex(index),
-                      leading: Text(widget.bilgi.seviyeler[index].seviye),
-                      title: Text(dateFormater(widget.bilgi.seviyeler[index].tarih, "dd.MM.yyyy")),
-                      subtitle: Text(widget.bilgi.seviyeler[index].aciklama),
-                      trailing: IconButton(
-                        icon: const Icon(Icons.arrow_upward),
-                        onPressed: () {
-                          setState(() {
-                            seviye = widget.bilgi.seviyeler[index];
-                          });
-                        },
-                      ),
-                      visualDensity: const VisualDensity(vertical: 1),
-                    )));
+                child: ListTile(
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20)),
+                  tileColor: tileColorByIndex(index),
+                  title: Text(
+                      "${widget.bilgi.seviyeler[index].seviye} ${dateFormater(widget.bilgi.seviyeler[index].tarih, "dd.MM.yyyy")}"),
+                  subtitle: Text(widget.bilgi.seviyeler[index].aciklama),
+                  trailing: IconButton(
+                    icon: const Icon(Icons.edit),
+                    onPressed: () {
+                      setState(() {
+                        seviye = widget.bilgi.seviyeler[index];
+                      });
+                    },
+                  ),
+                  visualDensity: const VisualDensity(vertical: -1),
+                ));
           },
         ))
       ],
