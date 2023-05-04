@@ -6,9 +6,10 @@ namespace MySqlTool {
     use mysqli;
     use mysqli_result;
     use mysqli_stmt;
-    use stdClass;
+    use mysqli_sql_exception;
 
     class MySqlStmt {
+        
         public static function resultToArray(mysqli_result $result) : array {
             $arr = array();
             while ($row = $result->fetch_object()) {
@@ -101,5 +102,51 @@ namespace MySqlTool {
             return $num;
         }
 
+        public static function multiQuery(mysqli $conn,string $sql,array $params = []):array {    
+            function sqlGenerate(mysqli $conn,$sql,array $params):string {   
+                function valToStr(mysqli $conn,$val) {                  
+                    if (is_null($val)) {
+                        return "NULL";
+                    } elseif ($val === false) {
+                        return "0";
+                    } elseif ($val === true) {
+                        return "1";
+                    }elseif ($val instanceof DateTime) {
+                        return $val->format('Y-m-d H:i:s');
+                    } elseif (is_string($val)) {
+                        if (trim($val) == "") {
+                            return "NULL";
+                        } else {
+                            return "'" . mysqli_escape_string($conn, $val) . "'";
+                        }                
+                    } elseif ((is_object($val)) || (is_array($val))) {
+                        return "'" . json_encode($val, JSON_UNESCAPED_UNICODE) . "'";
+                    } else {
+                        return "$val";
+                    }
+                }     
+                $nsql = preg_replace_callback("/\{[a-zA-Z_$][a-zA-Z_0-9]+\}/",function($m) use($params,$conn){
+                    $name =  substr($m[0],1,strlen($m[0])-2);
+                    if (array_key_exists($name,$params)) {
+                        return valToStr($conn,$params[$name]);
+                    } else {
+                        throw new \Exception("Parameter $name not found");
+                    }             
+                },$sql);
+                return $nsql;
+            }
+            $results = array();
+            if (mysqli_multi_query($conn, empty($params) ? $sql : sqlGenerate($conn,$sql,$params) )) {                
+                do {
+                    $result = $conn->store_result();
+                    if ($result instanceof mysqli_result) {
+                        array_push($results,self::resultToArray($result));                        
+                    }
+                } while ($conn->next_result());                
+            } else {
+                throw new mysqli_sql_exception(mysqli_error($conn),mysqli_errno($conn));
+            }
+            return $results;
+        }
     }
 }

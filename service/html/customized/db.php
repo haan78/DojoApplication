@@ -101,24 +101,24 @@ function uye_listele(string $durumlar) : array {
 }
 
 function sabitler() {
+    $sql = "SELECT tahakkuk_id,tanim,tutar FROM tahakkuk;
+    SELECT yoklama_id,tanim FROM yoklama;
+    SELECT muhasebe_tanim_id,tanim,tur FROM muhasebe_tanim";
     $mysqli = mysqlilink();
-    mysqli_multi_query($mysqli,
-        "SELECT tahakkuk_id,tanim,tutar FROM tahakkuk;
-        SELECT yoklama_id,tanim FROM yoklama;
-        SELECT muhasebe_tanim_id,tanim,tur FROM muhasebe_tanim");
-
-    $result_tahakkuklar = mysqli_store_result($mysqli);
-    mysqli_next_result($mysqli);
-    $result_yoklamalar = mysqli_store_result($mysqli);
-    mysqli_next_result($mysqli);
-    $result_muhasebe_tanim = mysqli_store_result($mysqli);
-
+    $result = [];
+    try {
+        $result = MySqlStmt::multiQuery($mysqli,$sql);
+    } catch (Exception $err) {
+        throw $err;
+    } finally {
+        $mysqli->close();
+    }
     $data = [
-        "tahakkuklar"=>MySqlStmt::resultToArray($result_tahakkuklar),
-        "yoklamalar" =>MySqlStmt::resultToArray($result_yoklamalar),
-        "muhasebe_tanimlar" => MySqlStmt::resultToArray($result_muhasebe_tanim)
+        "tahakkuklar"=>$result[0],
+        "yoklamalar" =>$result[1],
+        "muhasebe_tanimlar" => $result[2]
     ];
-    mysqli_close($mysqli);
+
     return $data;
 }
 

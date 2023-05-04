@@ -75,7 +75,7 @@ class _KendokaAidat extends State<KendokaAidat> with TickerProviderStateMixin {
                             tahakkukId: widget.bilgi.tahakkuk_id,
                           );
                         })).then((value) {
-                          setState(() {});
+                          if (context.mounted) setState(() {});
                         });
                       },
                     ))
@@ -136,7 +136,7 @@ class _KendokaAidat extends State<KendokaAidat> with TickerProviderStateMixin {
                                       tahakkukId: widget.bilgi.tahakkuk_id,
                                     );
                                   })).then((value) {
-                                    setState(() {});
+                                    if (context.mounted) setState(() {});
                                   });
                                 },
                               )));
@@ -163,7 +163,7 @@ class _KendokaAidat extends State<KendokaAidat> with TickerProviderStateMixin {
                           uyeId: widget.bilgi.uye_id,
                         );
                       })).then((value) {
-                        setState(() {});
+                        if (context.mounted) setState(() {});
                       });
                     },
                   ))
@@ -197,7 +197,7 @@ class _KendokaAidat extends State<KendokaAidat> with TickerProviderStateMixin {
                                     uyeId: widget.bilgi.uye_id,
                                   );
                                 })).then((value) {
-                                  setState(() {});
+                                  if (context.mounted) setState(() {});
                                 });
                               },
                             )));
@@ -225,7 +225,7 @@ class _KendokaAidat extends State<KendokaAidat> with TickerProviderStateMixin {
                           uyeId: widget.bilgi.uye_id,
                         );
                       })).then((value) {
-                        setState(() {});
+                        if (context.mounted) setState(() {});
                       });
                     },
                   ))
@@ -257,7 +257,7 @@ class _KendokaAidat extends State<KendokaAidat> with TickerProviderStateMixin {
                                     uyeId: widget.bilgi.uye_id,
                                   );
                                 })).then((value) {
-                                  setState(() {});
+                                  if (context.mounted) setState(() {});
                                 });
                               },
                             )));

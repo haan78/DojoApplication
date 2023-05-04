@@ -81,86 +81,6 @@ class _Aidat extends State<Aidat> {
     loadingdlg = LoadingDialog(context);
   }
 
-  List<Widget> btnGorup() {
-    List<Widget> bgl = [
-      Expanded(
-          child: ElevatedButton(
-        onPressed: () async {
-          if (_formKey.currentState!.validate()) {
-            int muhasebeId = 0;
-            try {
-              loadingdlg.push();
-              muhasebeId =
-                  await aidatodemeal(api, widget.uyeTahakkuk, widget.uyeId);
-              loadingdlg.pop();
-              if (context.mounted) {
-                Navigator.pop(context);
-              }
-            } catch (e) {
-              if (loadingdlg.started) loadingdlg.pop();
-              errorAlert(context, e.toString());
-            } finally {
-              setState(() {
-                widget.uyeTahakkuk.muhasebe_id = muhasebeId;
-              });
-            }
-          }
-        },
-        child: const Text("Kaydet"),
-      ))
-    ];
-    if (widget.uyeTahakkuk.uye_tahakkuk_id > 0) {
-      bgl.add(const SizedBox(width: 20));
-      bgl.add(SizedBox(
-        width: 50,
-        child: ElevatedButton(
-          onPressed: () {
-            //Silme Buraya
-            if (loadingdlg.started) {
-              return;
-            }
-            yesNoDialog(context,
-                text: "Bu ödeme kaydını silmek istediğinizden emin misiniz?",
-                onYes: (() async {
-              int muhasebeId = widget.uyeTahakkuk.muhasebe_id;
-              try {
-                if (widget.uyeTahakkuk.muhasebe_id > 0) {
-                  loadingdlg.push();
-                  await aidatodemesil(api, widget.uyeTahakkuk.muhasebe_id);
-                  loadingdlg.pop();
-                } else if (widget.uyeTahakkuk.uye_tahakkuk_id > 0) {
-                  loadingdlg.push();
-                  await aidatsil(api, widget.uyeTahakkuk.uye_tahakkuk_id);
-                  widget.uyeTahakkuk.uye_tahakkuk_id = 0;
-                  loadingdlg.pop();
-                } else {
-                  //sacmalik
-                  return;
-                }
-                muhasebeId = 0;
-                if (context.mounted) {
-                  Navigator.pop(context);
-                }
-              } catch (e) {
-                if (loadingdlg.started) loadingdlg.pop();
-                errorAlert(context, e.toString());
-              } finally {
-                setState(() {
-                  widget.uyeTahakkuk.muhasebe_id = muhasebeId;
-                });
-              }
-            }));
-          },
-          style: ButtonStyle(
-              backgroundColor:
-                  MaterialStateProperty.resolveWith((states) => colorBad)),
-          child: const Text("Sil"),
-        ),
-      ));
-    }
-    return bgl;
-  }
-
   @override
   Widget build(BuildContext context) {
     /*kurus mu kaldı aq*/
@@ -227,30 +147,31 @@ class _Aidat extends State<Aidat> {
                               }
                             })),
                     const SizedBox(width: 10),
-                    Expanded(
+                    SizedBox(
+                        width: 80,
                         child: DropdownButtonFormField(
-                      value: widget.uyeTahakkuk.yoklama_id,
-                      items: yoklamaMenuItems(widget.store.sabitler.yoklamalar),
-                      onChanged: (value) {
-                        if (value != null && value > 0) {
-                          setState(() {
-                            widget.uyeTahakkuk.yoklama_id = value;
-                          });
-                        }
-                      },
-                      validator: (value) {
-                        if (value == null || value == 0) {
-                          return "Yoklama Seçin";
-                        } else {
-                          return null;
-                        }
-                      },
-                    ))
+                          value: widget.uyeTahakkuk.yoklama_id,
+                          items: yoklamaMenuItems(
+                              widget.store.sabitler.yoklamalar),
+                          onChanged: (value) {
+                            if (value != null && value > 0) {
+                              setState(() {
+                                widget.uyeTahakkuk.yoklama_id = value;
+                              });
+                            }
+                          },
+                          validator: (value) {
+                            if (value == null || value == 0) {
+                              return "Yoklama Seçin";
+                            } else {
+                              return null;
+                            }
+                          },
+                        ))
                   ]),
-            Row(
-              children: [
-                Expanded(
-                    child: ElevatedButton(
+            SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
                   onPressed: () async {
                     DateTime? dt = await showDatePicker(
                         context: context,
@@ -270,75 +191,139 @@ class _Aidat extends State<Aidat> {
                   child: Text(
                       "Tarih :${widget.uyeTahakkuk.odeme_tarih != null ? dateFormater(widget.uyeTahakkuk.odeme_tarih!, "dd.MM.yyyy") : "Hatalı"}",
                       textAlign: TextAlign.left),
-                ))
-              ],
-            ),
+                )),
             const SizedBox(height: 10),
-            Row(
-              children: [
-                Expanded(
-                    child: TextFormField(
-                        decoration:
-                            const InputDecoration(labelText: "Tutar(TL)"),
-                        controller: tutarcon,
-                        keyboardType: TextInputType.number,
-                        //inputFormatters: [FilteringTextInputFormatter.allow(RegExp('[0-9]'))],
-                        onChanged: (value) {
-                          setState(() {
-                            widget.uyeTahakkuk.odenen = tutarcon.numberValue;
-                          });
-                        },
-                        validator: (value) {
-                          if ((value ?? "TL").trim() == "TL") {
-                            return "Lütfen bir tutar girin";
-                          } else {
-                            return null;
-                          }
-                        }))
-              ],
-            ),
-            const SizedBox(height: 10),
-            Row(
-              children: [
-                Expanded(
-                    child: DropdownButtonFormField(
-                  value: widget.uyeTahakkuk.kasa,
-                  decoration: const InputDecoration(labelText: "Kasa"),
-                  items: kasalar,
-                  onChanged: (value) {
-                    if (value != null) {
-                      setState(() {
-                        widget.uyeTahakkuk.kasa = value;
-                      });
-                    }
-                  },
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return "Lütfen bir kasa seçin";
-                    } else {
-                      return null;
-                    }
-                  },
-                ))
-              ],
-            ),
-            const SizedBox(height: 10),
-            Row(children: [
-              Expanded(
-                  child: TextFormField(
-                decoration: const InputDecoration(
-                  labelText: "Açıklama",
-                ),
-                controller: aciklamacon,
+            TextFormField(
+                decoration: const InputDecoration(labelText: "Tutar(TL)"),
+                controller: tutarcon,
+                keyboardType: TextInputType.number,
+                //inputFormatters: [FilteringTextInputFormatter.allow(RegExp('[0-9]'))],
                 onChanged: (value) {
                   setState(() {
-                    widget.uyeTahakkuk.aciklama = value;
+                    widget.uyeTahakkuk.odenen = tutarcon.numberValue;
                   });
                 },
-              )),
-            ]),
+                validator: (value) {
+                  if ((value ?? "TL").trim() == "TL") {
+                    return "Lütfen bir tutar girin";
+                  } else {
+                    return null;
+                  }
+                }),
+            const SizedBox(height: 10),
+            DropdownButtonFormField(
+              value: widget.uyeTahakkuk.kasa,
+              decoration: const InputDecoration(labelText: "Kasa"),
+              items: kasalar,
+              onChanged: (value) {
+                if (value != null) {
+                  setState(() {
+                    widget.uyeTahakkuk.kasa = value;
+                  });
+                }
+              },
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return "Lütfen bir kasa seçin";
+                } else {
+                  return null;
+                }
+              },
+            ),
+            const SizedBox(height: 10),
+            TextFormField(
+              decoration: const InputDecoration(
+                labelText: "Açıklama",
+              ),
+              controller: aciklamacon,
+              onChanged: (value) {
+                setState(() {
+                  widget.uyeTahakkuk.aciklama = value;
+                });
+              },
+            ),
             const SizedBox(height: 60),
-            Row(children: btnGorup()),
+            Row(children: [
+              SizedBox(
+                  width: 120,
+                  child: ElevatedButton(
+                    onPressed: () async {
+                      if (_formKey.currentState!.validate()) {
+                        int muhasebeId = 0;
+                        try {
+                          loadingdlg.push();
+                          muhasebeId = await aidatodemeal(
+                              api, widget.uyeTahakkuk, widget.uyeId);
+                          loadingdlg.pop();
+                          if (context.mounted) {
+                            Navigator.pop(context);
+                          }
+                        } catch (e) {
+                          if (loadingdlg.started) loadingdlg.pop();
+                          errorAlert(context, e.toString());
+                        } finally {
+                          setState(() {
+                            widget.uyeTahakkuk.muhasebe_id = muhasebeId;
+                          });
+                        }
+                      }
+                    },
+                    child: const Text("Kaydet"),
+                  )),
+              const SizedBox(width: 10),
+              SizedBox(
+                width: 60,
+                child: ElevatedButton(
+                  onPressed: widget.uyeTahakkuk.uye_tahakkuk_id > 0
+                      ? () {
+                          //Silme Buraya
+                          if (loadingdlg.started) {
+                            return;
+                          }
+                          yesNoDialog(context,
+                              text:
+                                  "Bu ödeme kaydını silmek istediğinizden emin misiniz?",
+                              onYes: (() async {
+                            int muhasebeId = widget.uyeTahakkuk.muhasebe_id;
+                            try {
+                              if (widget.uyeTahakkuk.muhasebe_id > 0) {
+                                loadingdlg.push();
+                                await aidatodemesil(
+                                    api, widget.uyeTahakkuk.muhasebe_id);
+                                loadingdlg.pop();
+                              } else if (widget.uyeTahakkuk.uye_tahakkuk_id >
+                                  0) {
+                                loadingdlg.push();
+                                await aidatsil(
+                                    api, widget.uyeTahakkuk.uye_tahakkuk_id);
+                                widget.uyeTahakkuk.uye_tahakkuk_id = 0;
+                                loadingdlg.pop();
+                              } else {
+                                //sacmalik
+                                return;
+                              }
+                              muhasebeId = 0;
+                              if (context.mounted) {
+                                Navigator.pop(context);
+                              }
+                            } catch (e) {
+                              if (loadingdlg.started) loadingdlg.pop();
+                              errorAlert(context, e.toString());
+                            } finally {
+                              setState(() {
+                                widget.uyeTahakkuk.muhasebe_id = muhasebeId;
+                              });
+                            }
+                          }));
+                        }
+                      : null,
+                  style: ButtonStyle(
+                      backgroundColor: MaterialStateProperty.resolveWith(
+                          (states) => colorBad)),
+                  child: const Text("Sil"),
+                ),
+              )
+            ]),
           ]),
         ));
   }

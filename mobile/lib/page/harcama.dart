@@ -13,7 +13,12 @@ class Harcama extends StatefulWidget {
   final int uyeId;
   final MuhasebeDiger muhasebe;
 
-  const Harcama(BuildContext context, {super.key, required this.store, required this.uyeAd, required this.uyeId, required this.muhasebe});
+  const Harcama(BuildContext context,
+      {super.key,
+      required this.store,
+      required this.uyeAd,
+      required this.uyeId,
+      required this.muhasebe});
   @override
   State<StatefulWidget> createState() {
     return _Harcama();
@@ -36,7 +41,12 @@ class _Harcama extends State<Harcama> {
     api = Api(url: widget.store.ApiUrl, authorization: widget.store.ApiToken);
     widget.muhasebe.tarih = DateTime.now();
     aciklamacon.text = widget.muhasebe.aciklama;
-    tutarcon = MoneyMaskedTextController(thousandSeparator: ".", decimalSeparator: "", rightSymbol: "TL", precision: 0, initialValue: widget.muhasebe.tutar);
+    tutarcon = MoneyMaskedTextController(
+        thousandSeparator: ".",
+        decimalSeparator: "",
+        rightSymbol: "TL",
+        precision: 0,
+        initialValue: widget.muhasebe.tutar);
     belgecon = TextEditingController(text: widget.muhasebe.belge);
   }
 
@@ -51,12 +61,16 @@ class _Harcama extends State<Harcama> {
               DropdownButtonFormField(
                   decoration: const InputDecoration(labelText: "Türü"),
                   value: widget.muhasebe.muhasebe_tanim_id,
-                  items: getMuhasebeTanimItems(widget.store.sabitler.muhasebeTanimlar, MuhasebeTanimEnum.gider),
+                  items: getMuhasebeTanimItems(
+                      widget.store.sabitler.muhasebeTanimlar,
+                      MuhasebeTanimEnum.gider),
                   onChanged: ((value) {
                     if (value != null) {
                       setState(() {
                         if (value > 0) {
-                          final mt = widget.store.sabitler.muhasebeTanimlar.firstWhere((element) => value == element.muhasebe_tanim_id);
+                          final mt = widget.store.sabitler.muhasebeTanimlar
+                              .firstWhere((element) =>
+                                  value == element.muhasebe_tanim_id);
                           widget.muhasebe.tanim = mt.tanim;
                           widget.muhasebe.muhasebe_tanim_id = value;
                         } else {
@@ -75,15 +89,20 @@ class _Harcama extends State<Harcama> {
                   }),
               ElevatedButton(
                 onPressed: () async {
-                  DateTime? dt =
-                      await showDatePicker(context: context, initialDate: widget.muhasebe.tarih, firstDate: DateTime(yil - 3, 1, 1), lastDate: DateTime(yil + 3, 1, 1));
+                  DateTime? dt = await showDatePicker(
+                      context: context,
+                      initialDate: widget.muhasebe.tarih,
+                      firstDate: DateTime(yil - 3, 1, 1),
+                      lastDate: DateTime(yil + 3, 1, 1));
                   if (dt != null) {
                     setState(() {
                       widget.muhasebe.tarih = dt;
                     });
                   }
                 },
-                child: Text("Tarih :${dateFormater(widget.muhasebe.tarih, "dd.MM.yyyy")}", textAlign: TextAlign.left),
+                child: Text(
+                    "Tarih :${dateFormater(widget.muhasebe.tarih, "dd.MM.yyyy")}",
+                    textAlign: TextAlign.left),
               ),
               DropdownButtonFormField(
                 value: widget.muhasebe.kasa,
@@ -145,41 +164,48 @@ class _Harcama extends State<Harcama> {
               const SizedBox(height: 10),
               Row(
                 children: [
-                  Expanded(
+                  SizedBox(
+                      width: double.infinity,
                       child: ElevatedButton(
-                    child: const Text("Harcamayı Kaydet"),
-                    onPressed: () async {
-                      if (_formKey.currentState!.validate()) {
-                        int muhasebeId = 0;
-                        try {
-                          loadingdlg.push();
-                          muhasebeId = await digerodemeal(api, widget.muhasebe, widget.uyeId, negative: true);
-                          loadingdlg.pop();
-                          if (context.mounted) {
-                            Navigator.pop(context);
+                        child: const Text("Harcamayı Kaydet"),
+                        onPressed: () async {
+                          if (_formKey.currentState!.validate()) {
+                            int muhasebeId = 0;
+                            try {
+                              loadingdlg.push();
+                              muhasebeId = await digerodemeal(
+                                  api, widget.muhasebe, widget.uyeId,
+                                  negative: true);
+                              loadingdlg.pop();
+                              if (context.mounted) {
+                                Navigator.pop(context);
+                              }
+                            } catch (e) {
+                              if (loadingdlg.started) loadingdlg.pop();
+                              errorAlert(context, e.toString());
+                            } finally {
+                              setState(() {
+                                widget.muhasebe.muhasebe_id = muhasebeId;
+                              });
+                            }
                           }
-                        } catch (e) {
-                          if (loadingdlg.started) loadingdlg.pop();
-                          errorAlert(context, e.toString());
-                        } finally {
-                          setState(() {
-                            widget.muhasebe.muhasebe_id = muhasebeId;
-                          });
-                        }
-                      }
-                    },
-                  )),
+                        },
+                      )),
                   const SizedBox(width: 20),
                   ElevatedButton(
                     onPressed: widget.muhasebe.muhasebe_id == 0
                         ? null
                         : () async {
                             //Silme Buraya
-                            yesNoDialog(context, text: "Bu ödeme kaydını silmek istediğinizden emin misiniz?", onYes: (() async {
+                            yesNoDialog(context,
+                                text:
+                                    "Bu ödeme kaydını silmek istediğinizden emin misiniz?",
+                                onYes: (() async {
                               int muhasebeId = widget.muhasebe.muhasebe_id;
                               try {
                                 loadingdlg.push();
-                                await odemesil(api, widget.muhasebe.muhasebe_id);
+                                await odemesil(
+                                    api, widget.muhasebe.muhasebe_id);
                                 loadingdlg.pop();
                                 muhasebeId = 0;
                                 if (context.mounted) {
@@ -195,7 +221,9 @@ class _Harcama extends State<Harcama> {
                               }
                             }));
                           },
-                    style: ButtonStyle(backgroundColor: MaterialStateProperty.resolveWith((states) => colorBad)),
+                    style: ButtonStyle(
+                        backgroundColor: MaterialStateProperty.resolveWith(
+                            (states) => colorBad)),
                     child: const Text("Sil"),
                   )
                 ],

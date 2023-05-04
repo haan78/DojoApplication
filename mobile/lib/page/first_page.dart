@@ -108,92 +108,88 @@ class _AdminPageState extends State<FirstPage> {
                 icon: const Icon(Icons.person_add))
           ],
         ),
-        body: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(3),
-              child: Row(
-                children: [
-                  Expanded(
-                      child: TextField(
-                    key: _araKey,
-                    decoration: const InputDecoration(
-                        labelText: "Ara", prefixIcon: Icon(Icons.search)),
-                    onChanged: (value) {
-                      setState(() {
-                        search = value;
-                        _reload = false;
-                      });
-                    },
-                  )),
-                  PopupMenuButton(
-                    itemBuilder: (BuildContext context) {
-                      return [
-                        PopupMenuItem(
+        body: Padding(
+          padding: const EdgeInsets.all(10),
+          child: Column(
+            children: [
+              TextField(
+                key: _araKey,
+                decoration: InputDecoration(
+                    labelText: "Ara",
+                    prefixIcon: const Icon(Icons.search),
+                    suffixIcon: PopupMenuButton(
+                      itemBuilder: (BuildContext context) {
+                        return [
+                          PopupMenuItem(
+                              child: TextButton(
+                                  onPressed: () {
+                                    setState(() {
+                                      _filterAction = FilterAction.debt;
+                                      _reload = false;
+                                    });
+                                  },
+                                  child: Row(
+                                    children: const [
+                                      Icon(Icons.payments),
+                                      Text("Aidat Borcu")
+                                    ],
+                                  ))),
+                          PopupMenuItem(
+                              child: TextButton(
+                                  onPressed: () {
+                                    setState(() {
+                                      _filterAction = FilterAction.last;
+                                      _reload = false;
+                                    });
+                                  },
+                                  child: Row(
+                                    children: const [
+                                      Icon(Icons.calendar_month),
+                                      Text("Gelmeyenler")
+                                    ],
+                                  ))),
+                          PopupMenuItem(
                             child: TextButton(
                                 onPressed: () {
                                   setState(() {
-                                    _filterAction = FilterAction.debt;
+                                    _filterAction = FilterAction.name;
                                     _reload = false;
                                   });
                                 },
                                 child: Row(
                                   children: const [
-                                    Icon(Icons.payments),
-                                    Text("Aidat Borcu")
+                                    Icon(Icons.sort_by_alpha),
+                                    Text("İsime Göre")
                                   ],
-                                ))),
-                        PopupMenuItem(
-                            child: TextButton(
-                                onPressed: () {
-                                  setState(() {
-                                    _filterAction = FilterAction.last;
-                                    _reload = false;
-                                  });
-                                },
-                                child: Row(
-                                  children: const [
-                                    Icon(Icons.calendar_month),
-                                    Text("Gelmeyenler")
-                                  ],
-                                ))),
-                        PopupMenuItem(
-                          child: TextButton(
-                              onPressed: () {
-                                setState(() {
-                                  _filterAction = FilterAction.name;
-                                  _reload = false;
-                                });
-                              },
-                              child: Row(
-                                children: const [
-                                  Icon(Icons.sort_by_alpha),
-                                  Text("İsime Göre")
-                                ],
-                              )),
-                        )
-                      ];
-                    },
-                    child: const Icon(Icons.sort),
-                  ),
-                ],
+                                )),
+                          )
+                        ];
+                      },
+                      child: const Icon(Icons.sort),
+                    )),
+                onChanged: (value) {
+                  setState(() {
+                    search = value;
+                    _reload = false;
+                  });
+                },
               ),
-            ),
-            Expanded(
-                child: FBuilder<List<UyeListDetay>>(
-              future: uyeler(listType, search, _filterAction, store, _reload),
-              builder: (data) {
-                return ListView.builder(
-                  itemCount: data.length,
-                  itemBuilder: (context, index) {
-                    return uyeListItem(data[index], () {
-                      kendokaGetir(context, data[index].uye_id);
-                    }, tileColorByIndex(index));
-                  },
-                );
-              },
-            ))
-          ],
+              FBuilder<List<UyeListDetay>>(
+                future: uyeler(listType, search, _filterAction, store, _reload),
+                builder: (data) {
+                  return Expanded(
+                      child: ListView.builder(
+                    itemCount: data.length,
+                    itemBuilder: (context, index) {
+                      return uyeListItem(data[index], () {
+                        kendokaGetir(context, data[index].uye_id);
+                      }, tileColorByIndex(index));
+                    },
+                  ));
+                },
+              )
+            ],
+          ),
         ));
   }
 

@@ -2,13 +2,9 @@
 
 import 'dart:convert';
 import 'dart:core';
-
 import 'package:dojo_mobile/page/appwindow.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-
 import 'api.dart';
-import 'package:flutter/cupertino.dart';
 
 class UyeSeviye {
   DateTime tarih = DateTime.now();
