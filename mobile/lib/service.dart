@@ -580,8 +580,8 @@ Future<void> rapor_gelirgiderAylik(Api api, List<GelirGiderAylik> list) async {
   }
   for (final raw in response) {
     final obj = GelirGiderAylik();
-    obj.ay = int.parse(raw["_ay"]);
-    obj.yil = int.parse(raw["_yil"]);
+    obj.ay = raw["_ay"] ?? 0;
+    obj.yil = raw["_yil"] ?? 0;
     obj.gelir = double.parse(raw["gelir"]);
     obj.gider = double.parse(raw["gider"]);
     obj.aidat = double.parse(raw["aidat"]);
@@ -602,12 +602,12 @@ Future<void> rapor_aylikyoklama(
   }
   for (final raw in response) {
     final obj = YoklamaAylik();
-    obj.ay = int.parse(raw["_ay"]);
-    obj.yil = int.parse(raw["_yil"]);
+    obj.ay = raw["_ay"] ?? 0;
+    obj.yil = raw["_yil"] ?? 0;
     obj.ortalama = double.parse(raw["ortalama"]);
-    obj.alt = int.parse(raw["alt"]);
-    obj.ust = int.parse(raw["ust"]);
-    obj.keiko = int.parse(raw["keiko"]);
+    obj.alt = raw["alt"] ?? 0;
+    obj.ust = raw["ust"] ?? 0;
+    obj.keiko = raw["keiko"] ?? 0;
     list.add(obj);
   }
 }
