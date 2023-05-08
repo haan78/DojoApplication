@@ -9,6 +9,8 @@ namespace MySqlTool {
     use mysqli_sql_exception;
 
     class MySqlStmt {
+
+        public static bool $closeConnection = FALSE;
         
         public static function resultToArray(mysqli_result $result) : array {
             $arr = array();
@@ -19,19 +21,19 @@ namespace MySqlTool {
             return $arr;
         }
 
-        public static function stmtToArray(mysqli_stmt $stmt) : array {
+        public static function stmtResult(mysqli_stmt $stmt) {
+            $result = null;
             if ($stmt->execute()) {
                 $result = $stmt->get_result();
                 if ( $result ) {
-                    $arr = self::resultToArray($result);
+                    $result = (array)self::resultToArray($result);
                 } else {
-                    throw new \Exception("Stmt has no result");
+                    $result = (int)mysqli_stmt_affected_rows($stmt);
                 }
             } else {
                 throw new \Exception(mysqli_stmt_error($stmt)." / ".mysqli_stmt_errno($stmt));
-            }
-            
-            return $arr;
+            }            
+            return $result;
         }
 
         public static function sqlToStmt(mysqli $conn,string $sql,array $params = []) : mysqli_stmt {
@@ -73,33 +75,28 @@ namespace MySqlTool {
             }
         }
 
-        public static function query(mysqli $conn, string $sql, array $params = []) : array {
-            $stmt = self::sqlToStmt($conn, $sql, $params);
-            $arr = self::stmtToArray($stmt);
-            $stmt->close();
+        public static function query(mysqli $conn, string $sql, array $params = []) {
+            $arr = [];
+            $stmt = null;
+            try {
+                $stmt = self::sqlToStmt($conn, $sql, $params);
+                $arr = self::stmtResult($stmt);
+            } catch (\Exception $err) {
+                throw $err;
+            } finally {
+                if ( !is_null($stmt) ) {
+                    $stmt->close();
+                }
+                if ( static::$closeConnection ) {
+                    $conn->close();
+                }
+            }            
             return $arr;
         }
 
-        public static function queryOne(mysqli $conn, string $sql, array $params = []) {            
-            $stmt = self::sqlToStmt($conn, $sql, $params);            
-            $arr = self::stmtToArray($stmt);            
-            $stmt->close();
-            if ( count($arr) > 0 ) {
-                return $arr[0];
-
-            } else {
-                return null;
-            }
-        }
-
-        public static function execute(mysqli $conn, string $sql, array $params = []) :int {
-            $stmt = self::sqlToStmt($conn, $sql, $params);
-            if (!$stmt->execute()) {
-                throw new \Exception(mysqli_stmt_error($stmt)." / ".mysqli_stmt_errno($stmt));
-            }
-            $num = mysqli_stmt_affected_rows($stmt);
-            $stmt->close();
-            return $num;
+        public static function queryOne(mysqli $conn, string $sql, array $params = []) {  
+            $arr = self::query($conn,$sql,$params);
+            return is_array($arr) && count($arr) > 0 ? $arr[0] : null;
         }
 
         public static function multiQuery(mysqli $conn,string $sql,array $params = []):array {    
@@ -126,7 +123,7 @@ namespace MySqlTool {
                     }
                 }     
                 $nsql = preg_replace_callback("/\{[a-zA-Z_$][a-zA-Z_0-9]+\}/",function($m) use($params,$conn){
-                    $name =  substr($m[0],1,strlen($m[0])-2);
+                    $name = substr($m[0],1,strlen($m[0])-2);
                     if (array_key_exists($name,$params)) {
                         return valToStr($conn,$params[$name]);
                     } else {
@@ -136,16 +133,24 @@ namespace MySqlTool {
                 return $nsql;
             }
             $results = array();
-            if (mysqli_multi_query($conn, empty($params) ? $sql : sqlGenerate($conn,$sql,$params) )) {                
-                do {
-                    $result = $conn->store_result();
-                    if ($result instanceof mysqli_result) {
-                        array_push($results,self::resultToArray($result));                        
-                    }
-                } while ($conn->next_result());                
-            } else {
-                throw new mysqli_sql_exception(mysqli_error($conn),mysqli_errno($conn));
-            }
+            try {
+                if (mysqli_multi_query($conn, empty($params) ? $sql : sqlGenerate($conn,$sql,$params) )) {            
+                    do {
+                        $result = $conn->store_result();
+                        if ($result instanceof mysqli_result) {
+                            array_push($results,self::resultToArray($result));                        
+                        }
+                    } while ($conn->next_result());                
+                } else {
+                    throw new mysqli_sql_exception(mysqli_error($conn),mysqli_errno($conn));
+                }
+            } catch (\Exception $err) {
+                throw $err;
+            } finally {
+                if (self::$closeConnection) {
+                    $conn->close();
+                }                
+            }            
             return $results;
         }
     }

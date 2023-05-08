@@ -563,7 +563,7 @@ Future<void> kyuoneri(Api api, List<KyuOneri> list) async {
   for (final raw in response) {
     final ko = KyuOneri();
     ko.ad = raw["ad"];
-    ko.sayi = int.parse(raw["sayi"]);
+    ko.sayi = raw["sayi"] ?? 0;
     ko.sinav = raw["sinav"];
     ko.kabuledildi = (ko.sayi >= 12);
     list.add(ko);
