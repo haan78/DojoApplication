@@ -10,11 +10,11 @@ MySqlStmt::$closeConnection = TRUE;
 function mysqlilink(): mysqli {
 
     $c = @mysqli_connect(
-        $GLOBALS["MYSQL"]["host"] ?? "",
-        $GLOBALS["MYSQL"]["user"]?? "",
-        $GLOBALS["MYSQL"]["password"]?? "",
-        $GLOBALS["MYSQL"]["database"]?? "",
-        $GLOBALS["MYSQL"]["port"]?? ""
+        $GLOBALS["DB"]["host"] ?? "",
+        $GLOBALS["DB"]["user"]?? "dojosensei",
+        $GLOBALS["DB"]["password"]?? "",
+        $GLOBALS["DB"]["database"]?? "dojo",
+        $GLOBALS["DB"]["port"]?? 3306
     );
     if ($c) {
         mysqli_report(MYSQLI_REPORT_STRICT);
