@@ -5,8 +5,6 @@ error_reporting(E_ALL);
 ini_set('display_errors', TRUE);
 ini_set('display_startup_errors', TRUE);
 
-define("SERVICE_ROOT","https://dojo.ankarakendo.com");
-define("INFO_EMAIL","ankarakendo2007@gmail.com");
 define("MAX_LOGIN_ATTEMPT",5);
 define("TOKEN_TIME",7200);
 define("SECRET_FILE_PATH","/etc/.secrets/dojo.json");

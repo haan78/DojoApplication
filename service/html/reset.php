@@ -28,7 +28,7 @@ page(function () {
                 <button class="entry" onclick="resetformsubmit(this)">Değiştir</button>
             </div>
             <div class="link">
-                <a href="mailto:<?php echo INFO_EMAIL; ?>"><?php echo INFO_EMAIL; ?></a>
+                <a href="mailto:<?php echo $GLOBALS["INFO_EMAIL"]; ?>"><?php echo $GLOBALS["INFO_EMAIL"]; ?></a>
             </div>
         </div>
     </div>
