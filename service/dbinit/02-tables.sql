@@ -102,6 +102,7 @@ CREATE TABLE uye_tahakkuk (
   degisme timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
   yoklama_id bigint DEFAULT NULL,
   PRIMARY KEY (uye_tahakkuk_id),
+  UNIQUE KEY `uye_tahakkuk_unq1` (`uye_id`,`ay`,`yil`,`yoklama_id`) USING BTREE,
   KEY uye_tahakkuk_idx1 (uye_id,tahakkuk_id) USING BTREE,
   KEY uye_tahakkuk_idx2 (muhasebe_id)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_turkish_ci;
