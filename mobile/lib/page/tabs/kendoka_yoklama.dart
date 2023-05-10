@@ -63,7 +63,9 @@ class _KendokaYoklama extends State<KendokaYoklama> {
                                     tarih:
                                         widget.bilgi.yoklamalar[index].tarih);
                                 loadingdlg.pop();
-                                widget.bilgi.yoklamalar.removeAt(index);
+                                setState(() {
+                                  widget.bilgi.yoklamalar.removeAt(index);
+                                });
                               } catch (ex) {
                                 if (loadingdlg.started) loadingdlg.pop();
                                 errorAlert(context, ex.toString());

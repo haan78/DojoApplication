@@ -689,10 +689,10 @@ Future<List<GenelRap>> rapor_geneluyeraporu(Api api) async {
   for (final raw in response) {
     final obj = GenelRap();
     obj.ad = raw["ad"] ?? "";
-    obj.borc_sayi = int.parse(raw["borc_sayi"]);
+    obj.borc_sayi = raw["borc_sayi"] ?? 0;
     obj.borc_tutar = double.parse(raw["borc_tutar"]);
     obj.cinsiyet = raw["cinsiyet"] ?? "";
-    obj.devam_sayi = int.parse(raw["devam_sayi"]);
+    obj.devam_sayi = raw["devam_sayi"] ?? 0;
     obj.dogum_tarih = DateTime.parse(raw["dogum_tarih"]);
     obj.durum = raw["durum"] ?? "";
     obj.ekfno = raw["ekfno"] ?? "";
@@ -702,7 +702,7 @@ Future<List<GenelRap>> rapor_geneluyeraporu(Api api) async {
     obj.sinav_tarih =
         raw["sinav_tarih"] != null ? DateTime.parse(raw["sinav_tarih"]) : null;
     obj.tahakkuk = raw["tahakkuk"] ?? "";
-    obj.uye_id = int.parse(raw["uye_id"]);
+    obj.uye_id = raw["uye_id"] ?? 0;
     list.add(obj);
   }
   return list;
