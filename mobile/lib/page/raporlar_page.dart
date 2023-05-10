@@ -259,8 +259,7 @@ class _RaporlarPage extends State<RaporlarPage> with TickerProviderStateMixin {
                                 child: const Text("Excel Dökümanı .xlsx"))
                           ]));
                     }),
-                Expanded(
-                    child: FBuilder(
+                FBuilder(
                   future: rapor_seviyebildirim(api, listSeviyeBildirim),
                   builder: (data) {
                     return Column(children: [
@@ -371,7 +370,7 @@ class _RaporlarPage extends State<RaporlarPage> with TickerProviderStateMixin {
                           child: const Text("Excel Dökümanı .xlsx"))
                     ]);
                   },
-                )),
+                ),
                 Center(
                     child: ElevatedButton(
                         onPressed: () async {
