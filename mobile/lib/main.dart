@@ -43,7 +43,7 @@ class MyApp extends StatelessWidget {
               Provider.of<Store>(context).copy(s);
               return MaterialApp(
                 theme: theme,
-                home: WebLoginPage(),
+                home: const WebLoginPage(),
               );
             } else {
               return MessagePage(snapshot.error.toString(), MessageType.error);
