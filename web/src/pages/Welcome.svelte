@@ -34,13 +34,15 @@
             <span><b>Seviye Tar.</b>{ trDate(level.tarih)}</span>            
             <hr/>        
             <span><b>Son Çal.</b>{attendances[0] ? ( trDate(attendances[0].tarih) ) + " / " + attendances[0].tanim : "" }</span>
-            <span><b>Son 3 Ay Çal.</b>{info.son3Ay}</span>            
-            {#if borcbilgiparse(info.borcbilgi,1) != 0}
+            <span><b>Son 3 Ay Çal.</b>{info.son3Ay}</span>
             <hr/>
+            {#if borcbilgiparse(info.borcbilgi,1) != -1}            
             <a href={'javascript:;'} on:click={()=>{module="Dues"}} style="color: red;">
             <span><b>Ödenmemiş aidta Sayısı </b>{borcbilgiparse(info.borcbilgi,1)}</span><br/>
             <span><b>Toplma Aidat Borcu </b>{borcbilgiparse(info.borcbilgi,2)} TL</span>
             </a>
+            {:else}
+            <span style="color:green; font-weight: bold;">Ödenmemiş Aidat Borsunuz Bulunmamaktadır</span>
             {/if}
             <hr/>
             <span><a href="ankara_kendo_kyu_sinavi_yonetmeligi.pdf" target="_blank">Kyu Sınavı Yönetmeliği</a></span>
@@ -94,12 +96,17 @@
     let detail:string = "";
 
     function borcbilgiparse(borcbilgi:string,part:number):number {
-        const arr = borcbilgi.split(" ");
-        if (arr[part-1]) {
-            return parseFloat(arr[part-1]) || -1;            
+        if (borcbilgi) {
+            const arr = borcbilgi.split(" ");
+            if (arr[part-1]) {
+                return parseFloat(arr[part-1]) || -1;            
+            } else {
+                return -1;
+            }
         } else {
             return -1;
         }
+        
     }
 
     function exit() {

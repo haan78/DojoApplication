@@ -1,6 +1,8 @@
 <?php
 require_once "./settings.php";
 
+initSecret();
+
 function setSessionAttempt() {
     session_start();
     $_SESSION['attempt'] = $_SESSION['attempt'] ?? 0;
