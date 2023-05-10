@@ -31,7 +31,10 @@ class _Kendoka extends State<Kendoka> {
   bool _reload = true;
   final scaffoldKey = GlobalKey<ScaffoldState>();
 
-  Widget getWigget({required Sabitler sabitler, required UyeBilgi bilgi, required Store store}) {
+  Widget getWigget(
+      {required Sabitler sabitler,
+      required UyeBilgi bilgi,
+      required Store store}) {
     if (_bottomNavIndex == 0) {
       return KendokaBase(
         sabitler: formSabitler,
@@ -45,7 +48,8 @@ class _Kendoka extends State<Kendoka> {
         store: store,
       );
     } else if (_bottomNavIndex == 2) {
-      return KendokaSeviye(sabitler: sabitler, bilgi: bilgi, store: store, uyeAd: bilgi.ad);
+      return KendokaSeviye(
+          sabitler: sabitler, bilgi: bilgi, store: store, uyeAd: bilgi.ad);
     } else {
       return KendokaYoklama(sabitler: sabitler, bilgi: bilgi, store: store);
     }
@@ -111,10 +115,15 @@ class _Kendoka extends State<Kendoka> {
                     },
                     type: BottomNavigationBarType.fixed,
                     items: const [
-                        BottomNavigationBarItem(label: "Genel", icon: Icon(Icons.person)),
-                        BottomNavigationBarItem(label: "Aidatlar", icon: Icon(Icons.payments)),
-                        BottomNavigationBarItem(label: "Sinavlar", icon: Icon(Icons.card_membership)),
-                        BottomNavigationBarItem(label: "Keikolar", icon: Icon(Icons.checklist))
+                        BottomNavigationBarItem(
+                            label: "Genel", icon: Icon(Icons.person)),
+                        BottomNavigationBarItem(
+                            label: "Aidatlar", icon: Icon(Icons.payments)),
+                        BottomNavigationBarItem(
+                            label: "Sinavlar",
+                            icon: Icon(Icons.card_membership)),
+                        BottomNavigationBarItem(
+                            label: "Keikolar", icon: Icon(Icons.checklist))
                       ])
                 : null,
           );
@@ -136,11 +145,12 @@ Future<UyeBilgi> yueBilgiGetir(Store store, int uye_id, bool reload) async {
       formUyeBilgi = await uyeBilgi(api, uye_id: uye_id);
     } else {
       formUyeBilgi = UyeBilgi();
-      formUyeBilgi.ad = "Yeni Üye";
+      formUyeBilgi.ad = "";
       formUyeBilgi.cinsiyet = "ERKEK";
       formUyeBilgi.durum = "registered";
       formUyeBilgi.tahakkuk_id = 1;
-      formUyeBilgi.image = (await rootBundle.load("assets/kendoka.jpg")).buffer.asUint8List();
+      formUyeBilgi.image =
+          (await rootBundle.load("assets/kendoka.jpg")).buffer.asUint8List();
       formUyeBilgi.file_type = "image/jpeg";
     }
   }

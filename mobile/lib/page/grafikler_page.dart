@@ -133,6 +133,13 @@ class _GrafiklerPage extends State<GrafiklerPage>
                       ]),
                       Expanded(
                           child: DChartBar(
+                        axisLineColor: Colors.white,
+                        domainAxisTitleColor: Colors.white,
+                        domainLabelColor: Colors.white,
+                        borderColor: Colors.white,
+                        barValueColor: Colors.white,
+                        measureLabelColor: Colors.white,
+                        measureAxisTitleColor: Colors.white,
                         data: [
                           {'id': 'Gelir', 'data': dGelir},
                           {'id': 'Aidat', 'data': dAidat},
@@ -142,7 +149,6 @@ class _GrafiklerPage extends State<GrafiklerPage>
                         axisLineTick: 2,
                         axisLinePointTick: 1,
                         axisLinePointWidth: 5,
-                        axisLineColor: Colors.black,
                         measureLabelPaddingToAxisLine: 16,
                         barColor: (barData, index, id) {
                           if (id == "Gelir") {
@@ -156,7 +162,6 @@ class _GrafiklerPage extends State<GrafiklerPage>
                         showBarValue: true,
                         showMeasureLine: false,
                         barValueFontSize: 10,
-                        barValueColor: Colors.white,
                         verticalDirection: false,
                         barValuePosition: BarValuePosition.inside,
                         barValueAnchor: BarValueAnchor.end,
@@ -228,11 +233,18 @@ class _GrafiklerPage extends State<GrafiklerPage>
                     ]),
                     Expanded(
                         child: DChartBar(
+                            axisLineColor: Colors.white,
+                            domainAxisTitleColor: Colors.white,
+                            domainLabelColor: Colors.white,
+                            borderColor: Colors.white,
+                            barValueColor: Colors.white,
+                            measureLabelColor: Colors.white,
+                            measureAxisTitleColor: Colors.white,
                             data: [
-                          {'id': 'Max', 'data': dMax},
-                          {'id': 'Ort', 'data': dOrt},
-                          {'id': 'Min', 'data': dMin}
-                        ],
+                              {'id': 'Max', 'data': dMax},
+                              {'id': 'Ort', 'data': dOrt},
+                              {'id': 'Min', 'data': dMin}
+                            ],
                             barColor: (barData, index, id) {
                               if (id == "Max") {
                                 return Colors.green.shade800;
@@ -245,7 +257,6 @@ class _GrafiklerPage extends State<GrafiklerPage>
                             showBarValue: true,
                             showMeasureLine: false,
                             barValueFontSize: 10,
-                            barValueColor: Colors.white,
                             verticalDirection: false,
                             barValuePosition: BarValuePosition.inside,
                             barValueAnchor: BarValueAnchor.end,
@@ -315,11 +326,18 @@ class _GrafiklerPage extends State<GrafiklerPage>
                       ]),
                       Expanded(
                           child: DChartBar(
+                              axisLineColor: Colors.white,
+                              domainAxisTitleColor: Colors.white,
+                              domainLabelColor: Colors.white,
+                              borderColor: Colors.white,
+                              barValueColor: Colors.white,
+                              measureLabelColor: Colors.white,
+                              measureAxisTitleColor: Colors.white,
                               data: [
-                            {'id': 'Genel', 'data': dGenel},
-                            {'id': 'Erkek', 'data': dErkek},
-                            {'id': 'Kadin', 'data': dKadin}
-                          ],
+                                {'id': 'Genel', 'data': dGenel},
+                                {'id': 'Erkek', 'data': dErkek},
+                                {'id': 'Kadin', 'data': dKadin}
+                              ],
                               barColor: (barData, index, id) {
                                 if (id == "Genel") {
                                   return Colors.green.shade800;
@@ -332,7 +350,6 @@ class _GrafiklerPage extends State<GrafiklerPage>
                               showBarValue: true,
                               showMeasureLine: false,
                               barValueFontSize: 10,
-                              barValueColor: Colors.white,
                               verticalDirection: false,
                               barValuePosition: BarValuePosition.inside,
                               barValueAnchor: BarValueAnchor.end,

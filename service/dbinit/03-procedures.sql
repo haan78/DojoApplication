@@ -98,7 +98,7 @@ BEGIN
         
        	#uye seviye ekle 7 kyu        
         insert into `uye_seviye` ( `uye_seviye`.`aciklama`,`uye_seviye`.`tarih`,`uye_seviye`.`uye_id`,`uye_seviye`.`seviye` )
-        	VALUES ( 'Yeni Uye',DATE('1952-03-14'),p_uye_id,'7 KYU' ); 
+        	VALUES ( 'Yeni Uye',CURDATE(),p_uye_id,'7 KYU' ); 
         set p_parola = @_pass;
        	
     else
