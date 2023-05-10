@@ -11,10 +11,7 @@ import '../store.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class WebLoginPage extends StatelessWidget {
-  WebLoginPage({super.key});
-
-  late WebViewController _pageController;
-  bool rememberme = false;
+  const WebLoginPage({super.key});
 
   WebViewController wconn(BuildContext context, Store s) {
     WebViewController c = WebViewController();
@@ -49,7 +46,7 @@ class WebLoginPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Store s = Provider.of<Store>(context, listen: false);
-    _pageController = wconn(context, s);
+    WebViewController pageController = wconn(context, s);
 /*    if (first) {
       _user.text = s.ApiUser;
       _pass.text = s.ApiPassword;
@@ -80,7 +77,7 @@ class WebLoginPage extends StatelessWidget {
                     child: ClipRRect(
                         borderRadius:
                             const BorderRadius.all(Radius.circular(20)),
-                        child: WebViewWidget(controller: _pageController))),
+                        child: WebViewWidget(controller: pageController))),
                 const SizedBox(height: 10),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
@@ -88,14 +85,14 @@ class WebLoginPage extends StatelessWidget {
                     TextButton(
                         onPressed: () async {
                           await forgetSettings();
-                          _pageController
+                          pageController
                               .runJavaScript("setLoginData('','','mobile')");
                         },
                         child: const Text("Beni Unut")),
                     const Spacer(),
                     IconButton(
                       onPressed: () {
-                        _pageController.reload();
+                        pageController.reload();
                       },
                       icon: const Icon(Icons.refresh),
                     ),

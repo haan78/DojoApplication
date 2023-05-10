@@ -511,8 +511,9 @@ class _RaporlarPage extends State<RaporlarPage> with TickerProviderStateMixin {
                             }
                             openExcel("gelirgider", excel);
                           } catch (err) {
-                            if (context.mounted)
+                            if (context.mounted) {
                               errorAlert(context, err.toString());
+                            }
                           }
                           loading = false;
                         },

@@ -1,5 +1,5 @@
 import 'package:dojo_mobile/page/message_page.dart';
-import 'package:dojo_mobile/page/tabs/kendokaAidat.dart';
+import 'package:dojo_mobile/page/tabs/kendoka_aidat.dart';
 import 'package:dojo_mobile/page/tabs/kendoka_base.dart';
 import 'package:dojo_mobile/page/tabs/kendoka_seviye.dart';
 import 'package:dojo_mobile/page/tabs/kendoka_yoklama.dart';
@@ -137,12 +137,12 @@ class _Kendoka extends State<Kendoka> {
   }
 }
 
-Future<UyeBilgi> yueBilgiGetir(Store store, int uye_id, bool reload) async {
+Future<UyeBilgi> yueBilgiGetir(Store store, int uyeId, bool reload) async {
   if (reload) {
     Api api = Api(url: store.ApiUrl, authorization: store.ApiToken);
     formSabitler = store.sabitler;
-    if (uye_id > 0) {
-      formUyeBilgi = await uyeBilgi(api, uye_id: uye_id);
+    if (uyeId > 0) {
+      formUyeBilgi = await uyeBilgi(api, uye_id: uyeId);
     } else {
       formUyeBilgi = UyeBilgi();
       formUyeBilgi.ad = "";
