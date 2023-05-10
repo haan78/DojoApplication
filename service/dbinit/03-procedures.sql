@@ -166,7 +166,7 @@ BEGIN
 			DELETE FROM uye_tahakkuk 
 				WHERE uye_id = p_uye_id 
 					AND yoklama_id = p_yoklama_id 
-					AND ay = MONTH(uy.tarih) 
+					AND ay = MONTH(p_tarih) 
 					AND yil = YEAR(p_tarih)
 					AND muhasebe_id IS NULL;
 		end if;

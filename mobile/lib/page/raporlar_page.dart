@@ -120,9 +120,10 @@ class _RaporlarPage extends State<RaporlarPage> with TickerProviderStateMixin {
                                           bitis = dt;
                                         });
                                       } else {
-                                        if (context.mounted)
+                                        if (context.mounted) {
                                           errorAlert(context,
                                               "Bitiş tarihi başlangıçtan büyük olamaz");
+                                        }
                                       }
                                     }
                                   },
@@ -136,7 +137,7 @@ class _RaporlarPage extends State<RaporlarPage> with TickerProviderStateMixin {
                                         scrollDirection: Axis.horizontal,
                                         child: DataTable(
                                             border: TableBorder.all(
-                                                color: Colors.black),
+                                                color: Colors.white),
                                             columns: const [
                                               DataColumn(label: Text("Ad")),
                                               DataColumn(label: Text("Tarih")),
@@ -249,8 +250,9 @@ class _RaporlarPage extends State<RaporlarPage> with TickerProviderStateMixin {
                                     }
                                     openExcel("gelirgider", excel);
                                   } catch (err) {
-                                    if (context.mounted)
+                                    if (context.mounted) {
                                       errorAlert(context, err.toString());
+                                    }
                                   }
                                   loading = false;
                                 },
@@ -269,8 +271,9 @@ class _RaporlarPage extends State<RaporlarPage> with TickerProviderStateMixin {
                                   scrollDirection: Axis.horizontal,
                                   child: DataTable(
                                     border:
-                                        TableBorder.all(color: Colors.black),
+                                        TableBorder.all(color: Colors.white),
                                     columns: const [
+                                      DataColumn(label: Text("Sıra")),
                                       DataColumn(label: Text("Ad")),
                                       DataColumn(label: Text("EkfNo")),
                                       DataColumn(label: Text("Doğum Tarihi")),
@@ -282,6 +285,7 @@ class _RaporlarPage extends State<RaporlarPage> with TickerProviderStateMixin {
                                         listSeviyeBildirim.length, (index) {
                                       final sb = listSeviyeBildirim[index];
                                       return DataRow(cells: [
+                                        DataCell(Text((index + 1).toString())),
                                         DataCell(Text(sb.ad)),
                                         DataCell(Text(sb.ekfno)),
                                         DataCell(Text(dateFormater(
@@ -358,8 +362,9 @@ class _RaporlarPage extends State<RaporlarPage> with TickerProviderStateMixin {
                               }
                               openExcel("gelirgider", excel);
                             } catch (err) {
-                              if (context.mounted)
+                              if (context.mounted) {
                                 errorAlert(context, err.toString());
+                              }
                             }
                             loading = false;
                           },

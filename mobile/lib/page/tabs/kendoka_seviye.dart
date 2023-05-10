@@ -96,7 +96,7 @@ class _KendokaSeviye extends State<KendokaSeviye> {
                     },
                   ))
                 ]),
-                Dikey2,
+                const SizedBox(height: 20),
                 Row(children: [
                   ElevatedButton(
                       onPressed: () {

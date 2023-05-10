@@ -265,11 +265,6 @@ const kasalar = [
   DropdownMenuItem(value: "Dernek Banka", child: Text("Dernek Banka"))
 ];
 
-const Dikey = SizedBox(height: 10);
-const Dikey2 = SizedBox(height: 20);
-const Yatay = SizedBox(width: 10);
-const Yatay2 = SizedBox(width: 20);
-
 // ignore: unnecessary_const
 
 Row appTitle({required String text}) {
@@ -437,17 +432,17 @@ class FullDataTable extends StatelessWidget {
 
 Color renkver(int val, double min, double max) {
   if (val < min) {
-    return const Color.fromARGB(255, 17, 105, 20);
+    return const Color.fromARGB(255, 52, 179, 57);
   } else if (val < max) {
-    return const Color.fromARGB(255, 226, 213, 30);
+    return const Color.fromARGB(255, 230, 217, 46);
   } else {
-    return const Color.fromARGB(255, 206, 32, 19);
+    return const Color.fromARGB(255, 231, 126, 118);
   }
 }
 
 Color tileColorByIndex(int index) {
   //return index % 2 == 1 ? const Color.fromARGB(255, 208, 224, 233) : const Color.fromARGB(255, 229, 233, 208);
   return index % 2 == 1
-      ? const Color.fromARGB(255, 8, 121, 182)
-      : const Color.fromARGB(255, 87, 152, 190);
+      ? const Color.fromARGB(255, 2, 70, 64)
+      : const Color.fromARGB(255, 7, 89, 136);
 }

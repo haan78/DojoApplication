@@ -9,7 +9,8 @@ import '../store.dart';
 class YoklamaGun extends StatefulWidget {
   final Keiko keiko;
   final Store store;
-  const YoklamaGun(BuildContext context, {super.key, required this.keiko, required this.store});
+  const YoklamaGun(BuildContext context,
+      {super.key, required this.keiko, required this.store});
 
   @override
   State<StatefulWidget> createState() {
@@ -30,7 +31,8 @@ class _YoklamaGun extends State<YoklamaGun> {
   Future<List<KeikoKendoka>> getList() async {
     if (reload) {
       try {
-        KeikoListe kl = await yoklamaliste(api, tarih: widget.keiko.tarih, yoklama_id: widget.keiko.yoklama_id);
+        KeikoListe kl = await yoklamaliste(api,
+            tarih: widget.keiko.tarih, yoklama_id: widget.keiko.yoklama_id);
         reload = false;
         if (widget.keiko.sayi != kl.katilanSayisi) {
           setState(() {
@@ -48,7 +50,8 @@ class _YoklamaGun extends State<YoklamaGun> {
   List<DropdownMenuItem<int>> yoklamaitmes(List<Yoklama> yoklamalar) {
     List<DropdownMenuItem<int>> result = [];
     for (int i = 0; i < list.length; i++) {
-      result.add(DropdownMenuItem<int>(value: yoklamalar[i].yoklama_id, child: Text(yoklamalar[i].tanim)));
+      result.add(DropdownMenuItem<int>(
+          value: yoklamalar[i].yoklama_id, child: Text(yoklamalar[i].tanim)));
     }
     return result;
   }
@@ -57,7 +60,8 @@ class _YoklamaGun extends State<YoklamaGun> {
   void initState() {
     super.initState();
     api = Api(url: widget.store.ApiUrl, authorization: widget.store.ApiToken);
-    if (widget.keiko.yoklama_id == 0 && widget.store.sabitler.yoklamalar.length == 1) {
+    if (widget.keiko.yoklama_id == 0 &&
+        widget.store.sabitler.yoklamalar.length == 1) {
       widget.keiko.tanim = widget.store.sabitler.yoklamalar[0].tanim;
       widget.keiko.yoklama_id = widget.store.sabitler.yoklamalar[0].yoklama_id;
     }
@@ -66,7 +70,8 @@ class _YoklamaGun extends State<YoklamaGun> {
 
   @override
   Widget build(BuildContext context) {
-    _scrollController = ScrollController(keepScrollOffset: true, initialScrollOffset: _offset);
+    _scrollController =
+        ScrollController(keepScrollOffset: true, initialScrollOffset: _offset);
     return Scaffold(
       appBar: AppBar(title: appTitle(text: "Keikoda Olan Kişiler"), actions: [
         IconButton(
@@ -98,7 +103,11 @@ class _YoklamaGun extends State<YoklamaGun> {
                 const SizedBox(width: 10),
                 ElevatedButton(
                     onPressed: () async {
-                      final dt = await showDatePicker(context: context, initialDate: widget.keiko.tarih, firstDate: tbas, lastDate: tbit);
+                      final dt = await showDatePicker(
+                          context: context,
+                          initialDate: widget.keiko.tarih,
+                          firstDate: tbas,
+                          lastDate: tbit);
                       if (dt != null) {
                         setState(() {
                           widget.keiko.tarih = dt;
@@ -107,7 +116,8 @@ class _YoklamaGun extends State<YoklamaGun> {
                         });
                       }
                     },
-                    child: Text(dateFormater(widget.keiko.tarih, "dd.MM.yyyy"))),
+                    child:
+                        Text(dateFormater(widget.keiko.tarih, "dd.MM.yyyy"))),
                 const SizedBox(width: 10),
                 Text("Katılımcı ${widget.keiko.sayi} / ${list.length}")
               ],
@@ -120,39 +130,58 @@ class _YoklamaGun extends State<YoklamaGun> {
                 return GridView.builder(
                   controller: _scrollController,
                   padding: const EdgeInsets.all(10),
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3, childAspectRatio: 0.6),
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 3, childAspectRatio: 0.6),
                   itemCount: data.length,
                   itemBuilder: (context, index) {
                     return InkWell(
                       child: Card(
-                        shadowColor: data[index].katilim ? Colors.green.shade500 : Colors.black54,
-                        elevation: 9,
+                        shadowColor: data[index].katilim
+                            ? Colors.green.shade500
+                            : Colors.black54,
+                        elevation: data[index].katilim ? 1 : 9,
                         shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20), side: BorderSide(color: data[index].katilim ? Colors.green.shade900 : Colors.white, width: 2)),
+                            borderRadius: BorderRadius.circular(20),
+                            side: BorderSide(
+                                color: data[index].katilim
+                                    ? Colors.green.shade900
+                                    : Colors.black54,
+                                width: 2)),
                         child: Padding(
                           padding: const EdgeInsets.all(5),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Expanded(
-                                //borderRadius: BorderRadius.circular(25),
+                          child: Padding(
+                              padding: const EdgeInsets.all(5),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Expanded(
+                                    //borderRadius: BorderRadius.circular(25),
 
-                                child: Image.memory(data[index].image!),
-                              ),
-                              Text(
-                                data[index].ad,
-                                maxLines: 2,
-                                style: const TextStyle(color: Colors.black, fontSize: 12, fontWeight: FontWeight.bold),
-                              )
-                            ],
-                          ),
+                                    child: Image.memory(data[index].image!),
+                                  ),
+                                  const SizedBox(height: 5),
+                                  Text(
+                                    data[index].ad,
+                                    maxLines: 2,
+                                    style: TextStyle(
+                                        color: data[index].katilim
+                                            ? Colors.white
+                                            : Colors.grey.shade500,
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.bold),
+                                  )
+                                ],
+                              )),
                         ),
                       ),
                       onTap: () async {
                         try {
                           loadingdlg.push();
-                          final result = await uyeYoklama(api, yoklama_id: widget.keiko.yoklama_id, uye_id: data[index].uye_id, tarih: widget.keiko.tarih);
+                          final result = await uyeYoklama(api,
+                              yoklama_id: widget.keiko.yoklama_id,
+                              uye_id: data[index].uye_id,
+                              tarih: widget.keiko.tarih);
                           loadingdlg.pop();
                           setState(() {
                             _offset = _scrollController.offset;
