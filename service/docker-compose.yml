@@ -10,7 +10,6 @@ services:
             - "TZ=Turkey"
         volumes: 
             - "./html:/var/www/html"
-            ##- "./backend/vendor:/var/www/html/backend/vendor"
             - "./developer.sh:/developer.sh"
         command: 
             - "/developer.sh"
@@ -30,7 +29,6 @@ services:
         ports:
             - 3307:3306
         volumes:
-            - ./dbinit:/docker-entrypoint-initdb.d
             - my8vol:/data/db
 
 volumes:

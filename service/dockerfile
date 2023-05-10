@@ -37,8 +37,6 @@ RUN chmod 755 -R /etc/.secrets
 WORKDIR /var/www/html
 
 FROM base as production
-COPY ./frontend .
-COPY ./backend ./backend
-RUN cd backend
+COPY ./html /var/www/html
 RUN composer install
-RUN cd ..
+ENTRYPOINT [ "apache2-foreground" ]

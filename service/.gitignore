@@ -1,7 +1,3 @@
 html/vendor
 html/composer.lock
 html/member
-
-dbinit/data*
-secrets.json
-dojo_service.env
