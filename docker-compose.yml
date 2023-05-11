@@ -31,6 +31,5 @@ services:
         volumes:
             - ./initdb:/docker-entrypoint-initdb.d
             - my8vol:/data/db
-
 volumes:
     my8vol:
