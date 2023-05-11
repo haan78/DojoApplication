@@ -1,1 +1,7 @@
 .vscode
+initdb/data*
+transfer/vendor
+secrets.json
+html/vendor
+html/composer.lock
+html/member

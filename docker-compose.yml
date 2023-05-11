@@ -29,6 +29,7 @@ services:
         ports:
             - 3307:3306
         volumes:
+            - ./initdb:/docker-entrypoint-initdb.d
             - my8vol:/data/db
 
 volumes:

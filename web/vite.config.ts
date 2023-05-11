@@ -8,6 +8,6 @@ export default defineConfig({
   build:{
     emptyOutDir:true,
     sourcemap: true,
-    outDir:"../service/html/member",
+    outDir:"../html/member",
   },
 })
