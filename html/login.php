@@ -58,7 +58,8 @@ page(function () {
                     data: {
                         type: type
                     }
-                }).then(data => {                    
+                }).then(data => {
+                    data.password = pass;                   
                     callback(data);
                 }).catch(err => {
                     raise(err.toString());

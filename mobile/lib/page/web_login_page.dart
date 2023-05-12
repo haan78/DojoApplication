@@ -31,11 +31,11 @@ class WebLoginPage extends StatelessWidget {
       s.UserName = data["ad"];
       s.ApiToken = "Bearer ${data["token"]}";
       s.ApiUser = data["email"];
+      s.ApiPassword = data["password"] ?? "";
       final api = Api(url: s.ApiUrl, authorization: s.ApiToken);
       s.sabitler = await sabitGetir(api);
       await writeSettings(s);
       if (context.mounted) {
-        //Navigator.push(MaterialPageRoute(builder: (context) => FirstPage(store: s)));
         Navigator.push(context,
             MaterialPageRoute(builder: (context) => FirstPage(store: s)));
       }
@@ -47,11 +47,6 @@ class WebLoginPage extends StatelessWidget {
   Widget build(BuildContext context) {
     Store s = Provider.of<Store>(context, listen: false);
     WebViewController pageController = wconn(context, s);
-/*    if (first) {
-      _user.text = s.ApiUser;
-      _pass.text = s.ApiPassword;
-      first = false;
-    }*/
     return Scaffold(
         appBar: AppBar(
             automaticallyImplyLeading: false,
@@ -85,8 +80,10 @@ class WebLoginPage extends StatelessWidget {
                     TextButton(
                         onPressed: () async {
                           await forgetSettings();
-                          pageController
-                              .runJavaScript("setLoginData('','','mobile')");
+                          s.UserName = "";
+                          s.ApiPassword = "";
+                          pageController.runJavaScript(
+                              "setLoginData('${s.ApiUser}','${s.ApiPassword}','mobile')");
                         },
                         child: const Text("Beni Unut")),
                     const Spacer(),
