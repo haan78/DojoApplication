@@ -103,7 +103,15 @@ class _AdminPageState extends State<FirstPage> {
             ),
             IconButton(
                 onPressed: () {
-                  kendokaGetir(context, 0);
+                  Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const Kendoka(0)))
+                      .then((value) {
+                    setState(() {
+                      _reload = true;
+                    });
+                  });
                 },
                 icon: const Icon(Icons.person_add))
           ],
@@ -182,7 +190,15 @@ class _AdminPageState extends State<FirstPage> {
                     itemCount: data.length,
                     itemBuilder: (context, index) {
                       return uyeListItem(data[index], () {
-                        kendokaGetir(context, data[index].uye_id);
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    Kendoka(data[index].uye_id))).then((value) {
+                          setState(() {
+                            _reload = true;
+                          });
+                        });
                       }, tileColorByIndex(index));
                     },
                   ));
@@ -239,9 +255,4 @@ class _AdminPageState extends State<FirstPage> {
 
     return Future<List<UyeListDetay>>(() => data);
   }
-}
-
-void kendokaGetir(BuildContext context, int uyeId) {
-  Navigator.push(
-      context, MaterialPageRoute(builder: (context) => Kendoka(uyeId)));
 }
