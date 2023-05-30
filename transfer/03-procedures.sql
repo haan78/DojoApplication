@@ -1,6 +1,3 @@
-##SET GLOBAL log_bin_trust_function_creators = 1;
-USE dojo;
-
 DELIMITER ;;
 
 CREATE PROCEDURE `dojo`.`uye_kimlik_olustur`(out p_anahtar varchar(255),out p_ad varchar(255), in p_email varchar(100), in p_uye_id bigint)

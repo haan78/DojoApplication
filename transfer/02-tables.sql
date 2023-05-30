@@ -1,7 +1,3 @@
-USE dojo;
-
-SET NAMES utf8mb4;
-
 CREATE TABLE dosya (
   dosya_id bigint NOT NULL AUTO_INCREMENT,
   icerik longblob NOT NULL,

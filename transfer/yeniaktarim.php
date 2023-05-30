@@ -423,10 +423,25 @@ function randomPassword(int $default = 6 ):string {
   return implode($pass); //turn the array into a string
 }
 
+function passCreate(int $len = 8): string {
+  $KEYS = '1234567890ABCFGTXRYUPLabcdefghtlomnvcxz_';
+  $s = "";
+  for ($i = 0; $i < $len; $i++) {
+      $s.= $KEYS[random_int(0,strlen($KEYS)-1)];
+  }
+  return $s;
+}
+
 if (!isset($argv[1])) {
   echo "No Connection String";
   exit(1);
 }
+
+$dbpass = passCreate(22);
+
+echo "/* DB SQL */\n".str_replace('{{dbpassword}}','\''.$dbpass.'\'',file_get_contents('01-db.sql'))."\n\n";
+echo "/* TABLES SQL */\n".file_get_contents('02-tables.sql')."\n\n";
+echo "####/* PROCEDURES SQL */\n".file_get_contents('03-procedures.sql')."\n\n";
 
 $emaillist = [];
 $conn = new \MongoDB\Client(trim($argv[1]));
@@ -435,15 +450,14 @@ $uyeit = new \IteratorIterator($cursor);
 $uyeit->rewind();
 $id = 1;
 $muhasebe_id = 1;
-echo "SET NAMES utf8mb4 COLLATE utf8mb4_turkish_ci;".PHP_EOL;
-echo "USE dojo;".PHP_EOL;
 
-echo "TRUNCATE TABLE uye;".PHP_EOL;
+echo "/* DATA SQL */\n";
+/*echo "TRUNCATE TABLE uye;".PHP_EOL;
 echo "TRUNCATE TABLE uye_seviye;".PHP_EOL;
 echo "TRUNCATE TABLE uye_yoklama;".PHP_EOL;
 echo "TRUNCATE TABLE muhasebe;".PHP_EOL;
 echo "TRUNCATE TABLE uye_tahakkuk;".PHP_EOL;
-echo "TRUNCATE TABLE dosya;".PHP_EOL;
+echo "TRUNCATE TABLE dosya;".PHP_EOL;*/
 
 while ($doc = $uyeit->current()) {
   $uye = [
