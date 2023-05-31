@@ -8,7 +8,6 @@ require_once "./lib/MySqlTool/MySqlStmt.php";
 MySqlStmt::$closeConnection = TRUE;
 
 function mysqlilink(): mysqli {
-
     $c = @mysqli_connect(
         $GLOBALS["DB"]["host"] ?? "",
         $GLOBALS["DB"]["user"]?? "dojosensei",
@@ -65,14 +64,17 @@ function uye_listele(string $durumlar) : array {
     ,SUM(IF(ut.uye_tahakkuk_id is NULL,0,1)) as odenmemis_aidat_syisi,
     SUM( COALESCE(ut.borc,0) ) as odenmemis_aidat_borcu,
     (SELECT uy.tarih FROM uye_yoklama uy WHERE uy.uye_id = u.uye_id ORDER BY uy.tarih DESC LIMIT 1 ) AS son_keiko,
-    (SELECT count(*) FROM  uye_yoklama uy WHERE uy.uye_id  = u.uye_id AND uy.tarih >= DATE_ADD(CURRENT_DATE,INTERVAL -3 MONTH)) as son3Ay,
-    d.icerik as image , d.file_type as image_type
+    (SELECT count(*) FROM  uye_yoklama uy WHERE uy.uye_id  = u.uye_id AND uy.tarih >= DATE_ADD(CURRENT_DATE,INTERVAL -3 MONTH)) as son3Ay
     FROM uye u
     LEFT JOIN uye_tahakkuk ut ON ut.uye_id = u.uye_id and ut.muhasebe_id  is null
-    LEFT JOIN dosya d ON d.dosya_id  = u.dosya_id
     WHERE FIND_IN_SET(u.durum,?)
     GROUP BY u.uye_id,u.ad,u.cinsiyet,u.dosya_id,u.durum,u.ekfno,u.email,seviye"; 
     return MySqlStmt::query(mysqlilink(),$sql,[$durumlar]);
+}
+
+function uyeImage(int $uye_id):stdClass {
+    $sql = "SELECT d.icerik, d.file_type FROM uye u LEFT JOIN dosya d ON d.dosya_id = u.dosya_id WHERE u.uye_id = ?";
+    return MySqlStmt::queryOne(mysqlilink(),$sql,[$uye_id]);
 }
 
 function sabitler() {
@@ -166,8 +168,7 @@ function yoklamalar() {
 }
 
 function yoklamaliste(int $yoklama_id, string $tarih) {
-    $sql = "SELECT u.uye_id,u.ad,d.icerik,d.file_type,IF(uy.yoklama_id IS NOT NULL,1,0) as katilim FROM uye u 
-    LEFT JOIN dosya d ON u.dosya_id = d.dosya_id
+    $sql = "SELECT u.uye_id,u.ad,IF(uy.yoklama_id IS NOT NULL,1,0) as katilim FROM uye u 
     LEFT JOIN uye_yoklama uy ON uy.uye_id = u.uye_id and uy.yoklama_id = ? AND uy.tarih = ? 
     WHERE (u.durum NOT IN ('passive','registered') OR uy.yoklama_id IS NOT NULL) ORDER BY u.ad ASC";    
     return MySqlStmt::query(mysqlilink(),$sql,[$yoklama_id,$tarih]);

@@ -2,6 +2,6 @@
     "Name":"Ankara Kendo",
     "Service":"/service.php",
     "Login":"/login.php",
-    "Host":"http://10.0.2.2:8002",
+    "Host":"https://dojo.ankarakendo.com",
     "Web":"http://ankarakendo.com"    
 }

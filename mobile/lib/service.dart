@@ -3,6 +3,8 @@
 import 'dart:convert';
 import 'dart:core';
 import 'package:dojo_mobile/page/appwindow.dart';
+import 'package:dojo_mobile/store.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'api.dart';
 
@@ -84,8 +86,6 @@ class UyeListDetay {
   double odenmemis_aidat_borcu = 0;
   DateTime son_keiko = DateTime.now();
   int son3Ay = 0;
-  String image_type = "";
-  Uint8List? image;
 }
 
 class Tahakkuk {
@@ -121,8 +121,6 @@ class KeikoKendoka {
   String ad = "";
   int uye_id = 0;
   bool katilim = false;
-  String file_type = "";
-  Uint8List? image;
 }
 
 class KyuOneri {
@@ -219,13 +217,6 @@ Future<List<UyeListDetay>> uye_listele(Api api,
         : DateTime.parse(urd["son_keiko"].toString());
     uld.son3Ay = int.parse(urd["son3Ay"].toString());
     uld.uye_id = int.parse(urd["uye_id"].toString());
-    uld.image_type = urd["image_type"] ?? "";
-    String? image = urd["image"];
-    if (image != null && image.isNotEmpty) {
-      uld.image = base64Decode(urd["image"]);
-    } else {
-      uld.image = null;
-    }
 
     l.add(uld);
   }
@@ -402,14 +393,6 @@ Future<KeikoListe> yoklamaliste(Api api,
   for (final kk in response) {
     KeikoKendoka kendoka = KeikoKendoka();
     kendoka.ad = kk["ad"];
-    if (kk["icerik"] != null && kk["file_type"] != null) {
-      kendoka.file_type = kk["file_type"];
-      kendoka.image = base64Decode(kk["icerik"]);
-    } else {
-      kendoka.image =
-          (await rootBundle.load("assets/kendoka.jpg")).buffer.asUint8List();
-      kendoka.file_type = "image/jpeg";
-    }
 
     kendoka.uye_id = kk["uye_id"];
     kendoka.katilim = kk["katilim"] == 1 ? true : false;
@@ -706,4 +689,13 @@ Future<List<GenelRap>> rapor_geneluyeraporu(Api api) async {
     list.add(obj);
   }
   return list;
+}
+
+Future<Image> uyeImageLoad(Api api, int uyeId, {BoxFit? fit}) async {
+  dynamic r = await api.call("/admin/uye/image/$uyeId");
+  if (r["icerik"] != null) {
+    return Image.memory(base64Decode(r["icerik"]), fit: fit);
+  } else {
+    return Image.memory(kendokaImg!, fit: fit);
+  }
 }

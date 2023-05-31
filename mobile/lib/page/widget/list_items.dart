@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 
+import '../../api.dart';
 import '../../service.dart';
 import '../appwindow.dart';
 
 Widget uyeListItem(
-    UyeListDetay data, VoidCallback? btnCallback, Color? bgColor) {
+    Api api, UyeListDetay data, VoidCallback? btnCallback, Color? bgColor) {
   return Padding(
     padding: const EdgeInsets.all(5),
     child: ClipRRect(
@@ -23,7 +24,13 @@ Widget uyeListItem(
                       child: ClipRRect(
                           borderRadius:
                               const BorderRadius.all(Radius.circular(10)),
-                          child: Image.memory(data.image!, fit: BoxFit.fill))),
+                          child: FBuilder(
+                            future: uyeImageLoad(api, data.uye_id,
+                                fit: BoxFit.fill),
+                            builder: (Image data) {
+                              return data;
+                            },
+                          ))),
                   const SizedBox(width: 10),
                   Expanded(
                       child: SizedBox(

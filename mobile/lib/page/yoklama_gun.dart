@@ -18,8 +18,12 @@ class YoklamaGun extends StatefulWidget {
   }
 }
 
+class KeikoKendoka2 extends KeikoKendoka {
+  Image? img;
+}
+
 class _YoklamaGun extends State<YoklamaGun> {
-  List<KeikoKendoka> list = [];
+  List<KeikoKendoka2> list = [];
   bool reload = true;
   late ScrollController _scrollController;
   final tbas = DateTime.now().add(const Duration(days: -14));
@@ -39,12 +43,27 @@ class _YoklamaGun extends State<YoklamaGun> {
             widget.keiko.sayi = kl.katilanSayisi;
           });
         }
-        list = kl.list;
+        list.clear();
+        for (int i = 0; i < kl.list.length; i++) {
+          KeikoKendoka2 kk2 = KeikoKendoka2();
+          kk2.ad = kl.list[i].ad;
+          kk2.katilim = kl.list[i].katilim;
+          kk2.uye_id = kl.list[i].uye_id;
+          list.add(kk2);
+        }
       } catch (err) {
         errorAlert(context, err.toString());
       }
     }
     return list;
+  }
+
+  Future<Image> getImg(int index) async {
+    if (list[index].img == null) {
+      return await uyeImageLoad(api, list[index].uye_id);
+    } else {
+      return list[index].img!;
+    }
   }
 
   List<DropdownMenuItem<int>> yoklamaitmes(List<Yoklama> yoklamalar) {
@@ -158,7 +177,12 @@ class _YoklamaGun extends State<YoklamaGun> {
                                   Expanded(
                                     //borderRadius: BorderRadius.circular(25),
 
-                                    child: Image.memory(data[index].image!),
+                                    child: FBuilder(
+                                        future: getImg(index),
+                                        builder: (img) {
+                                          list[index].img = img;
+                                          return img;
+                                        }),
                                   ),
                                   const SizedBox(height: 5),
                                   Text(
@@ -184,6 +208,7 @@ class _YoklamaGun extends State<YoklamaGun> {
                               tarih: widget.keiko.tarih);
                           loadingdlg.pop();
                           setState(() {
+                            reload = false;
                             _offset = _scrollController.offset;
                             if (result == 1) {
                               list[index].katilim = true;

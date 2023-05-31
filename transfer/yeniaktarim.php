@@ -568,7 +568,7 @@ while ($doc = $uyeit->current()) {
       array_push($aidatlar, [
         "uye_id" => $id,
         "tahakkuk_id" => $uye["tahakkuk_id"],
-        "borc" => ($uye["tahakkuk_id"] == 1 ? 250 : 200),
+        "borc" => ($uye["tahakkuk_id"] == 1 ? 350 : 300),
         "yil" => $yil,
         "ay" => $ay,
         "tahakkuk_tarih" => $eksik . "-01",

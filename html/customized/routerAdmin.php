@@ -49,6 +49,10 @@ function routerAdmin(DefaultJsonRouter $router)
         return uye_listele($jdata->durumlar);
     });
 
+    $router->add("/admin/uye/image/#uye_id", function (Request $req) {        
+        return uyeImage($req->params()["uye_id"]);
+    });
+
     $router->add("/admin/uye/kayit/#uye_id", function (Request $req) {
         $jdata = $req->json();
         $uye_id = $req->params()["uye_id"];

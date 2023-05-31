@@ -189,7 +189,7 @@ class _AdminPageState extends State<FirstPage> {
                       child: ListView.builder(
                     itemCount: data.length,
                     itemBuilder: (context, index) {
-                      return uyeListItem(data[index], () {
+                      return uyeListItem(api, data[index], () {
                         Navigator.push(
                             context,
                             MaterialPageRoute(

@@ -34,6 +34,8 @@ class Store {
   }
 }
 
+Uint8List? kendokaImg;
+
 Future<Store> LoadStore() async {
   Store s = Store();
   String jdata;
@@ -47,7 +49,8 @@ Future<Store> LoadStore() async {
   } else {
     jdata = await rootBundle.loadString("assets/defaults.release.json");
   }
-
+  kendokaImg =
+      (await rootBundle.load("assets/kendoka.jpg")).buffer.asUint8List();
   final Map<String, dynamic> data = jsonDecode(jdata);
   s.HostUrl = data["Host"].toString();
   s.AppName = data["Name"].toString();
