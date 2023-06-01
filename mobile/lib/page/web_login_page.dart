@@ -16,7 +16,6 @@ class WebLoginPage extends StatelessWidget {
   WebViewController wconn(BuildContext context, Store s) {
     WebViewController c = WebViewController();
     c.setJavaScriptMode(JavaScriptMode.unrestricted);
-    //c.setBackgroundColor(const Color(0x00000000));
     c.loadRequest(Uri.parse(s.LoginUrl));
     c.setNavigationDelegate(NavigationDelegate(
       onPageFinished: (url) {
@@ -67,12 +66,9 @@ class WebLoginPage extends StatelessWidget {
             padding: const EdgeInsets.all(10),
             child: Column(
               children: [
-                Container(
-                    constraints: const BoxConstraints(maxHeight: 400),
-                    child: ClipRRect(
-                        borderRadius:
-                            const BorderRadius.all(Radius.circular(20)),
-                        child: WebViewWidget(controller: pageController))),
+                SizedBox(
+                    height: 400,
+                    child: WebViewWidget(controller: pageController)),
                 const SizedBox(height: 10),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,

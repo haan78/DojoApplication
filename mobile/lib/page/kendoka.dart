@@ -1,4 +1,3 @@
-import 'package:dojo_mobile/page/message_page.dart';
 import 'package:dojo_mobile/page/tabs/kendoka_aidat.dart';
 import 'package:dojo_mobile/page/tabs/kendoka_base.dart';
 import 'package:dojo_mobile/page/tabs/kendoka_seviye.dart';
@@ -66,72 +65,61 @@ class _Kendoka extends State<Kendoka> {
   @override
   Widget build(BuildContext context) {
     Store store = Provider.of<Store>(context);
-    return FutureBuilder<UyeBilgi>(
+    return FBuilder<UyeBilgi>(
       future: yueBilgiGetir(store, widget.uyeId, _reload),
-      builder: (context, snapshot) {
-        if (snapshot.hasError) {
-          return Text(snapshot.error.toString());
-        }
-        if (snapshot.connectionState == ConnectionState.done) {
-          UyeBilgi ub = snapshot.data!;
-          return Scaffold(
-            key: scaffoldKey,
-            appBar: AppBar(
-              title: appTitle(text: ub.ad),
-              actions: [
-                IconButton(
-                    onPressed: () {
+      builder: (data) {
+        return Scaffold(
+          key: scaffoldKey,
+          appBar: AppBar(
+            title: appTitle(text: data.ad),
+            actions: [
+              IconButton(
+                  onPressed: () {
+                    setState(() {
+                      _reload = true;
+                    });
+                  },
+                  icon: const Icon(Icons.refresh)),
+              IconButton(
+                  onPressed: () async {
+                    if (data.email.isNotEmpty) {
+                      await launchUrl(Uri(scheme: "mailto", path: data.email));
+                    }
+                  },
+                  icon: const Icon(Icons.email))
+            ],
+          ),
+          body: Padding(
+              padding: const EdgeInsets.all(10),
+              child: getWigget(
+                sabitler: formSabitler,
+                bilgi: data,
+                store: store,
+              )),
+          bottomNavigationBar: widget.uyeId > 0
+              ? BottomNavigationBar(
+                  currentIndex: _bottomNavIndex,
+                  onTap: (int index) {
+                    if (mounted) {
                       setState(() {
-                        _reload = true;
+                        _bottomNavIndex = index;
+                        _reload = false;
                       });
-                    },
-                    icon: const Icon(Icons.refresh)),
-                IconButton(
-                    onPressed: () async {
-                      if (ub.email.isNotEmpty) {
-                        await launchUrl(Uri(scheme: "mailto", path: ub.email));
-                      }
-                    },
-                    icon: const Icon(Icons.email))
-              ],
-            ),
-            body: Padding(
-                padding: const EdgeInsets.all(10),
-                child: getWigget(
-                  sabitler: formSabitler,
-                  bilgi: ub,
-                  store: store,
-                )),
-            bottomNavigationBar: widget.uyeId > 0
-                ? BottomNavigationBar(
-                    currentIndex: _bottomNavIndex,
-                    onTap: (int index) {
-                      if (mounted) {
-                        setState(() {
-                          _bottomNavIndex = index;
-                          _reload = false;
-                        });
-                      }
-                    },
-                    type: BottomNavigationBarType.fixed,
-                    items: const [
-                        BottomNavigationBarItem(
-                            label: "Genel", icon: Icon(Icons.person)),
-                        BottomNavigationBarItem(
-                            label: "Aidatlar", icon: Icon(Icons.payments)),
-                        BottomNavigationBarItem(
-                            label: "Sinavlar",
-                            icon: Icon(Icons.card_membership)),
-                        BottomNavigationBarItem(
-                            label: "Keikolar", icon: Icon(Icons.checklist))
-                      ])
-                : null,
-          );
-        } else if (snapshot.connectionState == ConnectionState.waiting) {
-          return const MessagePage("Loading...", MessageType.info);
-        } else {
-          return const MessagePage("Error", MessageType.error);
-        }
+                    }
+                  },
+                  type: BottomNavigationBarType.fixed,
+                  items: const [
+                      BottomNavigationBarItem(
+                          label: "Genel", icon: Icon(Icons.person)),
+                      BottomNavigationBarItem(
+                          label: "Aidatlar", icon: Icon(Icons.payments)),
+                      BottomNavigationBarItem(
+                          label: "Sinavlar", icon: Icon(Icons.card_membership)),
+                      BottomNavigationBarItem(
+                          label: "Keikolar", icon: Icon(Icons.checklist))
+                    ])
+              : null,
+        );
       },
     );
   }
