@@ -1,0 +1,8 @@
+
+flutter_native_splash:
+  image: assets/splash.png
+  color: "#000000"
+  fullscreen: true
+  web_image_mode: stretch
+  android_gravity: fill
+  ios_content_mode: scaleToFill
