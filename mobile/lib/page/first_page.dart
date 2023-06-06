@@ -63,11 +63,8 @@ class _AdminPageState extends State<FirstPage> {
                               _reload = true;
                             });
                           },
-                          child: Row(
-                            children: const [
-                              Icon(Icons.group),
-                              Text("Aktif Üyeler")
-                            ],
+                          child: const Row(
+                            children: [Icon(Icons.group), Text("Aktif Üyeler")],
                           ))),
                   PopupMenuItem(
                       child: TextButton(
@@ -77,8 +74,8 @@ class _AdminPageState extends State<FirstPage> {
                               _reload = true;
                             });
                           },
-                          child: Row(
-                            children: const [
+                          child: const Row(
+                            children: [
                               Icon(Icons.group_off),
                               Text("Pasif Üyeler")
                             ],
@@ -91,8 +88,8 @@ class _AdminPageState extends State<FirstPage> {
                               _reload = true;
                             });
                           },
-                          child: Row(
-                            children: const [
+                          child: const Row(
+                            children: [
                               Icon(Icons.group_add),
                               Text("Bekleyenler")
                             ],
@@ -136,8 +133,8 @@ class _AdminPageState extends State<FirstPage> {
                                       _reload = false;
                                     });
                                   },
-                                  child: Row(
-                                    children: const [
+                                  child: const Row(
+                                    children: [
                                       Icon(Icons.payments),
                                       Text("Aidat Borcu")
                                     ],
@@ -150,8 +147,8 @@ class _AdminPageState extends State<FirstPage> {
                                       _reload = false;
                                     });
                                   },
-                                  child: Row(
-                                    children: const [
+                                  child: const Row(
+                                    children: [
                                       Icon(Icons.calendar_month),
                                       Text("Gelmeyenler")
                                     ],
@@ -164,8 +161,8 @@ class _AdminPageState extends State<FirstPage> {
                                     _reload = false;
                                   });
                                 },
-                                child: Row(
-                                  children: const [
+                                child: const Row(
+                                  children: [
                                     Icon(Icons.sort_by_alpha),
                                     Text("İsime Göre")
                                   ],
@@ -189,7 +186,7 @@ class _AdminPageState extends State<FirstPage> {
                       child: ListView.builder(
                     itemCount: data.length,
                     itemBuilder: (context, index) {
-                      return uyeListItem(api, data[index], () {
+                      return uyeListItem(store, data[index], () {
                         Navigator.push(
                             context,
                             MaterialPageRoute(

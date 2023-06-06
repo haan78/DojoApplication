@@ -11,7 +11,7 @@ function mysqlilink(): mysqli {
     $c = @mysqli_connect(
         $GLOBALS["DB"]["host"] ?? "",
         $GLOBALS["DB"]["user"]?? "dojosensei",
-        $GLOBALS["DB"]["password"]?? "",
+        "nBUP4v9mcgGx6tYL3R5cAA", //$GLOBALS["DB"]["password"]?? "",
         $GLOBALS["DB"]["database"]?? "dojo",
         $GLOBALS["DB"]["port"]?? 3306
     );
@@ -73,8 +73,13 @@ function uye_listele(string $durumlar) : array {
 }
 
 function uyeImage(int $uye_id):stdClass {
-    $sql = "SELECT d.icerik, d.file_type FROM uye u LEFT JOIN dosya d ON d.dosya_id = u.dosya_id WHERE u.uye_id = ?";
-    return MySqlStmt::queryOne(mysqlilink(),$sql,[$uye_id]);
+    $sql = "SELECT d.icerik as icerik, d.file_type FROM uye u LEFT JOIN dosya d ON d.dosya_id = u.dosya_id WHERE u.uye_id = ?";
+    $result = MySqlStmt::queryOne(mysqlilink(),$sql,[$uye_id]);
+    if (!is_null($result)) {
+        return $result;
+    } else {
+        throw new Exception("No data");
+    }
 }
 
 function sabitler() {
@@ -105,10 +110,10 @@ function seviye_sil($uye_id,string $seviye) {
     return MySqlStmt::query(mysqlilink(),$sql,[$uye_id,$seviye]);
 }
 
-function uye_eke($uye_id,$ad,$tahakkuk_id,$email,$cinsiyet,$dogum,$ekfno,$durum,$dosya,$file_type) {
+function uye_eke($uye_id,$ad,$tahakkuk_id,$email,$cinsiyet,$dogum,$ekfno,$durum,$img) {
     $p = new \MySqlTool\MySqlToolCall(mysqlilink());
     $outs = $p->procedure("uye_ekle")->out("uye_id",$uye_id)->out("parola")->in($tahakkuk_id)
-    ->in($ad)->in($email)->in($dosya)->in($file_type)->in($cinsiyet)->in($dogum)->in($ekfno)->in($durum)->call()->result("outs");
+    ->in($ad)->in($email)->in($img)->in($cinsiyet)->in($dogum)->in($ekfno)->in($durum)->call()->result("outs");
     return $outs["uye_id"];
 }
 
@@ -338,4 +343,26 @@ function rapor_geneluyeraporu() {
     left join (select uy.uye_id,max(uy.tarih) son,min(uy.tarih) ilk, count(*) sayi from uye_yoklama uy group by uy.uye_id) yok on yok.uye_id = u.uye_id
     WHERE _us.uye_seviye_id is null and u.durum in ('active','admin','super-admin')";
     return MySqlStmt::query(mysqlilink(),$sql);
+}
+
+function tahsilatci_list() {
+    $sql = "SELECT DISTINCT tahsilatci FROM muhasebe ORDER BY tahsilatci DESC";
+    return MySqlStmt::query(mysqlilink(),$sql);
+}
+
+function rapor_eldentahsilat(string $tahsilatci, string $baslangic, string $bitis) {
+    $sql = "SELECT 
+	u.ad,
+	m.tarih,
+	m.tutar,
+	mt.tanim,	
+	m.ay,
+	m.yil,
+    m.aciklama,
+	coalesce(m.degisme,m.olusma) as zaman    
+FROM muhasebe m
+ inner join muhasebe_tanim mt on mt.muhasebe_tanim_id  = m.muhasebe_tanim_id 
+ left join uye u on u.uye_id = m.uye_id 
+WHERE (m.tarih BETWEEN DATE(?) AND DATE(?)) and kasa = 'Elden' and  COALESCE(m.tahsilatci,'-') = ?";
+    return MySqlStmt::query(mysqlilink(),$sql,[$baslangic, $bitis, $tahsilatci]);
 }

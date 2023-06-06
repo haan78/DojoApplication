@@ -49,14 +49,10 @@ function routerAdmin(DefaultJsonRouter $router)
         return uye_listele($jdata->durumlar);
     });
 
-    $router->add("/admin/uye/image/#uye_id", function (Request $req) {        
-        return uyeImage($req->params()["uye_id"]);
-    });
-
     $router->add("/admin/uye/kayit/#uye_id", function (Request $req) {
         $jdata = $req->json();
         $uye_id = $req->params()["uye_id"];
-        return uye_eke($uye_id, $jdata->ad, $jdata->tahakkuk_id, $jdata->email, $jdata->cinsiyet, $jdata->dogum, $jdata->ekfno, $jdata->durum, $jdata->dosya, $jdata->file_type);
+        return uye_eke($uye_id, $jdata->ad, $jdata->tahakkuk_id, $jdata->email, $jdata->cinsiyet, $jdata->dogum, $jdata->ekfno, $jdata->durum, $jdata->img);
     });
 
     $router->add("/admin/uye/epostatest/#uye_id", function (Request $req) {
@@ -149,6 +145,10 @@ function routerAdmin(DefaultJsonRouter $router)
         return  muhasebe_duzelt($muhasebe_id, $uye_id, $tarih, $tutar, $kasa, $muhasebe_tanim_id, $aciklama, $belge, $tahsilatci);
     });
 
+    $router->add("/admin/muhasebe/tahsilatcilar",function(Request $req){
+        return tahsilatci_list();
+    });
+
     $router->add("/admin/yoklamalar", function (Request $req) {
         return yoklamalar();
     });
@@ -190,4 +190,12 @@ function routerAdmin(DefaultJsonRouter $router)
     $router->add("/admin/rapor/geneluyeraporu", function (Request $req) {
         return rapor_geneluyeraporu();
     });
+
+    $router->add("/admin/rapor/eldentahsilat/@tahsilatci/@baslangic/@bitis", function (Request $req) {
+        return rapor_eldentahsilat($req->param("tahsilatci"), $req->param("baslangic"), $req->param("bitis"));
+    });
+
+    
+
+
 }

@@ -3,7 +3,6 @@ import 'package:dojo_mobile/page/tabs/kendoka_base.dart';
 import 'package:dojo_mobile/page/tabs/kendoka_seviye.dart';
 import 'package:dojo_mobile/page/tabs/kendoka_yoklama.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -137,9 +136,6 @@ Future<UyeBilgi> yueBilgiGetir(Store store, int uyeId, bool reload) async {
       formUyeBilgi.cinsiyet = "ERKEK";
       formUyeBilgi.durum = "registered";
       formUyeBilgi.tahakkuk_id = 1;
-      formUyeBilgi.image =
-          (await rootBundle.load("assets/kendoka.jpg")).buffer.asUint8List();
-      formUyeBilgi.file_type = "image/jpeg";
     }
   }
 

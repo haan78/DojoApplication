@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:dojo_mobile/service.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -7,7 +9,6 @@ import '../../api.dart';
 import '../../store.dart';
 import '../appwindow.dart';
 import '../widget/alert.dart';
-// ignore: camel_case_types
 
 class KendokaBase extends StatefulWidget {
   final UyeBilgi bilgi;
@@ -47,7 +48,9 @@ class _KendokaBase extends State<KendokaBase> {
   late TextEditingController emailEdit;
   late TextEditingController ekfnoEdit;
   TextEditingController adEdit = TextEditingController();
+  Uint8List? imgdata;
   CameraController? camera;
+
   late LoadingDialog loadingdlg;
 
   @override
@@ -58,7 +61,8 @@ class _KendokaBase extends State<KendokaBase> {
     api = Api(url: widget.store.ApiUrl, authorization: widget.store.ApiToken);
     ekfnoEdit = TextEditingController(text: widget.bilgi.ekfno);
     emailEdit = TextEditingController(text: widget.bilgi.email);
-    buttonImage = Image.memory(widget.bilgi.image!, fit: BoxFit.fill);
+    buttonImage =
+        uyeImageLoad(widget.store, widget.bilgi.uye_id, fit: BoxFit.fill);
     if (widget.bilgi.uye_id == 0) {
       resimsecildi = false;
       tarihsecildi = false;
@@ -108,12 +112,10 @@ class _KendokaBase extends State<KendokaBase> {
                   if (xfile != null) {
                     //formUyeBilgi.image = await xfile.readAsBytes();
                     final bytes = await xfile.readAsBytes();
-                    final mime = xfile.mimeType ?? "image/jpeg";
+                    //final mime = xfile.mimeType ?? "image/jpeg";
                     setState(() {
-                      widget.bilgi.image = bytes;
-                      widget.bilgi.file_type = mime;
-                      buttonImage =
-                          Image.memory(widget.bilgi.image!, fit: BoxFit.fill);
+                      imgdata = bytes;
+                      buttonImage = Image.memory(imgdata!, fit: BoxFit.fill);
                       resimsecildi = true;
                     });
                   }
@@ -325,8 +327,8 @@ class _KendokaBase extends State<KendokaBase> {
                   if (_formKey.currentState!.validate()) {
                     try {
                       loadingdlg.push();
-                      widget.bilgi.uye_id =
-                          await uyeKayit(api, ub: widget.bilgi);
+                      widget.bilgi.uye_id = await uyeKayit(api,
+                          ub: widget.bilgi, imgdata: imgdata);
                       loadingdlg.pop();
                       if (widget.bilgi.durum == "registered" &&
                           context.mounted) {

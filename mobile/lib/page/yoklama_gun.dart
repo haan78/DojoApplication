@@ -58,9 +58,9 @@ class _YoklamaGun extends State<YoklamaGun> {
     return list;
   }
 
-  Future<Image> getImg(int index) async {
+  Image getImg(int index) {
     if (list[index].img == null) {
-      return await uyeImageLoad(api, list[index].uye_id);
+      return uyeImageLoad(widget.store, list[index].uye_id);
     } else {
       return list[index].img!;
     }
@@ -177,12 +177,7 @@ class _YoklamaGun extends State<YoklamaGun> {
                                   Expanded(
                                     //borderRadius: BorderRadius.circular(25),
 
-                                    child: FBuilder(
-                                        future: getImg(index),
-                                        builder: (img) {
-                                          list[index].img = img;
-                                          return img;
-                                        }),
+                                    child: getImg(index),
                                   ),
                                   const SizedBox(height: 5),
                                   Text(

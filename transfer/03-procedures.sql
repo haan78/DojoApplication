@@ -1,6 +1,6 @@
 DELIMITER ;;
 
-CREATE PROCEDURE `dojo`.`uye_kimlik_olustur`(out p_anahtar varchar(255),out p_ad varchar(255), in p_email varchar(100), in p_uye_id bigint)
+CREATE PROCEDURE uye_kimlik_olustur(out p_anahtar varchar(255),out p_ad varchar(255), in p_email varchar(100), in p_uye_id bigint)
 BEGIN
 	DECLARE uid bigint default null;
 	DECLARE d varchar(20) default null;
@@ -24,18 +24,14 @@ BEGIN
 	end if;
 END;;
 
-CREATE PROCEDURE `dojo`.`uye_bilgi`(
-        IN `p_uye_id` BIGINT
-    )
+CREATE PROCEDURE uye_bilgi( IN p_uye_id BIGINT )
 BEGIN
 	SELECT 
     	u.`ad`,u.`cinsiyet`,u.`dosya_id`,u.`durum`,u.`ekfno`,u.`email`,u.`tahakkuk_id`,t.tanim  as "tahakkuk",u.dogum_tarih,
         (SELECT count(*) FROM  uye_yoklama uy WHERE uy.uye_id  = u.uye_id AND uy.tarih >= DATE_ADD(CURRENT_DATE,INTERVAL -3 MONTH)) as son3Ay,
-        d.`file_type`,d.`icerik` as img64,
         (SELECT concat(count(*),' ',sum(ut.borc)) from uye_tahakkuk ut WHERE ut.muhasebe_id is null and ut.uye_id = u.uye_id )as borcbilgi
     FROM uye u 
     INNER JOIN `tahakkuk` t ON t.`tahakkuk_id` = u.`tahakkuk_id`
-    LEFT JOIN dosya d ON d.`dosya_id` = u.`dosya_id`
     WHERE u.`uye_id` = p_uye_id;
     
     SELECT 
@@ -49,7 +45,7 @@ BEGIN
   		ORDER BY uy.tarih DESC;
 END;;
 
-CREATE PROCEDURE `dojo`.`uye_kimlik_degistir`(in p_anahtar varchar(255), in p_parola varchar(255))
+CREATE PROCEDURE uye_kimlik_degistir(in p_anahtar varchar(255), in p_parola varchar(255))
 BEGIN
 	declare _email varchar(100) default null;
 	declare uid bigint default null;
@@ -68,33 +64,32 @@ BEGIN
 END;;
 
 
-CREATE PROCEDURE `dojo`.`uye_ekle`(
-        INOUT `p_uye_id` BIGINT,
-        OUT `p_parola` VARCHAR(10),
-        IN `p_tahakkuk_id` BIGINT,
-        IN `p_ad` VARCHAR(255),
-        IN `p_email` VARCHAR(255),
-        IN `p_dosya` LONGBLOB,
-        IN  p_ft varchar(20),
-        IN `p_cinsiyet` ENUM('ERKEK','KADIN'),
-        IN `p_dogum_tarih` DATE,
-        IN `p_ekfno` VARCHAR(20),
-        IN `p_durum` VARCHAR(20)
+CREATE PROCEDURE uye_ekle(
+                INOUT p_uye_id BIGINT,
+        OUT p_parola VARCHAR(10),
+        IN p_tahakkuk_id BIGINT,
+        IN p_ad VARCHAR(255),
+        IN p_email VARCHAR(255),
+        IN p_dosya LONGBLOB,
+        IN p_cinsiyet ENUM('ERKEK','KADIN'),
+        IN p_dogum_tarih DATE,
+        IN p_ekfno VARCHAR(20),
+        IN p_durum VARCHAR(20)
     )
 BEGIN
 	START TRANSACTION;
     if coalesce(p_uye_id,0) = 0 then
     
-    	INSERT INTO dosya ( icerik,file_type ) VALUES (p_dosya,p_ft);
+    	INSERT INTO dosya ( icerik,file_type ) VALUES (FROM_BASE64(p_dosya),"image/jpeg");
     	SET @did = LAST_INSERT_ID();
     	
     	SET @_pass = parola_uret(6);
-    	INSERT INTO uye ( `ad`,`durum`,`cinsiyet`,dogum_tarih,`dosya_id`,`ekfno`,`email`, `tahakkuk_id`, parola )
+    	INSERT INTO uye ( ad,durum,cinsiyet,dogum_tarih,dosya_id,ekfno,email, tahakkuk_id, parola )
     		VALUES ( p_ad, p_durum, p_cinsiyet,p_dogum_tarih, @did, p_ekfno, p_email, p_tahakkuk_id,@_pass );
         set p_uye_id = LAST_INSERT_ID();
         
-       	#uye seviye ekle 7 kyu        
-        insert into `uye_seviye` ( `uye_seviye`.`aciklama`,`uye_seviye`.`tarih`,`uye_seviye`.`uye_id`,`uye_seviye`.`seviye` )
+       	
+        insert into uye_seviye ( uye_seviye.aciklama,uye_seviye.tarih,uye_seviye.uye_id,uye_seviye.seviye )
         	VALUES ( 'Yeni Uye',CURDATE(),p_uye_id,'7 KYU' ); 
         set p_parola = @_pass;
        	
@@ -105,18 +100,16 @@ BEGIN
     		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Member not found', MYSQL_ERRNO = 1001;
     	END IF;
     	UPDATE uye u 
-        	SET u.`ad` = p_ad, u.`cinsiyet` = p_cinsiyet, u.`durum` = p_durum, u.`ekfno` = ekfno, u.`email` = p_email, 
-        	u.`tahakkuk_id` = p_tahakkuk_id
-            	WHERE u.`uye_id` = p_uye_id;
-        UPDATE dosya d SET d.icerik = p_dosya WHERE d.dosya_id = @did;       
+        	SET u.ad = p_ad, u.cinsiyet = p_cinsiyet, u.durum = p_durum, u.ekfno = ekfno, u.email = p_email, 
+        	u.tahakkuk_id = p_tahakkuk_id
+            	WHERE u.uye_id = p_uye_id;
+        UPDATE dosya d SET d.icerik = FROM_BASE64(p_dosya), d.file_type = "image/jpeg" WHERE d.dosya_id = @did;       
 	end if;
-    
-    
     COMMIT;
 END;;
 
-CREATE FUNCTION `dojo`.`parola_uret`(
-        `length` TINYINT
+CREATE FUNCTION parola_uret(
+        length TINYINT
     ) RETURNS varchar(100) CHARSET utf8mb4 COLLATE utf8mb4_turkish_ci
 	READS SQL DATA DETERMINISTIC 
 BEGIN
@@ -133,7 +126,7 @@ BEGIN
   RETURN @returnStr;
 END;;
 
-CREATE PROCEDURE `dojo`.`uye_yoklama_eklesil`(in p_yoklama_id bigint, in p_uye_id bigint, in p_tarih date )
+CREATE PROCEDURE uye_yoklama_eklesil(in p_yoklama_id bigint, in p_uye_id bigint, in p_tarih date )
 BEGIN
 	declare c int(11) DEFAULT  0;
 	declare cay int(11) DEFAULT  0;
@@ -174,7 +167,7 @@ BEGIN
 	
 END;;
 
-CREATE PROCEDURE dojo.aidat_odeme_sil(in p_muhasebe_id bigint)
+CREATE PROCEDURE aidat_odeme_sil(in p_muhasebe_id bigint)
 BEGIN
 	declare utid bigint default null;
 	SELECT ut.uye_tahakkuk_id into utid FROM uye_tahakkuk ut WHERE ut.muhasebe_id = p_muhasebe_id limit 1;
@@ -195,7 +188,7 @@ BEGIN
 END;;
 
 
-CREATE PROCEDURE dojo.aidat_odeme_al(in p_uye_id bigint, in p_yoklama_id bigint, in p_tarih date, in p_yil smallint, in p_ay tinyint , in p_kasa varchar(20), in p_tutar decimal(14,2), in p_aciklama varchar(255), in p_tahsilatci varchar(80) )
+CREATE PROCEDURE aidat_odeme_al(in p_uye_id bigint, in p_yoklama_id bigint, in p_tarih date, in p_yil smallint, in p_ay tinyint , in p_kasa varchar(20), in p_tutar decimal(14,2), in p_aciklama varchar(255), in p_tahsilatci varchar(80) )
 BEGIN
 	declare utid bigint default null;
 	declare tid bigint default null;
@@ -227,7 +220,7 @@ BEGIN
 	SELECT muhid AS muhasebe_id;
 END;;
 
-CREATE PROCEDURE dojo.muhasebe_esd(inout p_muhasebe_id bigint, in p_uye_id bigint, in p_tarih date, in p_tutar decimal(14,2), in p_kasa varchar(20), in p_muhasebe_tanim_id bigint , in p_aciklama varchar(255), in p_belge varchar(50), in p_tahsilatci varchar(80))
+CREATE PROCEDURE muhasebe_esd(inout p_muhasebe_id bigint, in p_uye_id bigint, in p_tarih date, in p_tutar decimal(14,2), in p_kasa varchar(20), in p_muhasebe_tanim_id bigint , in p_aciklama varchar(255), in p_belge varchar(50), in p_tahsilatci varchar(80))
 BEGIN
 	if p_muhasebe_tanim_id = 9 then
 		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Aidatlar degisiklik buradan yapilamaz', MYSQL_ERRNO = 1001;

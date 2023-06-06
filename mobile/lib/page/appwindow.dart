@@ -1,5 +1,11 @@
+import 'dart:io';
+
+import 'package:better_open_file/better_open_file.dart';
+import 'package:dojo_mobile/page/widget/alert.dart';
+import 'package:excel/excel.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:path_provider/path_provider.dart';
 
 import '../service.dart';
 
@@ -445,4 +451,19 @@ Color tileColorByIndex(int index) {
   return index % 2 == 1
       ? const Color.fromARGB(255, 2, 70, 64)
       : const Color.fromARGB(255, 7, 89, 136);
+}
+
+Future<void> openExcel(
+    BuildContext context, String reportName, Excel excel) async {
+  Directory tempDir = await getTemporaryDirectory();
+
+  final fname =
+      "${tempDir.path}/$reportName${dateFormater(DateTime.now(), "yyyyMMddHHmmss")}.xlsx";
+  final file = File(fname);
+  await file.writeAsBytes(excel.save(fileName: fname)!);
+
+  final result = await OpenFile.open(file.path);
+  if (result.type != ResultType.done) {
+    if (context.mounted) errorAlert(context, result.message);
+  }
 }

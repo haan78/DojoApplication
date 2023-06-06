@@ -46,18 +46,21 @@ class Api {
     return auth;
   }
 
-  Future<dynamic> call(String method, {dynamic data, int tryit = 0, int timeout = 10}) async {
+  Future<dynamic> call(String method,
+      {dynamic data, int tryit = 0, int timeout = 10}) async {
     dynamic response;
     message = "";
     try {
       http.Response res;
       headers["authorization"] = authorization;
+      //print(authorization);
       if (tryit > 0) {
         headers["Keep-Alive"] = "timeout=$timeout, max=$tryit";
       }
       Uri fullurl = Uri.parse("$url$method");
       if (data != null) {
-        res = await http.post(fullurl, headers: headers, body: jsonEncode(data));
+        res =
+            await http.post(fullurl, headers: headers, body: jsonEncode(data));
       } else {
         res = await http.get(fullurl, headers: headers);
       }
@@ -68,7 +71,9 @@ class Api {
       } catch (ex0) {
         throw Exception("Service response ${ex0.toString()}");
       }
-      if (jres.containsKey("success") && jres.containsKey("data") && jres.containsKey("status")) {
+      if (jres.containsKey("success") &&
+          jres.containsKey("data") &&
+          jres.containsKey("status")) {
         if (res.headers.containsKey("authorization")) {
           authorization = res.headers["authorization"]!;
         }

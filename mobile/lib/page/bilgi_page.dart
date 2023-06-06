@@ -27,7 +27,8 @@ class BilgiPage extends StatelessWidget {
               const SizedBox(height: 20),
               TextButton(
                   onPressed: () async {
-                    await launchUrl(Uri(scheme: "mailto", path: programerEmail));
+                    await launchUrl(
+                        Uri(scheme: "mailto", path: programerEmail));
                   },
                   child: const Text(programerEmail)),
               const SizedBox(height: 20),
@@ -35,7 +36,14 @@ class BilgiPage extends StatelessWidget {
                   onPressed: () async {
                     launchUrl(Uri.parse(store.WebUrl));
                   },
-                  child: const Text("Web Sayfası"))
+                  child: const Text("Web Sayfası")),
+              const SizedBox(height: 20),
+              TextButton(
+                  onPressed: () async {
+                    launchUrl(Uri.parse(
+                        "${store.HostUrl}/member/kyu_sinavi_icerigi.html"));
+                  },
+                  child: const Text("Kyu Sınavı Yönetmeliği"))
             ],
           )),
     );

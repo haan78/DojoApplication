@@ -3,305 +3,191 @@ if (PHP_SAPI != 'cli') {
   die("Works only CLI mode");
 }
 
-define("QUERY", array (
-  0 => 
-  array (
-    '$addFields' => 
-    array (
-      'keikoaylar' => 
-      array (
-        '$setUnion' => 
-        array (
-          '$map' => 
-          array (
+define("QUERY", [
+  0 => [
+    '$addFields' => [
+      'keikoaylar' => [
+        '$setUnion' => [
+          '$map' => [
             'input' => '$keikolar',
             'as' => 'ktar',
-            'in' => 
-            array (
-              '$dateToString' => 
-              array (
+            'in' => [
+              '$dateToString' => [
                 'format' => '%Y-%m',
                 'date' => '$$ktar',
-              ),
-            ),
-          ),
-        ),
-      ),
-    ),
-  ),
-  1 => 
-  array (
-    '$lookup' => 
-    array (
+              ],
+            ],
+          ],
+        ],
+      ],
+    ],
+  ],
+  1 => [
+    '$lookup' => [
       'from' => 'gelirgider',
       'localField' => '_id',
       'foreignField' => 'uye_id',
       'as' => 'aidatlar',
-      'pipeline' => 
-      array (
-        0 => 
-        array (
-          '$match' => 
-          array (
-            '$and' => 
-            array (
-              0 => 
-              array (
-                '$expr' => 
-                array (
-                  '$eq' => 
-                  array (
+      'pipeline' => [
+        0 => [
+          '$match' => [
+            '$and' => [
+              0 => [
+                '$expr' => [
+                  '$eq' => [
                     0 => '$tur',
                     1 => 'GELIR',
-                  ),
-                ),
-              ),
-              1 => 
-              array (
-                '$expr' => 
-                array (
-                  '$gt' => 
-                  array (
+                  ],
+                ],
+              ],
+              1 => [
+                '$expr' => [
+                  '$gt' => [
                     0 => '$ay',
                     1 => 0,
-                  ),
-                ),
-              ),
-              2 => 
-              array (
-                '$expr' => 
-                array (
-                  '$regexMatch' => 
-                  array (
+                  ],
+                ],
+              ],
+              2 => [
+                '$expr' => [
+                  '$regexMatch' => [
                     'input' => '$tanim',
                     'regex' => 'aidat',
                     'options' => 'i',
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ),
-        1 => 
-        array (
-          '$project' => 
-          array (
+                  ],
+                ],
+              ],
+            ],
+          ],
+        ],
+        1 => [
+          '$project' => [
             '_id' => 0,
             'tarih' => 1,
             'yil' => 1,
             'ay' => 1,
             'tanim' => 1,
-            'yilay' => 
-            array (
-              '$dateToString' => 
-              array (
+            'yilay' => [
+              '$dateToString' => [
                 'format' => '%Y-%m',
-                'date' => 
-                array (
-                  '$dateFromParts' => 
-                  array (
+                'date' => [
+                  '$dateFromParts' => [
                     'year' => '$yil',
                     'month' => '$ay',
                     'day' => 1,
-                  ),
-                ),
-              ),
-            ),
+                  ],
+                ],
+              ],
+            ],
             'tutar' => 1,
             'aciklama' => 1,
             'kasa' => 1,
             'user_text' => 1,
-            'tamogrenci' => 
-            array (
-              '$cond' => 
-              array (
-                'if' => 
-                array (
-                  '$regexMatch' => 
-                  array (
+            'tamogrenci' => [
+              '$cond' => [
+                'if' => [
+                  '$regexMatch' => [
                     'input' => '$tanim',
                     'regex' => 'tam',
                     'options' => 'i',
-                  ),
-                ),
+                  ],
+                ],
                 'then' => 'TAM',
                 'else' => 'OGRENCI',
-              ),
-            ),
-          ),
-        ),
-        2 => 
-        array (
-          '$group' => 
-          array (
+              ],
+            ],
+          ],
+        ],
+        2 => [
+          '$group' => [
             '_id' => '$yilay',
-            'toplam' => 
-            array (
+            'toplam' => [
               '$sum' => '$tutar',
-            ),
-            'tamogrenci' => 
-            array (
+            ],
+            'tamogrenci' => [
               '$min' => '$tamogrenci',
-            ),
-            'yil' => 
-            array (
+            ],
+            'yil' => [
               '$min' => '$yil',
-            ),
-            'ay' => 
-            array (
+            ],
+            'ay' => [
               '$min' => '$ay',
-            ),
-            'tarih' => 
-            array (
+            ],
+            'tarih' => [
               '$max' => '$tarih',
-            ),
-            'kasa' => 
-            array (
+            ],
+            'kasa' => [
               '$last' => '$kasa',
-            ),
-            'aciklama' => 
-            array (
+            ],
+            'aciklama' => [
               '$last' => '$aciklama',
-            ),
-            'user_text' => 
-            array (
+            ],
+            'user_text' => [
               '$last' => '$user_text',
-            ),
-            'tanim' => 
-            array (
+            ],
+            'tanim' => [
               '$last' => '$tanim',
-            ),
-          ),
-        ),
-      ),
-    ),
-  ),
-  2 => 
-  array (
-    '$addFields' => 
-    array (
+            ],
+          ],
+        ],
+      ],
+    ],
+  ],
+  2 => [
+    '$addFields' => [
       'aidataylar' => '$aidatlar._id',
-    ),
-  ),
-  3 => 
-  array (
-    '$addFields' => 
-    array (
-      'aidateksigi' => 
-      array (
-        '$setDifference' => 
-        array (
+    ],
+  ],
+  3 => [
+    '$addFields' => [
+      'aidateksigi' => [
+        '$setDifference' => [
           0 => '$keikoaylar',
           1 => '$aidataylar',
-        ),
-      ),
-    ),
-  ),
-  4 => 
-  array (
-    '$lookup' => 
-    array (
+        ],
+      ],
+    ],
+  ],
+  4 => [
+    '$lookup' => [
       'from' => 'gelirgider',
       'localField' => '_id',
       'foreignField' => 'uye_id',
       'as' => 'diger',
-      'pipeline' => 
-      array (
-        0 => 
-        array (
-          '$match' => 
-          array (
-            '$expr' => 
-            array (
-              '$not' => 
-              array (
-                '$regexMatch' => 
-                array (
+      'pipeline' => [
+        0 => [
+          '$match' => [
+            '$expr' => [
+              '$not' => [
+                '$regexMatch' => [
                   'input' => '$tanim',
                   'regex' => 'aidat',
                   'options' => 'i',
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
-    ),
-  ),
-  5 => 
-  array (
-    '$addFields' => 
-    array (
-      'dosya_id' => 
-      array (
+                ],
+              ],
+            ],
+          ],
+        ],
+      ],
+    ],
+  ],
+  5 => [
+    '$addFields' => [
+      'dosya_id' => [
         '$toObjectId' => '$img',
-      ),
-    ),
-  ),
-  6 => 
-  array (
-    '$lookup' => 
-    array (
-      'from' => 'dosya.files',
-      'localField' => 'dosya_id',
-      'foreignField' => '_id',
-      'as' => 'foto',
-      'pipeline' => 
-      array (
-        0 => 
-        array (
-          '$lookup' => 
-          array (
-            'from' => 'dosya.chunks',
-            'localField' => '_id',
-            'foreignField' => 'files_id',
-            'as' => 'data',
-          ),
-        ),
-        1 => 
-        array (
-          '$project' => 
-          array (
-            '_id' => 0,
-            'type' => '$metadata.file_type',
-            'data' => 
-            array (
-              '$first' => '$data.data',
-            ),
-          ),
-        ),
-      ),
-    ),
-  ),
-  7 => 
-  array (
-    '$addFields' => 
-    array (
-      'foto' => 
-      array (
-        '$first' => '$foto',
-      ),
-    ),
-  ),
-  8 => 
-  array (
-    '$match' => 
-    array (
-      'foto' => 
-      array (
-        '$exists' => true,
-      ),
+      ],
+    ],
+  ],
+  6 => [
+    '$match' => [
       'email_activation' => true,
-      'cinsiyet' => 
-      array (
+      'cinsiyet' => [
         '$ne' => NULL,
-      ),
-    ),
-  ),
-  9 => 
-  array (
-    '$project' => 
-    array (
+      ],
+    ],
+  ],
+  7 => [
+    '$project' => [
       '_id' => 0,
       'ad' => 1,
       'ogrenci' => 1,
@@ -315,10 +201,10 @@ define("QUERY", array (
       'aidatlar' => 1,
       'aidateksigi' => 1,
       'diger' => 1,
-      'foto' => 1,
-    ),
-  ),
-));
+      'img' => 1,
+    ],
+  ],
+]);
 
 require_once __DIR__ . "/vendor/autoload.php";
 
@@ -459,6 +345,10 @@ echo "TRUNCATE TABLE muhasebe;".PHP_EOL;
 echo "TRUNCATE TABLE uye_tahakkuk;".PHP_EOL;
 echo "TRUNCATE TABLE dosya;".PHP_EOL;*/
 
+$bucket = $conn->selectDatabase("dojo")->selectGridFSBucket([
+  "bucketName" => "dosya"
+]);
+
 while ($doc = $uyeit->current()) {
   $uye = [
     "uye_id" => $id,
@@ -471,8 +361,7 @@ while ($doc = $uyeit->current()) {
     "durum" => ($doc["active"] ? "active" : "passive"),
     "ekfno" => $doc["ekfno"]
   ];
-  $type = $doc["foto"]["type"];
-  $foto = $doc["foto"]["data"]; //base64_encode($doc["foto"]["data"]);
+  $img = $doc["img"];
   $seviye = null;
 
   if (!in_array($uye["email"], $emaillist)) {
@@ -577,14 +466,24 @@ while ($doc = $uyeit->current()) {
       ]);
     }
 
+    $f_id = new \MongoDB\BSON\ObjectId($img);
+    $f_result = $bucket->findOne(["_id" => $f_id]);
+    $f_data = null;
+    if ( !is_null($f_result) ) {
+      $destination = fopen('php://temp', 'w+b');
+      $bucket->downloadToStream($f_id, $destination);
+      $f_data = stream_get_contents($destination, -1, 0);
+    }
+
     echo PHP_EOL . "/*" . $uye["ad"] . "--------------*/" . PHP_EOL;
     echo insert("uye",[$uye]);
     echo insert("uye_seviye",$seviyeler);
     echo insert("uye_yoklama",$yoklamalar);
     echo insert("muhasebe",$muhasebe);
     echo insert("uye_tahakkuk", $aidatlar);
-    //echo insert("dosya",[["dosya_id"=>$id,"file_type"=>$type,"icerik"=>$foto ]]);
-    echo "\nINSERT INTO dosya (dosya_id, file_type, icerik) VALUES ( $id, '".$type."', FROM_BASE64('".base64_encode($foto)."') );";
+    if (!is_null($f_data)) {
+      echo "\nINSERT INTO dosya (dosya_id, file_type, icerik) VALUES ( $id, '".$f_result->metadata->file_type."', FROM_BASE64('".base64_encode($f_data)."') );";
+    }    
 
     array_push($emaillist, $uye["email"]);
     $id++;

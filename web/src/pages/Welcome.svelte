@@ -45,7 +45,7 @@
             <span style="color:green; font-weight: bold;">Ödenmemiş Aidat Borsunuz Bulunmamaktadır</span>
             {/if}
             <hr/>
-            <span><a href="ankara_kendo_kyu_sinavi_yonetmeligi.pdf" target="_blank">Kyu Sınavı Yönetmeliği</a></span>
+            <span><a href="kyu_sinavi_icerigi.html" target="_blank">Kyu Sınavı Yönetmeliği</a></span>
         </div>
     </div>
         {/if}
