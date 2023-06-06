@@ -11,7 +11,7 @@ function mysqlilink(): mysqli {
     $c = @mysqli_connect(
         $GLOBALS["DB"]["host"] ?? "",
         $GLOBALS["DB"]["user"]?? "dojosensei",
-        "nBUP4v9mcgGx6tYL3R5cAA", //$GLOBALS["DB"]["password"]?? "",
+        $GLOBALS["DB"]["password"]?? "",
         $GLOBALS["DB"]["database"]?? "dojo",
         $GLOBALS["DB"]["port"]?? 3306
     );
