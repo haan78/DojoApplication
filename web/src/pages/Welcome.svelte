@@ -23,7 +23,7 @@
         {:else}
     <div class="info">
         <div class="left">
-            <img class="foto" src={ `data:${info.file_type};base64, ${info.img64}` } alt="" />
+            <img class="foto" src="/img.php/member" alt="" />
             <p>Üyelik bilgilerinizle ilgili bir sorun olduğunu düşüyor veya resminizi değiştirmek istiyorsanız. Lütfen çalışmadaki yetkili <i>Senpai</i> ile temasa geçin</p>
         </div>
         <div class="labels">

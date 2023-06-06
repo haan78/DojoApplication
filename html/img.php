@@ -4,9 +4,11 @@ require_once "./customized/db.php";
 require_once "vendor/autoload.php";
 require_once "./lib/Minmi.php";
 require_once "./customized/routerAdmin.php";
+require_once "./customized/routerMember.php";
 
 use \Minmi\Router;
 use \Minmi\Response;
+use \Minmi\Request;
 
 initSecret();
 
@@ -63,8 +65,14 @@ class ImageRouter extends Router {
     }
 }
 
-$router = new ImageRouter("",function($req){
-    authAdmin($req);
+$router = new ImageRouter("",function(Request $req){
+    $path = $req->getUriPattern();
+    if (strpos($path,"/member",0)===0) {
+        authMember($req);
+    } else {
+        authAdmin($req);
+    }
+    
 });
 
 $router->add("/uye/#uye_id",function($req) {
@@ -92,6 +100,25 @@ $router->add("/uye/#uye_id",function($req) {
     } else {
         throw new \Exception("No ID");
     }
+});
+
+$router->add("/member",function(Request $req) {
+    $uye_id = $req->local()->uye_id ?? 0;
+    if ($uye_id > 0) {
+        $imgdata = uyeImage($uye_id);
+
+        list($w, $h) = getimagesizefromstring($imgdata->icerik);
+        $im = @imagecreatefromstring($imgdata->icerik);
+        //var_dump([$h,$w]);
+        if ($im) {
+            return new ImageResult("image/jpeg", $im,-1);           
+        } else {        
+            throw new \Exception("img error");
+        }
+    } else {
+        throw new \Exception("No ID");
+    }
+
 });
 
 $router->execute();
