@@ -145,8 +145,8 @@ function routerAdmin(DefaultJsonRouter $router)
         return  muhasebe_duzelt($muhasebe_id, $uye_id, $tarih, $tutar, $kasa, $muhasebe_tanim_id, $aciklama, $belge, $tahsilatci);
     });
 
-    $router->add("/admin/muhasebe/tahsilatcilar",function(Request $req){
-        return tahsilatci_list();
+    $router->add("/admin/muhasebe/tahsilatcilar/@bas/@bit",function(Request $req){
+        return tahsilatci_list($req->param("bas"),$req->param("bit"));
     });
 
     $router->add("/admin/yoklamalar", function (Request $req) {

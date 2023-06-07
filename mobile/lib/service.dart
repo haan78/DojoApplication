@@ -638,11 +638,13 @@ Future<void> rapor_gelirgider_detay(Api api, DateTime baslangic, DateTime bitis,
   }
 }
 
-Future<List<String>> tahsilatci_list(Api api) async {
+Future<List<String>> tahsilatci_list(Api api, DateTime baslangic, DateTime bitis) async {
   List<String> list = [];
+  final bas = dateFormater(baslangic, "yyyy-MM-dd");
+  final bit = dateFormater(bitis, "yyyy-MM-dd");
   dynamic response;
   try {
-    response = await api.call("/admin/muhasebe/tahsilatcilar");
+    response = await api.call("/admin/muhasebe/tahsilatcilar/$bas/$bit");
   } catch (err) {
     return Future.error(err);
   }

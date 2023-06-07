@@ -26,8 +26,7 @@ class _RaporGelirGider extends State<RaporGelirGider> {
   @override
   Widget build(BuildContext context) {
     return FBuilder<void>(
-        future: rapor_gelirgider_detay(
-            widget.api, baslangic, bitis, listGelirGiderDetay),
+        future: rapor_gelirgider_detay(widget.api, baslangic, bitis, listGelirGiderDetay),
         builder: (data) {
           return Padding(
               padding: appPading,
@@ -35,11 +34,7 @@ class _RaporGelirGider extends State<RaporGelirGider> {
                 Row(children: [
                   ElevatedButton(
                       onPressed: () async {
-                        final dt = await showDatePicker(
-                            context: context,
-                            initialDate: baslangic,
-                            firstDate: minTar,
-                            lastDate: maxTar);
+                        final dt = await showDatePicker(context: context, initialDate: baslangic, firstDate: minTar, lastDate: maxTar);
                         if (dt != null) {
                           if (bitis.difference(dt).inDays >= 0) {
                             setState(() {
@@ -47,31 +42,24 @@ class _RaporGelirGider extends State<RaporGelirGider> {
                             });
                           } else {
                             if (context.mounted) {
-                              errorAlert(context,
-                                  "Başlangıç tarihi bitiş tarihinden büyük olamaz");
+                              errorAlert(context, "Başlangıç tarihi bitiş tarihinden büyük olamaz");
                             }
                           }
                         }
                       },
-                      child: Text(
-                          "Başlangıc ${dateFormater(baslangic, "dd.MM.yyyy")}")),
+                      child: Text("Başlangıc ${dateFormater(baslangic, "dd.MM.yyyy")}")),
                   const SizedBox(width: 10),
                   ElevatedButton(
                       onPressed: () async {
-                        final dt = await showDatePicker(
-                            context: context,
-                            initialDate: baslangic,
-                            firstDate: minTar,
-                            lastDate: maxTar);
+                        final dt = await showDatePicker(context: context, initialDate: baslangic, firstDate: minTar, lastDate: maxTar);
                         if (dt != null) {
-                          if (bitis.difference(dt).inDays < 0) {
+                          if (baslangic.difference(dt).inDays < 0) {
                             setState(() {
                               bitis = dt;
                             });
                           } else {
                             if (context.mounted) {
-                              errorAlert(context,
-                                  "Bitiş tarihi başlangıçtan büyük olamaz");
+                              errorAlert(context, "Bitiş tarihi başlangıçtan büyük olamaz");
                             }
                           }
                         }
@@ -95,13 +83,11 @@ class _RaporGelirGider extends State<RaporGelirGider> {
                                   DataColumn(label: Text("Tahsilatcı")),
                                   DataColumn(label: Text("Açıklama"))
                                 ],
-                                rows: List<DataRow>.generate(
-                                    listGelirGiderDetay.length, (index) {
+                                rows: List<DataRow>.generate(listGelirGiderDetay.length, (index) {
                                   final ggd = listGelirGiderDetay[index];
                                   final dr = DataRow(cells: [
                                     DataCell(Text(ggd.ad)),
-                                    DataCell(Text(
-                                        dateFormater(ggd.tarih, "dd.MM.yyyy"))),
+                                    DataCell(Text(dateFormater(ggd.tarih, "dd.MM.yyyy"))),
                                     DataCell(Text(ggd.tanim)),
                                     DataCell(Text(ggd.kasa)),
                                     DataCell(Text(ggd.tutar.toString())),
@@ -118,72 +104,24 @@ class _RaporGelirGider extends State<RaporGelirGider> {
                       try {
                         final excel = Excel.createExcel();
                         final sheet = excel.sheets[excel.getDefaultSheet()!]!;
-                        sheet
-                            .cell(CellIndex.indexByColumnRow(
-                                columnIndex: 0, rowIndex: 0))
-                            .value = "Ad";
-                        sheet
-                            .cell(CellIndex.indexByColumnRow(
-                                columnIndex: 1, rowIndex: 0))
-                            .value = "Tarih";
-                        sheet
-                            .cell(CellIndex.indexByColumnRow(
-                                columnIndex: 2, rowIndex: 0))
-                            .value = "Tanım";
-                        sheet
-                            .cell(CellIndex.indexByColumnRow(
-                                columnIndex: 3, rowIndex: 0))
-                            .value = "Kasa";
-                        sheet
-                            .cell(CellIndex.indexByColumnRow(
-                                columnIndex: 4, rowIndex: 0))
-                            .value = "Tutar";
-                        sheet
-                            .cell(CellIndex.indexByColumnRow(
-                                columnIndex: 5, rowIndex: 0))
-                            .value = "Tür";
-                        sheet
-                            .cell(CellIndex.indexByColumnRow(
-                                columnIndex: 6, rowIndex: 0))
-                            .value = "Tahsilatcı";
-                        sheet
-                            .cell(CellIndex.indexByColumnRow(
-                                columnIndex: 7, rowIndex: 0))
-                            .value = "Açıklama";
+                        sheet.cell(CellIndex.indexByColumnRow(columnIndex: 0, rowIndex: 0)).value = "Ad";
+                        sheet.cell(CellIndex.indexByColumnRow(columnIndex: 1, rowIndex: 0)).value = "Tarih";
+                        sheet.cell(CellIndex.indexByColumnRow(columnIndex: 2, rowIndex: 0)).value = "Tanım";
+                        sheet.cell(CellIndex.indexByColumnRow(columnIndex: 3, rowIndex: 0)).value = "Kasa";
+                        sheet.cell(CellIndex.indexByColumnRow(columnIndex: 4, rowIndex: 0)).value = "Tutar";
+                        sheet.cell(CellIndex.indexByColumnRow(columnIndex: 5, rowIndex: 0)).value = "Tür";
+                        sheet.cell(CellIndex.indexByColumnRow(columnIndex: 6, rowIndex: 0)).value = "Tahsilatcı";
+                        sheet.cell(CellIndex.indexByColumnRow(columnIndex: 7, rowIndex: 0)).value = "Açıklama";
                         for (int i = 0; i < listGelirGiderDetay.length; i++) {
                           final row = listGelirGiderDetay[i];
-                          sheet
-                              .cell(CellIndex.indexByColumnRow(
-                                  columnIndex: 0, rowIndex: i + 1))
-                              .value = row.ad;
-                          sheet
-                              .cell(CellIndex.indexByColumnRow(
-                                  columnIndex: 1, rowIndex: i + 1))
-                              .value = dateFormater(row.tarih, "dd/MM/yyyy");
-                          sheet
-                              .cell(CellIndex.indexByColumnRow(
-                                  columnIndex: 2, rowIndex: i + 1))
-                              .value = row.tanim;
-                          sheet
-                              .cell(CellIndex.indexByColumnRow(
-                                  columnIndex: 3, rowIndex: i + 1))
-                              .value = row.kasa;
-                          sheet
-                              .cell(CellIndex.indexByColumnRow(
-                                  columnIndex: 4, rowIndex: i + 1))
-                              .value = row.tutar;
-                          sheet
-                              .cell(CellIndex.indexByColumnRow(
-                                  columnIndex: 5, rowIndex: i + 1))
-                              .value = row.tur;
-                          sheet
-                              .cell(CellIndex.indexByColumnRow(
-                                  columnIndex: 6, rowIndex: i + 1))
-                              .value = row.tahsilatci;
-                          sheet
-                              .cell(CellIndex.indexByColumnRow(
-                                  columnIndex: 7, rowIndex: i + 1))
-                              .value = row.aciklama;
+                          sheet.cell(CellIndex.indexByColumnRow(columnIndex: 0, rowIndex: i + 1)).value = row.ad;
+                          sheet.cell(CellIndex.indexByColumnRow(columnIndex: 1, rowIndex: i + 1)).value = dateFormater(row.tarih, "dd/MM/yyyy");
+                          sheet.cell(CellIndex.indexByColumnRow(columnIndex: 2, rowIndex: i + 1)).value = row.tanim;
+                          sheet.cell(CellIndex.indexByColumnRow(columnIndex: 3, rowIndex: i + 1)).value = row.kasa;
+                          sheet.cell(CellIndex.indexByColumnRow(columnIndex: 4, rowIndex: i + 1)).value = row.tutar;
+                          sheet.cell(CellIndex.indexByColumnRow(columnIndex: 5, rowIndex: i + 1)).value = row.tur;
+                          sheet.cell(CellIndex.indexByColumnRow(columnIndex: 6, rowIndex: i + 1)).value = row.tahsilatci;
+                          sheet.cell(CellIndex.indexByColumnRow(columnIndex: 7, rowIndex: i + 1)).value = row.aciklama;
                         }
                         openExcel(context, "gelirgider", excel);
                       } catch (err) {

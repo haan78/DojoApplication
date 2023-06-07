@@ -298,18 +298,7 @@ function insert(string $table, array $matrix): string {
   }
 }
 
-function randomPassword(int $default = 6 ):string {
-  $alphabet = "abcdefghijklmnopqrstuwxyz.!@#?*,-_%$~:0123456789";
-  $pass = array(); //remember to declare $pass as an array
-  $alphaLength = strlen($alphabet) - 1; //put the length -1 in cache
-  for ($i = 0; $i < $default; $i++) {
-      $n = rand(0, $alphaLength);
-      $pass[] = $alphabet[$n];
-  }
-  return implode($pass); //turn the array into a string
-}
-
-function passCreate(int $len = 8): string {
+function randomPassword(int $len = 6): string {
   $KEYS = '1234567890ABCFGTXRYUPLabcdefghtlomnvcxz_';
   $s = "";
   for ($i = 0; $i < $len; $i++) {
@@ -319,13 +308,11 @@ function passCreate(int $len = 8): string {
 }
 
 if (!isset($argv[1])) {
-  echo "No Connection String";
+  echo "No Connection String\n";
   exit(1);
 }
 
-$dbpass = passCreate(22);
-
-echo "/* DB SQL */\n".str_replace('{{dbpassword}}','\''.$dbpass.'\'',file_get_contents('01-db.sql'))."\n\n";
+echo "/* DB SQL */\n".file_get_contents('01-db.sql')."\n\n";
 echo "/* TABLES SQL */\n".file_get_contents('02-tables.sql')."\n\n";
 echo "####/* PROCEDURES SQL */\n".file_get_contents('03-procedures.sql')."\n\n";
 

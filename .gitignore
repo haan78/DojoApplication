@@ -1,7 +1,11 @@
 .vscode
-initdb/data*
 transfer/vendor
-secrets.json
+transfer/composer.lock
+
 html/vendor
 html/composer.lock
 html/member
+
+initdb/data*
+secrets.json
+passwords-production.sql

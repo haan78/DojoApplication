@@ -345,9 +345,9 @@ function rapor_geneluyeraporu() {
     return MySqlStmt::query(mysqlilink(),$sql);
 }
 
-function tahsilatci_list() {
-    $sql = "SELECT DISTINCT tahsilatci FROM muhasebe ORDER BY tahsilatci DESC";
-    return MySqlStmt::query(mysqlilink(),$sql);
+function tahsilatci_list(string $baslangic, string $bitis) {
+    $sql = "SELECT DISTINCT tahsilatci FROM muhasebe WHERE tarih BETWEEN DATE(?) AND DATE(?) ORDER BY tahsilatci ASC";
+    return MySqlStmt::query(mysqlilink(),$sql,[$baslangic, $bitis]);
 }
 
 function rapor_eldentahsilat(string $tahsilatci, string $baslangic, string $bitis) {

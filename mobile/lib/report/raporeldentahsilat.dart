@@ -16,9 +16,9 @@ class RaporEldenTahsilat extends StatefulWidget {
 
 class _RaporEldenTahsilat extends State<RaporEldenTahsilat> {
   DateTime bitis = DateTime.now();
-  DateTime baslangic = DateTime.now().subtract(const Duration(days: 90));
-  final minTar = DateTime(buYil - 3, 1, 1);
-  final maxTar = DateTime(buYil + 2, 1, 1);
+  DateTime baslangic = DateTime.now().subtract(const Duration(days: 30));
+  final minTar = DateTime(buYil - 2, 1, 1);
+  final maxTar = DateTime(buYil + 1, 1, 1);
   bool loading = false;
   bool reload = true;
   String thasilatci = "";
@@ -27,7 +27,8 @@ class _RaporEldenTahsilat extends State<RaporEldenTahsilat> {
 
   Future<List<EldenTahsilat>> load() async {
     if (reload || tahsilatcilar.isEmpty) {
-      tahsilatcilar = await tahsilatci_list(widget.api);
+      tahsilatcilar = await tahsilatci_list(widget.api, baslangic, bitis);
+      thasilatci = tahsilatcilar.isNotEmpty ? tahsilatcilar[0] : "";
       reload = false;
     }
     final data = await rapor_eldentahsilat(widget.api, thasilatci, baslangic, bitis);
@@ -43,7 +44,6 @@ class _RaporEldenTahsilat extends State<RaporEldenTahsilat> {
     return FBuilder(
         future: load(),
         builder: ((data) {
-          //thasilatci = data.isNotEmpty ? data[0] : "";
           return Padding(
               padding: appPading,
               child: Column(
@@ -55,6 +55,7 @@ class _RaporEldenTahsilat extends State<RaporEldenTahsilat> {
                           if (dt != null) {
                             if (bitis.difference(dt).inDays >= 0) {
                               setState(() {
+                                reload = true;
                                 baslangic = dt;
                               });
                             } else {
@@ -70,8 +71,9 @@ class _RaporEldenTahsilat extends State<RaporEldenTahsilat> {
                         onPressed: () async {
                           final dt = await showDatePicker(context: context, initialDate: baslangic, firstDate: minTar, lastDate: maxTar);
                           if (dt != null) {
-                            if (bitis.difference(dt).inDays < 0) {
+                            if (baslangic.difference(dt).inDays < 0) {
                               setState(() {
+                                reload = true;
                                 bitis = dt;
                               });
                             } else {
@@ -89,7 +91,7 @@ class _RaporEldenTahsilat extends State<RaporEldenTahsilat> {
                       const Text("Tahsilatcı"),
                       const SizedBox(width: 10),
                       DropdownButton<String>(
-                          value: thasilatci,
+                          value: thasilatci.isNotEmpty ? thasilatci : null,
                           items: List<DropdownMenuItem<String>>.generate(tahsilatcilar.length, (index) {
                             return DropdownMenuItem<String>(value: tahsilatcilar[index], child: Text(tahsilatcilar[index].isEmpty ? "[Belirtilmemiş]" : tahsilatcilar[index]));
                           }),
@@ -97,6 +99,7 @@ class _RaporEldenTahsilat extends State<RaporEldenTahsilat> {
                             if (value != null) {
                               setState(() {
                                 thasilatci = value;
+                                reload = false;
                               });
                             }
                           }),
