@@ -13,11 +13,7 @@ class KendokaAidat extends StatefulWidget {
   final UyeBilgi bilgi;
   final Store store;
   final Sabitler sabitler;
-  const KendokaAidat(
-      {super.key,
-      required this.sabitler,
-      required this.bilgi,
-      required this.store});
+  const KendokaAidat({super.key, required this.sabitler, required this.bilgi, required this.store});
 
   @override
   State<StatefulWidget> createState() {
@@ -45,11 +41,7 @@ class _KendokaAidat extends State<KendokaAidat> with TickerProviderStateMixin {
             labelColor: Colors.blueAccent.shade700,
             controller: tbc,
             labelStyle: const TextStyle(fontSize: 13),
-            tabs: const [
-              Tab(text: "Aidatlar"),
-              Tab(text: "Diğer Ödemeler"),
-              Tab(text: "Harcamalar")
-            ],
+            tabs: const [Tab(text: "Aidatlar"), Tab(text: "Diğer Ödemeler"), Tab(text: "Harcamalar")],
           ))
         ]),
         Expanded(
@@ -64,8 +56,7 @@ class _KendokaAidat extends State<KendokaAidat> with TickerProviderStateMixin {
                         child: ElevatedButton(
                       child: const Text("İleri Tarihli Aidat Tahsilat"),
                       onPressed: () {
-                        Navigator.push(context,
-                            MaterialPageRoute(builder: (context) {
+                        Navigator.push(context, MaterialPageRoute(builder: (context) {
                           return Aidat(
                             context,
                             uyeTahakkuk: UyeTahakkuk(),
@@ -87,22 +78,13 @@ class _KendokaAidat extends State<KendokaAidat> with TickerProviderStateMixin {
                       Text info1 = Text(data[index].tanim);
                       Text info2;
                       if (data[index].ay > 0 && data[index].muhasebe_id == 0) {
-                        info2 = Text(
-                            "${data[index].borc.toString()} TL ${trAy(data[index].ay)} / ${data[index].yil}",
-                            style: const TextStyle(color: colorBad));
-                      } else if (data[index].ay > 0 &&
-                          data[index].muhasebe_id > 0) {
-                        info2 = Text(
-                            "${data[index].odenen.toString()} TL ${trAy(data[index].ay)} / ${data[index].yil}",
-                            style: const TextStyle(color: colorGood));
-                      } else if (data[index].ay == 0 &&
-                          data[index].muhasebe_id == 0) {
-                        info2 = Text("${data[index].borc.toString()} TL",
-                            style: const TextStyle(color: colorBad));
-                      } else if (data[index].ay == 0 &&
-                          data[index].muhasebe_id > 0) {
-                        info2 = Text("${data[index].odenen.toString()} TL",
-                            style: const TextStyle(color: colorGood));
+                        info2 = Text("${data[index].borc.toString()} TL ${trAy(data[index].ay)} / ${data[index].yil}", style: const TextStyle(color: colorBad));
+                      } else if (data[index].ay > 0 && data[index].muhasebe_id > 0) {
+                        info2 = Text("${data[index].odenen.toString()} TL ${trAy(data[index].ay)} / ${data[index].yil}", style: const TextStyle(color: colorGood));
+                      } else if (data[index].ay == 0 && data[index].muhasebe_id == 0) {
+                        info2 = Text("${data[index].borc.toString()} TL", style: const TextStyle(color: colorBad));
+                      } else if (data[index].ay == 0 && data[index].muhasebe_id > 0) {
+                        info2 = Text("${data[index].odenen.toString()} TL", style: const TextStyle(color: colorGood));
                       } else {
                         info2 = const Text("");
                       }
@@ -125,8 +107,7 @@ class _KendokaAidat extends State<KendokaAidat> with TickerProviderStateMixin {
                               trailing: IconButton(
                                 icon: const Icon(Icons.arrow_forward),
                                 onPressed: () {
-                                  Navigator.push(context,
-                                      MaterialPageRoute(builder: (context) {
+                                  Navigator.push(context, MaterialPageRoute(builder: (context) {
                                     return Aidat(
                                       context,
                                       uyeTahakkuk: data[index],
@@ -153,8 +134,7 @@ class _KendokaAidat extends State<KendokaAidat> with TickerProviderStateMixin {
                       child: ElevatedButton(
                     child: const Text("Yeni Ödeme Al"),
                     onPressed: () {
-                      Navigator.push(context,
-                          MaterialPageRoute(builder: (context) {
+                      Navigator.push(context, MaterialPageRoute(builder: (context) {
                         return Odeme(
                           context,
                           muhasebe: MuhasebeDiger(),
@@ -187,8 +167,7 @@ class _KendokaAidat extends State<KendokaAidat> with TickerProviderStateMixin {
                             trailing: IconButton(
                               icon: const Icon(Icons.arrow_forward),
                               onPressed: () {
-                                Navigator.push(context,
-                                    MaterialPageRoute(builder: (context) {
+                                Navigator.push(context, MaterialPageRoute(builder: (context) {
                                   return Odeme(
                                     context,
                                     muhasebe: data[index],
@@ -210,26 +189,24 @@ class _KendokaAidat extends State<KendokaAidat> with TickerProviderStateMixin {
             future: uyeharcamalist(api, widget.bilgi.uye_id),
             builder: (data) {
               return Column(children: [
-                Row(children: [
-                  Expanded(
-                      child: ElevatedButton(
-                    child: const Text("Yeni Harcama"),
-                    onPressed: () {
-                      Navigator.push(context,
-                          MaterialPageRoute(builder: (context) {
-                        return Harcama(
-                          context,
-                          muhasebe: MuhasebeDiger(),
-                          store: widget.store,
-                          uyeAd: widget.bilgi.ad,
-                          uyeId: widget.bilgi.uye_id,
-                        );
-                      })).then((value) {
-                        if (context.mounted) setState(() {});
-                      });
-                    },
-                  ))
-                ]),
+                SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      child: const Text("Yeni Harcama"),
+                      onPressed: () {
+                        Navigator.push(context, MaterialPageRoute(builder: (context) {
+                          return Harcama(
+                            context,
+                            muhasebe: MuhasebeDiger(),
+                            store: widget.store,
+                            uyeAd: widget.bilgi.ad,
+                            uyeId: widget.bilgi.uye_id,
+                          );
+                        })).then((value) {
+                          if (context.mounted) setState(() {});
+                        });
+                      },
+                    )),
                 Expanded(
                     child: ListView.builder(
                   itemCount: data.length,
@@ -247,8 +224,7 @@ class _KendokaAidat extends State<KendokaAidat> with TickerProviderStateMixin {
                             trailing: IconButton(
                               icon: const Icon(Icons.arrow_forward),
                               onPressed: () {
-                                Navigator.push(context,
-                                    MaterialPageRoute(builder: (context) {
+                                Navigator.push(context, MaterialPageRoute(builder: (context) {
                                   return Harcama(
                                     context,
                                     muhasebe: data[index],
