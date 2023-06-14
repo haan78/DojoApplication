@@ -1,5 +1,3 @@
-import 'dart:typed_data';
-
 import 'package:dojo_mobile/service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -51,6 +49,8 @@ class _KendokaBase extends State<KendokaBase> {
 
   @override
   void initState() {
+    SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
+
     super.initState();
     loadingdlg = LoadingDialog(context);
     adEdit.text = widget.bilgi.ad;
@@ -92,9 +92,8 @@ class _KendokaBase extends State<KendokaBase> {
             TextButton(
                 style: TextButton.styleFrom(padding: const EdgeInsets.all(0), fixedSize: const Size(170, 250)),
                 onPressed: () async {
-                  await SystemChrome.setPreferredOrientations([
-                    DeviceOrientation.portraitUp,
-                  ]);
+                  //Orientation orientation = MediaQuery.of(context).orientation;
+
                   XFile? xfile;
                   try {
                     final imgpicker = ImagePicker();
