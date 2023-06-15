@@ -47,8 +47,6 @@ class _KendokaBase extends State<KendokaBase> {
 
   @override
   void initState() {
-    SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
-
     super.initState();
     loadingdlg = LoadingDialog(context);
     adEdit.text = widget.bilgi.ad;
