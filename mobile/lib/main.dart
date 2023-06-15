@@ -1,11 +1,7 @@
-import 'dart:convert';
-
 import 'package:dojo_mobile/page/appwindow.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'store.dart';
-import 'page/message_page.dart';
 import 'page/web_login_page.dart';
 //import 'package:json_theme/json_theme.dart';
 
