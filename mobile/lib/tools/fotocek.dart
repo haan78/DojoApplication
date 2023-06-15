@@ -11,17 +11,17 @@ Future<Uint8List> fixExifRotation(Uint8List imageBytes) async {
 
   if (height < width) {
     final exifData = await readExifFromBytes(imageBytes);
-
     img.Image fixedImage;
     final imgOr = exifData['Image Orientation']!;
+    //print([height, width, imgOr.printable]);
     if (imgOr.printable.contains('Horizontal')) {
       fixedImage = img.copyRotate(originalImage, angle: 90);
     } else if (imgOr.printable.contains('180')) {
       fixedImage = img.copyRotate(originalImage, angle: -90);
     } else {
-      fixedImage = img.copyRotate(originalImage, angle: 0);
+      fixedImage = img.copyRotate(originalImage, angle: -90);
     }
-    return img.encodeJpg(fixedImage);
+    return img.encodeJpg(fixedImage, quality: 40);
   } else {
     return imageBytes;
   }

@@ -89,7 +89,10 @@ $router->add("/uye/#uye_id",function($req) {
             if ( isset($_GET["orginal"]) ) {
                 return new ImageResult("image/jpeg", $im,-1);    
             } else {
-                $dst = imagecreatetruecolor($new_width, $new_height);    
+                if ( $w > $h ) {
+                    $im = imagerotate($im,-90,0);
+                }
+                $dst = imagecreatetruecolor($new_width, $new_height);                    
                 imagecopyresized($dst, $im, 0, 0, 0, 0, $new_width, $new_height, $w, $h);
                 return new ImageResult("image/jpeg", $dst,-1);
             }
