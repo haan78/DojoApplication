@@ -9,7 +9,7 @@ Future<Uint8List> fixExifRotation(Uint8List imageBytes) async {
   final height = originalImage!.height;
   final width = originalImage.width;
   final exifData = await readExifFromBytes(imageBytes);
-  final imgOr = exifData['Image Orientation']!
+  final imgOr = exifData['Image Orientation']!;
   print([height, width, imgOr.printable]);
   if (height < width) {
     img.Image fixedImage;
