@@ -1,3 +1,4 @@
+import 'package:dojo_mobile/page/widget/Foto.dart';
 import 'package:dojo_mobile/service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -73,13 +74,29 @@ class _KendokaBase extends State<KendokaBase> {
     if (list.isNotEmpty) {
       camera = CameraController(list[0], ResolutionPreset.medium);
       camera!.initialize().then((_) {
-        if (mounted) {
-          setState(() {});
-        }
+        camera!.lockCaptureOrientation(DeviceOrientation.landscapeLeft).then((value) {
+          if (mounted) {
+            setState(() {});
+          }
+        });
       });
     } else {
       camera = null;
     }
+  }
+
+  void fotoErr(String value) {
+    if (mounted) {
+      errorAlert(context, value);
+    }
+  }
+
+  void setFoto(Uint8List imgData) {
+    setState(() {
+      imgdata = imgData;
+      buttonImage = Image.memory(imgdata!, fit: BoxFit.fill);
+      resimsecildi = true;
+    });
   }
 
   @override
@@ -92,12 +109,17 @@ class _KendokaBase extends State<KendokaBase> {
             TextButton(
                 style: TextButton.styleFrom(padding: const EdgeInsets.all(0), fixedSize: const Size(170, 250)),
                 onPressed: () async {
-                  //Orientation orientation = MediaQuery.of(context).orientation;
+                  await Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => Foto(cbErr: fotoErr, cbImg: setFoto),
+                    ),
+                  );
 
-                  XFile? xfile;
+                  /*XFile? xfile;
                   try {
-                    final imgpicker = ImagePicker();
-                    xfile = await imgpicker.pickImage(source: ImageSource.camera, imageQuality: 30);
+                    //final imgpicker = ImagePicker();
+                    //xfile = await imgpicker.pickImage(source: ImageSource.camera, imageQuality: 30);
+                    xfile = await camera!.takePicture();
                   } catch (err) {
                     if (mounted) {
                       errorAlert(context, err.toString());
@@ -113,7 +135,7 @@ class _KendokaBase extends State<KendokaBase> {
                       buttonImage = Image.memory(imgdata!, fit: BoxFit.fill);
                       resimsecildi = true;
                     });
-                  }
+                  }*/
                 },
                 child: buttonImage),
             const SizedBox(height: 15),
