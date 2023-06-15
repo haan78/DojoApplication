@@ -8,22 +8,24 @@ Future<Uint8List> fixExifRotation(Uint8List imageBytes) async {
 
   final height = originalImage!.height;
   final width = originalImage.width;
-
+  final exifData = await readExifFromBytes(imageBytes);
+  final imgOr = exifData['Image Orientation']!
+  print([height, width, imgOr.printable]);
   if (height < width) {
-    final exifData = await readExifFromBytes(imageBytes);
     img.Image fixedImage;
-    final imgOr = exifData['Image Orientation']!;
-    print([height, width, imgOr.printable]);
     if (imgOr.printable.contains('Horizontal')) {
+      print("Dondur +90");
       fixedImage = img.copyRotate(originalImage, angle: 90);
     } else if (imgOr.printable.contains('180')) {
+      print("Dondur -90");
       fixedImage = img.copyRotate(originalImage, angle: -90);
     } else {
+      print("Dondur +90 2");
       fixedImage = img.copyRotate(originalImage, angle: -90);
     }
     return img.encodeJpg(fixedImage, quality: 40);
   } else {
-    print([height, width, "Dik"]);
+    print("Dondur 0");
     return imageBytes;
   }
 }
