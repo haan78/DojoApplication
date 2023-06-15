@@ -16,28 +16,20 @@ const appVersion = "1.0.0-beta";
 const programerEmail = "alibarisozturk@gmail.com";
 const appPading = EdgeInsets.all(3);
 
-ButtonStyle goodBtnStyle = ButtonStyle(
-    backgroundColor: MaterialStateProperty.resolveWith((states) => colorGood));
-ButtonStyle badBtnStyle = ButtonStyle(
-    backgroundColor: MaterialStateProperty.resolveWith((states) => colorBad));
-ButtonStyle warnBtnStyle = ButtonStyle(
-    backgroundColor: MaterialStateProperty.resolveWith((states) => colorWarn));
+ButtonStyle goodBtnStyle = ButtonStyle(backgroundColor: MaterialStateProperty.resolveWith((states) => colorGood));
+ButtonStyle badBtnStyle = ButtonStyle(backgroundColor: MaterialStateProperty.resolveWith((states) => colorBad));
+ButtonStyle warnBtnStyle = ButtonStyle(backgroundColor: MaterialStateProperty.resolveWith((states) => colorWarn));
 
 enum AppWindow { harcamalar, uyeler, yoklamalar, ayarlar, raporlar }
 
 final buYil = DateTime.now().year;
 
-yesNoDialog(BuildContext context,
-    {required String text,
-    String title = "Onay",
-    required Function() onYes,
-    Function()? onNo}) {
+yesNoDialog(BuildContext context, {required String text, String title = "Onay", required Function() onYes, Function()? onNo}) {
   showDialog(
       context: context,
       builder: ((context) {
         return AlertDialog(
-          title:
-              Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
+          title: Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
           content: Text(text),
           actions: [
             ElevatedButton(
@@ -70,10 +62,7 @@ class MultiSelectOption {
 }
 
 void multiSelectDialog(BuildContext context,
-    {required List<MultiSelectOption> list,
-    required Function(List<MultiSelectOption> options) onOk,
-    Function()? onCancel,
-    Widget? title}) {
+    {required List<MultiSelectOption> list, required Function(List<MultiSelectOption> options) onOk, Function()? onCancel, Widget? title}) {
   showDialog(
       context: context,
       builder: (context) {
@@ -89,65 +78,36 @@ void multiSelectDialog(BuildContext context,
                   }
                 }));
           }
-          return AlertDialog(
-              title: title,
-              content: Column(children: wlist),
-              actions: [
-                ElevatedButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                      onOk(list);
-                    },
-                    //style: ButtonStyle(backgroundColor: MaterialStateProperty.resolveWith((states) => colorGood)),
-                    style: goodBtnStyle,
-                    child: const Text("Tamam")),
-                ElevatedButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                      if (onCancel != null) {
-                        onCancel();
-                      }
-                    },
-                    //style: ButtonStyle(backgroundColor: MaterialStateProperty.resolveWith((states) => colorBad)),
-                    style: badBtnStyle,
-                    child: const Text("İptal"))
-              ]);
+          return AlertDialog(title: title, content: Column(children: wlist), actions: [
+            ElevatedButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                  onOk(list);
+                },
+                //style: ButtonStyle(backgroundColor: MaterialStateProperty.resolveWith((states) => colorGood)),
+                style: goodBtnStyle,
+                child: const Text("Tamam")),
+            ElevatedButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                  if (onCancel != null) {
+                    onCancel();
+                  }
+                },
+                //style: ButtonStyle(backgroundColor: MaterialStateProperty.resolveWith((states) => colorBad)),
+                style: badBtnStyle,
+                child: const Text("İptal"))
+          ]);
         });
       });
 }
 
 String trAy(int ayint) {
   final ind = ayint - 1;
-  return [
-    "Ocak",
-    "Şubat",
-    "Mart",
-    "Nisan",
-    "Mayıs",
-    "Haziran",
-    "Temmuz",
-    "Ağustos",
-    "Eylül",
-    "Ekim",
-    "Kasım",
-    "Aralık"
-  ][ind % 12];
+  return ["Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran", "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"][ind % 12];
 }
 
-const aylarText = [
-  "Ocak",
-  "Şubat",
-  "Mart",
-  "Nisan",
-  "Mayıs",
-  "Haziran",
-  "Temmuz",
-  "Ağustos",
-  "Eylül",
-  "Ekim",
-  "Kasım",
-  "Aralık"
-];
+const aylarText = ["Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran", "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"];
 const List<DropdownMenuItem<int>> aylarMenuItem = [
   DropdownMenuItem(value: 0, child: Text("[Seçiniz]")),
   DropdownMenuItem(value: 1, child: Text("Ocak")),
@@ -164,16 +124,12 @@ const List<DropdownMenuItem<int>> aylarMenuItem = [
   DropdownMenuItem(value: 12, child: Text("Aralık"))
 ];
 bool isEmail(String value) {
-  return RegExp(
-          r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
-      .hasMatch(value);
+  return RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+").hasMatch(value);
 }
 
-List<DropdownMenuItem<int>> yoklamaMenuItems(List<Yoklama> yoklamalar,
-    {bool bosSecenek = true}) {
+List<DropdownMenuItem<int>> yoklamaMenuItems(List<Yoklama> yoklamalar, {bool bosSecenek = true}) {
   List<DropdownMenuItem<int>> l = yoklamalar.asMap().entries.map((e) {
-    return DropdownMenuItem<int>(
-        value: e.value.yoklama_id, child: Text(e.value.tanim));
+    return DropdownMenuItem<int>(value: e.value.yoklama_id, child: Text(e.value.tanim));
   }).toList();
   if (bosSecenek) {
     l.insert(0, const DropdownMenuItem<int>(value: 0, child: Text("Seçiniz")));
@@ -188,20 +144,7 @@ String dateFormater(DateTime value, String format) {
 
 String trKisaDate(DateTime tarih) {
   const hafta = ["Pzt", "Sal", "Çar", "Per", "Cum", "Cmt", "Paz"];
-  const aylar = [
-    "Oca",
-    "Şub",
-    "Mar",
-    "Nis",
-    "May",
-    "Haz",
-    "Tem",
-    "Ağu",
-    "Eyl",
-    "Eki",
-    "Kas",
-    "Ara"
-  ];
+  const aylar = ["Oca", "Şub", "Mar", "Nis", "May", "Haz", "Tem", "Ağu", "Eyl", "Eki", "Kas", "Ara"];
 
   final gun = tarih.day.toString().padLeft(2, "0");
   final hg = hafta[tarih.weekday - 1];
@@ -220,48 +163,20 @@ DateTime dateTimeSum(DateTime date, Duration d, {bool subtract = false}) {
 
 final List<DropdownMenuItem> seviyeler = [
   const DropdownMenuItem(value: "", child: Text("")),
-  DropdownMenuItem(
-      value: "7 KYU",
-      child: Text("7 KYU", style: TextStyle(color: Colors.pink.shade200))),
-  DropdownMenuItem(
-      value: "6 KYU",
-      child: Text("6 KYU", style: TextStyle(color: Colors.pink.shade200))),
-  DropdownMenuItem(
-      value: "5 KYU",
-      child: Text("5 KYU", style: TextStyle(color: Colors.pink.shade200))),
-  DropdownMenuItem(
-      value: "4 KYU",
-      child: Text("4 KYU", style: TextStyle(color: Colors.pink.shade200))),
-  DropdownMenuItem(
-      value: "3 KYU",
-      child: Text("3 KYU", style: TextStyle(color: Colors.pink.shade400))),
-  DropdownMenuItem(
-      value: "2 KYU",
-      child: Text("2 KYU", style: TextStyle(color: Colors.pink.shade400))),
-  DropdownMenuItem(
-      value: "1 KYU",
-      child: Text("1 KYU", style: TextStyle(color: Colors.pink.shade600))),
-  DropdownMenuItem(
-      value: "1 DAN",
-      child: Text("1 DAN", style: TextStyle(color: Colors.pink.shade600))),
-  DropdownMenuItem(
-      value: "2 DAN",
-      child: Text("2 DAN", style: TextStyle(color: Colors.pink.shade600))),
-  DropdownMenuItem(
-      value: "3 DAN",
-      child: Text("3 DAN", style: TextStyle(color: Colors.red.shade400))),
-  DropdownMenuItem(
-      value: "4 DAN",
-      child: Text("4 DAN", style: TextStyle(color: Colors.red.shade600))),
-  DropdownMenuItem(
-      value: "5 DAN",
-      child: Text("5 DAN", style: TextStyle(color: Colors.red.shade600))),
-  DropdownMenuItem(
-      value: "6 DAN",
-      child: Text("6 DAN", style: TextStyle(color: Colors.red.shade900))),
-  DropdownMenuItem(
-      value: "7 DAN",
-      child: Text("7 DAN", style: TextStyle(color: Colors.brown.shade800)))
+  DropdownMenuItem(value: "7 KYU", child: Text("7 KYU", style: TextStyle(color: Colors.pink.shade200))),
+  DropdownMenuItem(value: "6 KYU", child: Text("6 KYU", style: TextStyle(color: Colors.pink.shade200))),
+  DropdownMenuItem(value: "5 KYU", child: Text("5 KYU", style: TextStyle(color: Colors.pink.shade200))),
+  DropdownMenuItem(value: "4 KYU", child: Text("4 KYU", style: TextStyle(color: Colors.pink.shade200))),
+  DropdownMenuItem(value: "3 KYU", child: Text("3 KYU", style: TextStyle(color: Colors.pink.shade400))),
+  DropdownMenuItem(value: "2 KYU", child: Text("2 KYU", style: TextStyle(color: Colors.pink.shade400))),
+  DropdownMenuItem(value: "1 KYU", child: Text("1 KYU", style: TextStyle(color: Colors.pink.shade600))),
+  DropdownMenuItem(value: "1 DAN", child: Text("1 DAN", style: TextStyle(color: Colors.pink.shade600))),
+  DropdownMenuItem(value: "2 DAN", child: Text("2 DAN", style: TextStyle(color: Colors.pink.shade600))),
+  DropdownMenuItem(value: "3 DAN", child: Text("3 DAN", style: TextStyle(color: Colors.red.shade400))),
+  DropdownMenuItem(value: "4 DAN", child: Text("4 DAN", style: TextStyle(color: Colors.red.shade600))),
+  DropdownMenuItem(value: "5 DAN", child: Text("5 DAN", style: TextStyle(color: Colors.red.shade600))),
+  DropdownMenuItem(value: "6 DAN", child: Text("6 DAN", style: TextStyle(color: Colors.red.shade900))),
+  DropdownMenuItem(value: "7 DAN", child: Text("7 DAN", style: TextStyle(color: Colors.brown.shade800)))
 ];
 
 const kasalar = [
@@ -329,23 +244,17 @@ Scaffold uyeScaffold({required String uyeAd, required Widget body}) {
 
 enum MuhasebeTanimEnum { gelir, gider }
 
-List<DropdownMenuItem<int>> getMuhasebeTanimItems(
-    List<MuhasebeTanim> tanimlar, MuhasebeTanimEnum tur,
-    {bool bosDeger = true}) {
+List<DropdownMenuItem<int>> getMuhasebeTanimItems(List<MuhasebeTanim> tanimlar, MuhasebeTanimEnum tur, {bool bosDeger = true}) {
   List<DropdownMenuItem<int>> l = [];
   if (bosDeger) {
     l.add(const DropdownMenuItem<int>(value: 0, child: Text("[Seçiniz]")));
   }
   for (final tanim in tanimlar) {
-    if (tur == MuhasebeTanimEnum.gelir &&
-        tanim.tur == 'GELIR' &&
-        tanim.muhasebe_tanim_id != 9) {
+    if (tur == MuhasebeTanimEnum.gelir && tanim.tur == 'GELIR' && tanim.muhasebe_tanim_id != 9) {
       // aidati buraya alma
-      l.add(DropdownMenuItem<int>(
-          value: tanim.muhasebe_tanim_id, child: Text(tanim.tanim)));
+      l.add(DropdownMenuItem<int>(value: tanim.muhasebe_tanim_id, child: Text(tanim.tanim)));
     } else if (tur == MuhasebeTanimEnum.gider && tanim.tur == 'GIDER') {
-      l.add(DropdownMenuItem<int>(
-          value: tanim.muhasebe_tanim_id, child: Text(tanim.tanim)));
+      l.add(DropdownMenuItem<int>(value: tanim.muhasebe_tanim_id, child: Text(tanim.tanim)));
     }
   }
   return l;
@@ -363,11 +272,7 @@ class LoadingDialog {
   void push() {
     if (!_started) {
       _started = true;
-      showDialog(
-          context: context,
-          barrierDismissible: false,
-          builder: (context) =>
-              const Center(child: CircularProgressIndicator())).then((value) {
+      showDialog(context: context, barrierDismissible: false, builder: (context) => const Center(child: CircularProgressIndicator())).then((value) {
         _started = false;
       });
     }
@@ -390,20 +295,16 @@ class LoadingDialog {
 class FullDataTable extends StatelessWidget {
   final List<Map<String, dynamic>> rows;
   final DataColumn Function(String name)? customColumn;
-  final DataCell Function(String name, int rowIndex, Map<String, dynamic> row)?
-      customCell;
+  final DataCell Function(String name, int rowIndex, Map<String, dynamic> row)? customCell;
 
-  const FullDataTable(
-      {super.key, required this.rows, this.customColumn, this.customCell});
+  const FullDataTable({super.key, required this.rows, this.customColumn, this.customCell});
 
   List<DataColumn> createColumns() {
     final l = <DataColumn>[];
     if (rows.isNotEmpty) {
       final fr = rows[0];
       for (int ci = 0; ci < fr.keys.length; ci++) {
-        l.add(customColumn != null
-            ? customColumn!(fr.keys.elementAt(ci))
-            : DataColumn(label: Text(fr.keys.elementAt(ci))));
+        l.add(customColumn != null ? customColumn!(fr.keys.elementAt(ci)) : DataColumn(label: Text(fr.keys.elementAt(ci))));
       }
     }
     return l;
@@ -414,9 +315,7 @@ class FullDataTable extends StatelessWidget {
     for (int i = 0; i < rows.length; i++) {
       final drl = <DataCell>[];
       for (final k in rows[i].keys) {
-        drl.add(customCell != null
-            ? customCell!(k, i, rows[i])
-            : DataCell(Text(rows[i][k].toString())));
+        drl.add(customCell != null ? customCell!(k, i, rows[i]) : DataCell(Text(rows[i][k].toString())));
       }
       l.add(DataRow(cells: drl));
     }
@@ -427,12 +326,8 @@ class FullDataTable extends StatelessWidget {
   Widget build(BuildContext context) {
     return SingleChildScrollView(
         scrollDirection: Axis.vertical,
-        child: SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: DataTable(
-                columns: createColumns(),
-                rows: createRows(),
-                border: TableBorder.all(color: Colors.black))));
+        child:
+            SingleChildScrollView(scrollDirection: Axis.horizontal, child: DataTable(columns: createColumns(), rows: createRows(), border: TableBorder.all(color: Colors.black))));
   }
 }
 
@@ -448,17 +343,13 @@ Color renkver(int val, double min, double max) {
 
 Color tileColorByIndex(int index) {
   //return index % 2 == 1 ? const Color.fromARGB(255, 208, 224, 233) : const Color.fromARGB(255, 229, 233, 208);
-  return index % 2 == 1
-      ? const Color.fromARGB(255, 2, 70, 64)
-      : const Color.fromARGB(255, 7, 89, 136);
+  return index % 2 == 1 ? const Color.fromARGB(255, 156, 192, 189) : const Color.fromARGB(255, 7, 89, 136);
 }
 
-Future<void> openExcel(
-    BuildContext context, String reportName, Excel excel) async {
+Future<void> openExcel(BuildContext context, String reportName, Excel excel) async {
   Directory tempDir = await getTemporaryDirectory();
 
-  final fname =
-      "${tempDir.path}/$reportName${dateFormater(DateTime.now(), "yyyyMMddHHmmss")}.xlsx";
+  final fname = "${tempDir.path}/$reportName${dateFormater(DateTime.now(), "yyyyMMddHHmmss")}.xlsx";
   final file = File(fname);
   await file.writeAsBytes(excel.save(fileName: fname)!);
 

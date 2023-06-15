@@ -1,9 +1,7 @@
-import 'package:dojo_mobile/page/widget/Foto.dart';
 import 'package:dojo_mobile/service.dart';
+import 'package:dojo_mobile/tools/fotocek.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:camera/camera.dart';
 
 import '../../api.dart';
 import '../../store.dart';
@@ -44,7 +42,6 @@ class _KendokaBase extends State<KendokaBase> {
   late TextEditingController ekfnoEdit;
   TextEditingController adEdit = TextEditingController();
   Uint8List? imgdata;
-  CameraController? camera;
 
   late LoadingDialog loadingdlg;
 
@@ -65,23 +62,6 @@ class _KendokaBase extends State<KendokaBase> {
     } else {
       resimsecildi = true;
       tarihsecildi = true;
-    }
-    setCamera();
-  }
-
-  void setCamera() async {
-    List<CameraDescription> list = await availableCameras();
-    if (list.isNotEmpty) {
-      camera = CameraController(list[0], ResolutionPreset.medium);
-      camera!.initialize().then((_) {
-        camera!.lockCaptureOrientation(DeviceOrientation.landscapeLeft).then((value) {
-          if (mounted) {
-            setState(() {});
-          }
-        });
-      });
-    } else {
-      camera = null;
     }
   }
 
@@ -109,11 +89,17 @@ class _KendokaBase extends State<KendokaBase> {
             TextButton(
                 style: TextButton.styleFrom(padding: const EdgeInsets.all(0), fixedSize: const Size(170, 250)),
                 onPressed: () async {
-                  await Navigator.of(context).push(
+                  final bytes = await fotoCek();
+                  setState(() {
+                    imgdata = bytes;
+                    buttonImage = Image.memory(imgdata!, fit: BoxFit.fill);
+                    resimsecildi = true;
+                  });
+                  /*await Navigator.of(context).push(
                     MaterialPageRoute(
                       builder: (context) => Foto(cbErr: fotoErr, cbImg: setFoto),
                     ),
-                  );
+                  );*/
 
                   /*XFile? xfile;
                   try {
