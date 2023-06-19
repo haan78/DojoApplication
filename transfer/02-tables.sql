@@ -51,7 +51,7 @@ CREATE TABLE uye (
   tahakkuk_id bigint NOT NULL,
   ad varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_turkish_ci NOT NULL,
   email varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_turkish_ci NOT NULL,
-  dosya_id bigint NOT NULL COMMENT 'uye fotografi',
+  dosya_id bigint DEFAULT NULL COMMENT 'uye fotografi',
   cinsiyet enum('ERKEK','KADIN') CHARACTER SET utf8mb4 COLLATE utf8mb4_turkish_ci NOT NULL,
   dogum_tarih date NOT NULL,
   ekfno varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_turkish_ci DEFAULT NULL,

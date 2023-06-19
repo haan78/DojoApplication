@@ -1,10 +1,7 @@
-import 'dart:typed_data';
-
 import 'package:dojo_mobile/service.dart';
+import 'package:dojo_mobile/tools/fotocek.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:camera/camera.dart';
 
 import '../../api.dart';
 import '../../store.dart';
@@ -45,7 +42,7 @@ class _KendokaBase extends State<KendokaBase> {
   late TextEditingController ekfnoEdit;
   TextEditingController adEdit = TextEditingController();
   Uint8List? imgdata;
-  CameraController? camera;
+  String? imagePath;
 
   late LoadingDialog loadingdlg;
 
@@ -65,21 +62,6 @@ class _KendokaBase extends State<KendokaBase> {
       resimsecildi = true;
       tarihsecildi = true;
     }
-    setCamera();
-  }
-
-  void setCamera() async {
-    List<CameraDescription> list = await availableCameras();
-    if (list.isNotEmpty) {
-      camera = CameraController(list[0], ResolutionPreset.medium);
-      camera!.initialize().then((_) {
-        if (mounted) {
-          setState(() {});
-        }
-      });
-    } else {
-      camera = null;
-    }
   }
 
   @override
@@ -92,25 +74,13 @@ class _KendokaBase extends State<KendokaBase> {
             TextButton(
                 style: TextButton.styleFrom(padding: const EdgeInsets.all(0), fixedSize: const Size(170, 250)),
                 onPressed: () async {
-                  await SystemChrome.setPreferredOrientations([
-                    DeviceOrientation.portraitUp,
-                  ]);
-                  XFile? xfile;
-                  try {
-                    //xfile = await camera!.takePicture();
-                    final imgpicker = ImagePicker();
-                    xfile = await imgpicker.pickImage(source: ImageSource.camera, imageQuality: 30);
-                  } catch (err) {
-                    errorAlert(context, err.toString());
-                  }
-
+                  final xfile = await fotoFile();
                   if (xfile != null) {
-                    //formUyeBilgi.image = await xfile.readAsBytes();
                     final bytes = await xfile.readAsBytes();
-                    //final mime = xfile.mimeType ?? "image/jpeg";
+                    final path = xfile.path;
                     setState(() {
-                      imgdata = bytes;
-                      buttonImage = Image.memory(imgdata!, fit: BoxFit.fill);
+                      buttonImage = Image.memory(bytes, fit: BoxFit.fill);
+                      imagePath = path;
                       resimsecildi = true;
                     });
                   }
@@ -283,7 +253,7 @@ class _KendokaBase extends State<KendokaBase> {
                   if (_formKey.currentState!.validate()) {
                     try {
                       loadingdlg.push();
-                      widget.bilgi.uye_id = await uyeKayit(api, ub: widget.bilgi, imgdata: imgdata);
+                      widget.bilgi.uye_id = await uyeKayit(api, ub: widget.bilgi, foto: imagePath);
                       loadingdlg.pop();
                       if (widget.bilgi.durum == "registered" && context.mounted) {
                         Navigator.pop(context);

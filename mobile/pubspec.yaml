@@ -37,13 +37,13 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
   provider: ^6.0.4
-  http: ^0.13.5
-  flutter_secure_storage: ^6.0.0
+  http: ^1.0.0
+  flutter_secure_storage: ^8.0.0
   webview_flutter: ^4.0.5
   url_launcher: ^6.1.7
   intl: ^0.18.0
   extended_masked_text: ^2.3.1
-  camera: ^0.10.3+2
+  #camera: ^0.10.3+2
   image_picker: ^0.8.6+4
   pdf: ^3.10.1
   path_provider: ^2.0.14
@@ -51,10 +51,11 @@ dependencies:
   d_chart: ^2.2.11
   excel: ^2.1.0
   safe_device: ^1.1.2
-  json_theme: ^5.0.2+5
+  ##exif: ^3.1.4
+  ##image: ^4.0.17
 
 dev_dependencies:
-  flutter_launcher_icons: "^0.12.0"
+  flutter_launcher_icons: ^0.13.1
   flutter_native_splash: ^2.3.0
   flutter_test:
     sdk: flutter
@@ -69,6 +70,13 @@ dev_dependencies:
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
+flutter_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "assets/logo2.png"
+  min_sdk_android: 30 # android min sdk min:16, default 21
+
+
 # The following section is specific to Flutter packages.
 flutter:
   assets:
@@ -78,7 +86,6 @@ flutter:
     - assets/defaults.release.json
     - assets/kendoka.jpg
     - assets/bilgiimg.jpg
-    - assets/theme1.json
   fonts:
     - family: Turkis
       fonts:
@@ -122,8 +129,3 @@ flutter:
   # see https://flutter.dev/custom-fonts/#from-packages
   
 
-flutter_icons:
-  android: "launcher_icon"
-  ios: true
-  image_path: "assets/logo2.png"
-  min_sdk_android: 30 # android min sdk min:16, default 21

@@ -19,12 +19,10 @@ class WebLoginPage extends StatelessWidget {
     c.loadRequest(Uri.parse(s.LoginUrl));
     c.setNavigationDelegate(NavigationDelegate(
       onPageFinished: (url) {
-        c.runJavaScript(
-            ("setLoginData('${s.ApiUser}','${s.ApiPassword}','mobile')"));
+        c.runJavaScript(("setLoginData('${s.ApiUser}','${s.ApiPassword}','mobile')"));
       },
     ));
-    c.addJavaScriptChannel("MobileApp",
-        onMessageReceived: (JavaScriptMessage message) async {
+    c.addJavaScriptChannel("MobileApp", onMessageReceived: (JavaScriptMessage message) async {
       final Map<String, dynamic> data = jsonDecode(message.message);
       s.UserStatus = data["durum"];
       s.UserName = data["ad"];
@@ -35,8 +33,7 @@ class WebLoginPage extends StatelessWidget {
       s.sabitler = await sabitGetir(api);
       await writeSettings(s);
       if (context.mounted) {
-        Navigator.push(context,
-            MaterialPageRoute(builder: (context) => FirstPage(store: s)));
+        Navigator.push(context, MaterialPageRoute(builder: (context) => FirstPage(store: s)));
       }
     });
     return c;
@@ -66,9 +63,7 @@ class WebLoginPage extends StatelessWidget {
             padding: const EdgeInsets.all(10),
             child: Column(
               children: [
-                SizedBox(
-                    height: 400,
-                    child: WebViewWidget(controller: pageController)),
+                SizedBox(height: 400, child: WebViewWidget(controller: pageController)),
                 const SizedBox(height: 10),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
@@ -78,8 +73,7 @@ class WebLoginPage extends StatelessWidget {
                           await forgetSettings();
                           s.UserName = "";
                           s.ApiPassword = "";
-                          pageController.runJavaScript(
-                              "setLoginData('${s.ApiUser}','${s.ApiPassword}','mobile')");
+                          pageController.runJavaScript("setLoginData('${s.ApiUser}','${s.ApiPassword}','mobile')");
                         },
                         child: const Text("Beni Unut")),
                     const Spacer(),

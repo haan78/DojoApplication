@@ -1,11 +1,9 @@
 // ignore_for_file: non_constant_identifier_names
 
-import 'dart:convert';
 import 'dart:core';
 import 'package:dojo_mobile/page/appwindow.dart';
 import 'package:dojo_mobile/store.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'api.dart';
 
 class UyeSeviye {
@@ -319,7 +317,7 @@ Future<void> epostaTest(Api api, {required int uye_id}) async {
   await api.call("/admin/uye/epostatest/$uye_id");
 }
 
-Future<int> uyeKayit(Api api, {required UyeBilgi ub, Uint8List? imgdata}) async {
+Future<int> uyeKayit(Api api, {required UyeBilgi ub, String? foto}) async {
   dynamic response = await api.call("/admin/uye/kayit/${ub.uye_id}", data: {
     "ad": ub.ad,
     "tahakkuk_id": ub.tahakkuk_id,
@@ -327,9 +325,11 @@ Future<int> uyeKayit(Api api, {required UyeBilgi ub, Uint8List? imgdata}) async 
     "cinsiyet": ub.cinsiyet,
     "dogum": dateFormater(ub.dogum_tarih, "yyyy-MM-dd"),
     "ekfno": ub.ekfno,
-    "durum": ub.durum,
-    "img": (imgdata == null ? null : base64Encode(imgdata))
+    "durum": ub.durum
   });
+  if (foto != null) {
+    await api.upload("/admin/uye/foto/${ub.uye_id}", path: foto);
+  }
   final int uye_id = int.parse(response as String);
   if (ub.durum == "registered") {
     await epostaTest(api, uye_id: uye_id);
@@ -479,7 +479,7 @@ Future<List<MuhasebeDiger>> uyedigerodemelist(Api api, int uye_id) async {
   for (final mdr in response) {
     final md = MuhasebeDiger();
     md.muhasebe_id = mdr["muhasebe_id"] as int;
-    md.aciklama = mdr["aciklama"];
+    md.aciklama = mdr["aciklama"] ?? "";
     md.kasa = mdr["kasa"];
     md.tanim = mdr["tanim"];
     md.muhasebe_tanim_id = mdr["muhasebe_tanim_id"] as int;

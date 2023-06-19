@@ -89,7 +89,10 @@ $router->add("/uye/#uye_id",function($req) {
             if ( isset($_GET["orginal"]) ) {
                 return new ImageResult("image/jpeg", $im,-1);    
             } else {
-                $dst = imagecreatetruecolor($new_width, $new_height);    
+                if ( $w > $h ) {
+                    $im = imagerotate($im,-90,0);
+                }
+                $dst = imagecreatetruecolor($new_width, $new_height);                    
                 imagecopyresized($dst, $im, 0, 0, 0, 0, $new_width, $new_height, $w, $h);
                 return new ImageResult("image/jpeg", $dst,-1);
             }
@@ -109,8 +112,10 @@ $router->add("/member",function(Request $req) {
 
         list($w, $h) = getimagesizefromstring($imgdata->icerik);
         $im = @imagecreatefromstring($imgdata->icerik);
-        //var_dump([$h,$w]);
         if ($im) {
+            if ( $w > $h ) {
+                $im = imagerotate($im,-90,0);
+            }
             return new ImageResult("image/jpeg", $im,-1);           
         } else {        
             throw new \Exception("img error");
