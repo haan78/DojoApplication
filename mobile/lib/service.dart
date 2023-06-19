@@ -1,11 +1,9 @@
 // ignore_for_file: non_constant_identifier_names
 
-import 'dart:convert';
 import 'dart:core';
 import 'package:dojo_mobile/page/appwindow.dart';
 import 'package:dojo_mobile/store.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'api.dart';
 
 class UyeSeviye {
@@ -481,7 +479,7 @@ Future<List<MuhasebeDiger>> uyedigerodemelist(Api api, int uye_id) async {
   for (final mdr in response) {
     final md = MuhasebeDiger();
     md.muhasebe_id = mdr["muhasebe_id"] as int;
-    md.aciklama = mdr["aciklama"];
+    md.aciklama = mdr["aciklama"] ?? "";
     md.kasa = mdr["kasa"];
     md.tanim = mdr["tanim"];
     md.muhasebe_tanim_id = mdr["muhasebe_tanim_id"] as int;

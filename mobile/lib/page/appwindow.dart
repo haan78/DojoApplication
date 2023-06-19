@@ -9,9 +9,12 @@ import 'package:path_provider/path_provider.dart';
 
 import '../service.dart';
 
-const Color colorGood = Color.fromARGB(255, 19, 94, 9);
-const Color colorBad = Color.fromARGB(255, 173, 5, 5);
-const Color colorWarn = Color.fromARGB(255, 204, 191, 11);
+const Color colorGood = Color.fromARGB(255, 88, 153, 78);
+const Color colorBad = Color.fromARGB(255, 221, 27, 27);
+const Color colorWarn = Color.fromARGB(255, 129, 122, 23);
+const colorTile1 = Color.fromARGB(255, 195, 204, 194);
+const colorTile2 = Color.fromARGB(255, 188, 201, 201);
+const colorInfo = Color.fromARGB(255, 16, 148, 148);
 const appVersion = "1.0.0-beta";
 const programerEmail = "alibarisozturk@gmail.com";
 const appPading = EdgeInsets.all(3);
@@ -223,7 +226,7 @@ class FBuilder<T> extends StatelessWidget {
                   child: Text(
                 "Hata Oluştu\n${snapshot.error.toString()}",
                 maxLines: 2,
-                style: TextStyle(color: Colors.red.shade700),
+                style: const TextStyle(color: colorBad),
               ));
             }
           } else if (snapshot.connectionState == ConnectionState.waiting) {
@@ -333,17 +336,16 @@ class FullDataTable extends StatelessWidget {
 
 Color renkver(int val, double min, double max) {
   if (val < min) {
-    return const Color.fromARGB(255, 52, 179, 57);
+    return colorGood;
   } else if (val < max) {
-    return const Color.fromARGB(255, 230, 217, 46);
+    return colorWarn;
   } else {
-    return const Color.fromARGB(255, 231, 126, 118);
+    return colorBad;
   }
 }
 
 Color tileColorByIndex(int index) {
-  //return index % 2 == 1 ? const Color.fromARGB(255, 208, 224, 233) : const Color.fromARGB(255, 229, 233, 208);
-  return index % 2 == 1 ? const Color.fromARGB(255, 156, 192, 189) : const Color.fromARGB(255, 7, 89, 136);
+  return index % 2 == 1 ? colorTile1 : colorTile2;
 }
 
 Future<void> openExcel(BuildContext context, String reportName, Excel excel) async {

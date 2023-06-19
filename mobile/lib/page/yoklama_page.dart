@@ -80,9 +80,9 @@ class _YoklamaPage extends State<YoklamaPage> {
                           return Padding(
                               padding: appPading,
                               child: ListTile(
-                                  leading: Text(tanim),
-                                  title: Text(tar),
-                                  subtitle: Text("Ksatılan Sayısı $sayi"),
+                                  leading: Text(tanim, style: const TextStyle(fontWeight: FontWeight.bold)),
+                                  title: Text(tar, style: const TextStyle(color: colorInfo, fontWeight: FontWeight.bold)),
+                                  subtitle: Text("Ksatılan Sayısı $sayi", style: const TextStyle(color: colorInfo)),
                                   dense: true,
                                   tileColor: tileColorByIndex(index),
                                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
