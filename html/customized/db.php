@@ -110,11 +110,33 @@ function seviye_sil($uye_id,string $seviye) {
     return MySqlStmt::query(mysqlilink(),$sql,[$uye_id,$seviye]);
 }
 
-function uye_eke($uye_id,$ad,$tahakkuk_id,$email,$cinsiyet,$dogum,$ekfno,$durum,$img) {
+function uye_eke($uye_id,$ad,$tahakkuk_id,$email,$cinsiyet,$dogum,$ekfno,$durum) {
     $p = new \MySqlTool\MySqlToolCall(mysqlilink());
     $outs = $p->procedure("uye_ekle")->out("uye_id",$uye_id)->out("parola")->in($tahakkuk_id)
-    ->in($ad)->in($email)->in($img)->in($cinsiyet)->in($dogum)->in($ekfno)->in($durum)->call()->result("outs");
+    ->in($ad)->in($email)->in($cinsiyet)->in($dogum)->in($ekfno)->in($durum)->call()->result("outs");
     return $outs["uye_id"];
+}
+
+function uploadUyeFoto(int $uye_id) {
+    $sql = "CALL uye_foto(?,?,?)";
+    $fpn = array_keys($_FILES)[0] ?? "";
+    if ($fpn) {
+        $fotofile = $_FILES[$fpn];
+        $path = $fotofile["tmp_name"];
+        $mimetype = $fotofile['type'];        
+        $img = imagecreatefromjpeg($path);
+            list($w, $h) = getimagesize($path);
+            if ( $w > $h ) {
+                $img = imagerotate($img,-90,0);
+            }
+            ob_start();
+            imagejpeg($img);
+            $img64 = base64_encode(ob_get_clean());
+            return MySqlStmt::query(mysqlilink(),$sql,[$uye_id,$img64,"image/jpeg"]);
+    } else {
+        throw new Exception("Dosya gonderilmemis");
+    }
+    
 }
 
 function uye_eposta_onkayit(int $uye_id,string &$ad,string &$email,string &$code,string &$parola):void { //coklu

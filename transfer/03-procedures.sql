@@ -65,12 +65,11 @@ END;;
 
 
 CREATE PROCEDURE uye_ekle(
-                INOUT p_uye_id BIGINT,
+        INOUT p_uye_id BIGINT,
         OUT p_parola VARCHAR(10),
         IN p_tahakkuk_id BIGINT,
         IN p_ad VARCHAR(255),
         IN p_email VARCHAR(255),
-        IN p_dosya LONGBLOB,
         IN p_cinsiyet ENUM('ERKEK','KADIN'),
         IN p_dogum_tarih DATE,
         IN p_ekfno VARCHAR(20),
@@ -79,10 +78,6 @@ CREATE PROCEDURE uye_ekle(
 BEGIN
 	START TRANSACTION;
     if coalesce(p_uye_id,0) = 0 then
-    
-    	INSERT INTO dosya ( icerik,file_type ) VALUES (FROM_BASE64(p_dosya),"image/jpeg");
-    	SET @did = LAST_INSERT_ID();
-    	
     	SET @_pass = parola_uret(6);
     	INSERT INTO uye ( ad,durum,cinsiyet,dogum_tarih,dosya_id,ekfno,email, tahakkuk_id, parola )
     		VALUES ( p_ad, p_durum, p_cinsiyet,p_dogum_tarih, @did, p_ekfno, p_email, p_tahakkuk_id,@_pass );
@@ -94,18 +89,25 @@ BEGIN
         set p_parola = @_pass;
        	
     else
-    	SET @did = NULL;
-    	SELECT dosya_id INTO @did FROM uye WHERE uye_id = p_uye_id;
-    	IF @did IS NULL THEN
-    		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Member not found', MYSQL_ERRNO = 1001;
-    	END IF;
     	UPDATE uye u 
         	SET u.ad = p_ad, u.cinsiyet = p_cinsiyet, u.durum = p_durum, u.ekfno = ekfno, u.email = p_email, 
         	u.tahakkuk_id = p_tahakkuk_id
-            	WHERE u.uye_id = p_uye_id;
-        UPDATE dosya d SET d.icerik = FROM_BASE64(p_dosya), d.file_type = "image/jpeg" WHERE d.dosya_id = @did;       
+            	WHERE u.uye_id = p_uye_id;   
 	end if;
     COMMIT;
+END;;
+
+CREATE PROCEDURE uye_foto(IN p_uye_id BIGINT(20), IN p_icerik LONGBLOB, IN p_file_type VARCHAR(20))
+BEGIN
+	DECLARE did BIGINT(20) DEFAULT NULL;
+	SELECT u.dosya_id INTO did FROM uye u WHERE u.uye_id = p_uye_id;
+	IF did IS NULL THEN
+		INSERT INTO dosya ( icerik, file_type ) VALUES ( FROM_BASE64(p_icerik), p_file_type );
+		SET did = LAST_INSERT_ID();
+		UPDATE uye u SET u.dosya_id = did WHERE u.uye_id = p_uye_id; 
+	ELSE
+		UPDATE dosya d SET d.icerik = FROM_BASE64(p_icerik), d.file_type = p_file_type WHERE d.dosya_id = did;
+	END IF;
 END;;
 
 CREATE FUNCTION parola_uret(

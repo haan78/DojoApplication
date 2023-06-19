@@ -46,51 +46,63 @@ class Api {
     return auth;
   }
 
-  Future<dynamic> call(String method, {dynamic data, int tryit = 0, int timeout = 10}) async {
-    dynamic response;
+  dynamic validateResponse(http.Response res) {
     message = "";
+    status = res.statusCode;
+    final Map<String, dynamic> jres;
+    try {
+      jres = jsonDecode(res.body);
+    } catch (ex0) {
+      throw Exception("Service response ${ex0.toString()}");
+    }
+    if (jres.containsKey("success") && jres.containsKey("data") && jres.containsKey("status")) {
+      if (res.headers.containsKey("authorization")) {
+        authorization = res.headers["authorization"]!;
+      }
+      success = jres["success"] as bool;
+      if (success) {
+        return jres["data"];
+      } else {
+        message = jres["data"]["message"] as String;
+        code = jres["data"]["code"] as int;
+        throw Exception(message);
+      }
+    } else {
+      throw Exception("Invalid Response");
+    }
+  }
+
+  Future<dynamic> upload(String method, {required String path, int timeout = 20}) async {
+    headers = {'Content-Type': 'application/json', 'Accept': 'application/json', 'Authorization': authorization};
+    try {
+      Uri fullurl = Uri.parse("$url$method");
+      final mpreq = http.MultipartRequest("POST", fullurl);
+      mpreq.headers.addAll(headers);
+      mpreq.files.add(await http.MultipartFile.fromPath("file", path));
+      final res = await http.Response.fromStream(await mpreq.send());
+      return validateResponse(res);
+    } on Error catch (e) {
+      throw ApiException(e.toString(), status, code: code);
+    } on Exception catch (e) {
+      throw ApiException(e.toString(), status, code: code);
+    }
+  }
+
+  Future<dynamic> call(String method, {dynamic data, int tryit = 0, int timeout = 10}) async {
     try {
       http.Response res;
       headers = {'Content-Type': 'application/json', 'Accept': 'application/json', 'Authorization': authorization};
-      //["authorization"] = authorization;
-      //print(authorization);
-      /*if (tryit > 0) {
-        headers["Keep-Alive"] = "timeout=$timeout, max=$tryit";
-      }*/
       Uri fullurl = Uri.parse("$url$method");
       if (data != null) {
         res = await http.post(fullurl, headers: headers, body: jsonEncode(data));
       } else {
         res = await http.get(fullurl, headers: headers);
       }
-      status = res.statusCode;
-      final Map<String, dynamic> jres;
-      try {
-        jres = jsonDecode(res.body);
-      } catch (ex0) {
-        throw Exception("Service response ${ex0.toString()}");
-      }
-      if (jres.containsKey("success") && jres.containsKey("data") && jres.containsKey("status")) {
-        if (res.headers.containsKey("authorization")) {
-          authorization = res.headers["authorization"]!;
-        }
-        success = jres["success"] as bool;
-        if (success) {
-          response = jres["data"];
-        } else {
-          message = jres["data"]["message"] as String;
-          code = jres["data"]["code"] as int;
-        }
-      } else {
-        message = "";
-      }
-      if (message.isNotEmpty) {
-        throw Exception(message);
-      }
-      //throw Exception("test");
-      return response;
-    } catch (ex) {
-      throw ApiException(ex.toString(), status, code: code);
+      return validateResponse(res);
+    } on Error catch (e) {
+      throw ApiException(e.toString(), status, code: code);
+    } on Exception catch (e) {
+      throw ApiException(e.toString(), status, code: code);
     }
   }
 }

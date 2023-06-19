@@ -112,8 +112,10 @@ $router->add("/member",function(Request $req) {
 
         list($w, $h) = getimagesizefromstring($imgdata->icerik);
         $im = @imagecreatefromstring($imgdata->icerik);
-        //var_dump([$h,$w]);
         if ($im) {
+            if ( $w > $h ) {
+                $im = imagerotate($im,-90,0);
+            }
             return new ImageResult("image/jpeg", $im,-1);           
         } else {        
             throw new \Exception("img error");

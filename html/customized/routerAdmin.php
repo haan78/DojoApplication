@@ -52,7 +52,12 @@ function routerAdmin(DefaultJsonRouter $router)
     $router->add("/admin/uye/kayit/#uye_id", function (Request $req) {
         $jdata = $req->json();
         $uye_id = $req->params()["uye_id"];
-        return uye_eke($uye_id, $jdata->ad, $jdata->tahakkuk_id, $jdata->email, $jdata->cinsiyet, $jdata->dogum, $jdata->ekfno, $jdata->durum, $jdata->img);
+        return uye_eke($uye_id, $jdata->ad, $jdata->tahakkuk_id, $jdata->email, $jdata->cinsiyet, $jdata->dogum, $jdata->ekfno, $jdata->durum);
+    });
+
+    $router->add("/admin/uye/foto/#uye_id", function (Request $req) {
+        $uye_id = $req->params()["uye_id"];
+        return uploadUyeFoto($uye_id);
     });
 
     $router->add("/admin/uye/epostatest/#uye_id", function (Request $req) {
