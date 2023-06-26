@@ -144,9 +144,7 @@ class _YoklamaGun extends State<YoklamaGun> {
                   itemBuilder: (context, index) {
                     return InkWell(
                       child: Card(
-                        color: data[index].katilim ? Colors.green.shade500 : null,
-                        shadowColor: data[index].katilim ? Colors.green.shade500 : Colors.black54,
-                        elevation: data[index].katilim ? 1 : 9,
+                        color: data[index].katilim ? colorGood : null,
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(20), side: BorderSide(color: data[index].katilim ? Colors.green.shade900 : Colors.black54, width: 2)),
                         child: Padding(
