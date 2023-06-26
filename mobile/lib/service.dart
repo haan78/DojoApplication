@@ -480,7 +480,8 @@ Future<List<MuhasebeDiger>> uyedigerodemelist(Api api, int uye_id) async {
     final md = MuhasebeDiger();
     md.muhasebe_id = mdr["muhasebe_id"] as int;
     md.aciklama = mdr["aciklama"] ?? "";
-    md.kasa = mdr["kasa"];
+    md.kasa = mdr["kasa"] ?? "";
+
     md.tanim = mdr["tanim"];
     md.muhasebe_tanim_id = mdr["muhasebe_tanim_id"] as int;
     md.tarih = DateTime.parse(mdr["tarih"]);

@@ -51,9 +51,9 @@ class _RaporGelirGider extends State<RaporGelirGider> {
                   const SizedBox(width: 10),
                   ElevatedButton(
                       onPressed: () async {
-                        final dt = await showDatePicker(context: context, initialDate: baslangic, firstDate: minTar, lastDate: maxTar);
+                        final dt = await showDatePicker(context: context, initialDate: bitis, firstDate: minTar, lastDate: maxTar);
                         if (dt != null) {
-                          if (baslangic.difference(dt).inDays < 0) {
+                          if (dt.difference(baslangic).inDays >= 0) {
                             setState(() {
                               bitis = dt;
                             });

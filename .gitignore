@@ -6,6 +6,6 @@ html/vendor
 html/composer.lock
 html/member
 
-initdb/data*
+initdb/*
 secrets.json
 passwords-production.sql
