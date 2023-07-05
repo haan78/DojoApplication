@@ -388,3 +388,13 @@ FROM muhasebe m
 WHERE (m.tarih BETWEEN DATE(?) AND DATE(?)) and kasa = 'Elden' and  COALESCE(m.tahsilatci,'-') = ?";
     return MySqlStmt::query(mysqlilink(),$sql,[$baslangic, $bitis, $tahsilatci]);
 }
+
+function maccalismasi_listesi(int $yoklama_id, string $tarih) {
+    $sql = "SELECT uy.uye_id,u.ad, us.seviye,us.tarih,u.cinsiyet,CAST(DATE_FORMAT(FROM_DAYS(DATEDIFF(NOW(), u.dogum_tarih)), '%Y') AS UNSIGNED) AS yas
+	FROM uye_yoklama uy
+	INNER JOIN uye u ON u.uye_id = uy.uye_id
+	INNER JOIN uye_seviye us ON us.uye_id = uy.uye_id
+	LEFT JOIN uye_seviye _us ON _us.uye_id = us.uye_id AND _us.tarih > us.tarih 
+		WHERE _us.uye_seviye_id IS NULL AND uy.yoklama_id = ? AND uy.tarih = ?";
+    return MySqlStmt::query(mysqlilink(),$sql,[$yoklama_id, $tarih]);
+}

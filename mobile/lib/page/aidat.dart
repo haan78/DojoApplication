@@ -12,13 +12,7 @@ class Aidat extends StatefulWidget {
   final String uyeAd;
   final int uyeId;
   final int tahakkukId;
-  const Aidat(BuildContext context,
-      {super.key,
-      required this.uyeTahakkuk,
-      required this.store,
-      required this.uyeAd,
-      required this.uyeId,
-      required this.tahakkukId});
+  const Aidat(BuildContext context, {super.key, required this.uyeTahakkuk, required this.store, required this.uyeAd, required this.uyeId, required this.tahakkukId});
 
   @override
   State<StatefulWidget> createState() {
@@ -52,8 +46,7 @@ class _Aidat extends State<Aidat> {
 
     if (widget.uyeTahakkuk.tahakkuk_id == 0) {
       widget.uyeTahakkuk.tahakkuk_id = widget.tahakkukId;
-      widget.uyeTahakkuk.odenen =
-          widget.store.sabitler.tahakkuklar.firstWhere((element) {
+      widget.uyeTahakkuk.odenen = widget.store.sabitler.tahakkuklar.firstWhere((element) {
         if (element.tahakkuk_id == widget.uyeTahakkuk.tahakkuk_id) {
           return true;
         } else {
@@ -64,17 +57,10 @@ class _Aidat extends State<Aidat> {
       widget.uyeTahakkuk.odenen = widget.uyeTahakkuk.borc;
     }
 
-    tutarcon = MoneyMaskedTextController(
-        thousandSeparator: ".",
-        decimalSeparator: "",
-        rightSymbol: "TL",
-        precision: 0,
-        initialValue: widget.uyeTahakkuk.odenen);
+    tutarcon = MoneyMaskedTextController(thousandSeparator: ".", decimalSeparator: ",", rightSymbol: "TL", precision: 2, initialValue: widget.uyeTahakkuk.odenen);
 
-    if (widget.store.sabitler.yoklamalar.length == 1 &&
-        widget.uyeTahakkuk.uye_tahakkuk_id == 0) {
-      widget.uyeTahakkuk.yoklama_id =
-          widget.store.sabitler.yoklamalar[0].yoklama_id;
+    if (widget.store.sabitler.yoklamalar.length == 1 && widget.uyeTahakkuk.uye_tahakkuk_id == 0) {
+      widget.uyeTahakkuk.yoklama_id = widget.store.sabitler.yoklamalar[0].yoklama_id;
     }
 
     super.initState();
@@ -93,8 +79,7 @@ class _Aidat extends State<Aidat> {
           key: _formKey,
           child: Column(children: [
             widget.uyeTahakkuk.uye_tahakkuk_id > 0
-                ? Text(
-                    "${widget.uyeTahakkuk.tanim} ${aylarText[widget.uyeTahakkuk.ay - 1]} / ${widget.uyeTahakkuk.yil}")
+                ? Text("${widget.uyeTahakkuk.tanim} ${aylarText[widget.uyeTahakkuk.ay - 1]} / ${widget.uyeTahakkuk.yil}")
                 : Row(children: [
                     SizedBox(
                         width: 90,
@@ -120,15 +105,11 @@ class _Aidat extends State<Aidat> {
                         width: 85,
                         child: DropdownButtonFormField(
                             items: [
-                              const DropdownMenuItem<int>(
-                                  value: 0, child: Text("[Seçiniz]")),
+                              const DropdownMenuItem<int>(value: 0, child: Text("[Seçiniz]")),
                               //DropdownMenuItem<int>(value: yil - 2, child: Text((yil - 2).toString())),
                               //DropdownMenuItem<int>(value: yil - 1, child: Text((yil - 1).toString())),
-                              DropdownMenuItem<int>(
-                                  value: yil, child: Text((yil).toString())),
-                              DropdownMenuItem<int>(
-                                  value: yil + 1,
-                                  child: Text((yil + 1).toString())),
+                              DropdownMenuItem<int>(value: yil, child: Text((yil).toString())),
+                              DropdownMenuItem<int>(value: yil + 1, child: Text((yil + 1).toString())),
                               //DropdownMenuItem<int>(value: yil + 2, child: Text((yil + 2).toString()))
                             ],
                             value: widget.uyeTahakkuk.yil,
@@ -151,8 +132,7 @@ class _Aidat extends State<Aidat> {
                         width: 80,
                         child: DropdownButtonFormField(
                           value: widget.uyeTahakkuk.yoklama_id,
-                          items: yoklamaMenuItems(
-                              widget.store.sabitler.yoklamalar),
+                          items: yoklamaMenuItems(widget.store.sabitler.yoklamalar),
                           onChanged: (value) {
                             if (value != null && value > 0) {
                               setState(() {
@@ -174,23 +154,16 @@ class _Aidat extends State<Aidat> {
                 child: ElevatedButton(
                   onPressed: () async {
                     DateTime? dt = await showDatePicker(
-                        context: context,
-                        initialDate:
-                            widget.uyeTahakkuk.odeme_tarih ?? DateTime.now(),
-                        firstDate: DateTime(yil - 2, 1, 1),
-                        lastDate: DateTime(yil + 2, 1, 1));
+                        context: context, initialDate: widget.uyeTahakkuk.odeme_tarih ?? DateTime.now(), firstDate: DateTime(yil - 2, 1, 1), lastDate: DateTime(yil + 2, 1, 1));
                     if (dt != null) {
                       setState(() {
                         widget.uyeTahakkuk.odeme_tarih = dt;
                       });
                     }
                   },
-                  style: ButtonStyle(
-                      backgroundColor: MaterialStateProperty.resolveWith(
-                          (states) => const Color.fromARGB(255, 192, 180, 8))),
-                  child: Text(
-                      "Tarih :${widget.uyeTahakkuk.odeme_tarih != null ? dateFormater(widget.uyeTahakkuk.odeme_tarih!, "dd.MM.yyyy") : "Hatalı"}",
-                      textAlign: TextAlign.left),
+                  style: ButtonStyle(backgroundColor: MaterialStateProperty.resolveWith((states) => const Color.fromARGB(255, 192, 180, 8))),
+                  child:
+                      Text("Tarih :${widget.uyeTahakkuk.odeme_tarih != null ? dateFormater(widget.uyeTahakkuk.odeme_tarih!, "dd.MM.yyyy") : "Hatalı"}", textAlign: TextAlign.left),
                 )),
             const SizedBox(height: 10),
             TextFormField(
@@ -252,8 +225,7 @@ class _Aidat extends State<Aidat> {
                         int muhasebeId = 0;
                         try {
                           loadingdlg.push();
-                          muhasebeId = await aidatodemeal(
-                              api, widget.uyeTahakkuk, widget.uyeId);
+                          muhasebeId = await aidatodemeal(api, widget.uyeTahakkuk, widget.uyeId);
                           loadingdlg.pop();
                           if (context.mounted) {
                             Navigator.pop(context);
@@ -280,22 +252,16 @@ class _Aidat extends State<Aidat> {
                           if (loadingdlg.started) {
                             return;
                           }
-                          yesNoDialog(context,
-                              text:
-                                  "Bu ödeme kaydını silmek istediğinizden emin misiniz?",
-                              onYes: (() async {
+                          yesNoDialog(context, text: "Bu ödeme kaydını silmek istediğinizden emin misiniz?", onYes: (() async {
                             int muhasebeId = widget.uyeTahakkuk.muhasebe_id;
                             try {
                               if (widget.uyeTahakkuk.muhasebe_id > 0) {
                                 loadingdlg.push();
-                                await aidatodemesil(
-                                    api, widget.uyeTahakkuk.muhasebe_id);
+                                await aidatodemesil(api, widget.uyeTahakkuk.muhasebe_id);
                                 loadingdlg.pop();
-                              } else if (widget.uyeTahakkuk.uye_tahakkuk_id >
-                                  0) {
+                              } else if (widget.uyeTahakkuk.uye_tahakkuk_id > 0) {
                                 loadingdlg.push();
-                                await aidatsil(
-                                    api, widget.uyeTahakkuk.uye_tahakkuk_id);
+                                await aidatsil(api, widget.uyeTahakkuk.uye_tahakkuk_id);
                                 widget.uyeTahakkuk.uye_tahakkuk_id = 0;
                                 loadingdlg.pop();
                               } else {
@@ -317,9 +283,7 @@ class _Aidat extends State<Aidat> {
                           }));
                         }
                       : null,
-                  style: ButtonStyle(
-                      backgroundColor: MaterialStateProperty.resolveWith(
-                          (states) => colorBad)),
+                  style: ButtonStyle(backgroundColor: MaterialStateProperty.resolveWith((states) => colorBad)),
                   child: const Text("Sil"),
                 ),
               )

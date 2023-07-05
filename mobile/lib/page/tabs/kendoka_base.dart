@@ -135,6 +135,7 @@ class _KendokaBase extends State<KendokaBase> {
               Expanded(
                   child: TextFormField(
                 decoration: const InputDecoration(labelText: "E-Posta"),
+                keyboardType: TextInputType.emailAddress,
                 controller: emailEdit,
                 onChanged: (value) {
                   setState(() {

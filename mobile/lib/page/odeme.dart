@@ -34,7 +34,7 @@ class _Odeme extends State<Odeme> {
     api = Api(url: widget.store.ApiUrl, authorization: widget.store.ApiToken);
     widget.muhasebe.tarih = DateTime.now();
     aciklamacon.text = widget.muhasebe.aciklama;
-    tutarcon = MoneyMaskedTextController(thousandSeparator: ".", decimalSeparator: "", rightSymbol: "TL", precision: 0, initialValue: widget.muhasebe.tutar);
+    tutarcon = MoneyMaskedTextController(thousandSeparator: ".", decimalSeparator: ",", rightSymbol: "TL", precision: 2, initialValue: widget.muhasebe.tutar);
     super.initState();
     loadingdlg = LoadingDialog(context);
   }
