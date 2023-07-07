@@ -1,6 +1,7 @@
 // ignore_for_file: non_constant_identifier_names
 
 import 'dart:core';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dojo_mobile/page/appwindow.dart';
 import 'package:dojo_mobile/store.dart';
 import 'package:flutter/material.dart';
@@ -701,6 +702,15 @@ Image uyeImageLoad(Store s, int uyeId, {BoxFit? fit}) {
     "${s.HostUrl}/img.php/uye/$uyeId",
     headers: headers,
     fit: fit,
+  );
+}
+
+CachedNetworkImage uyeImageLoadCached(Store s, int uyeId, {BoxFit? fit}) {
+  Map<String, String> headers = {"authorization": s.ApiToken};
+  return CachedNetworkImage(
+    httpHeaders: headers,
+    fit: fit,
+    imageUrl: "${s.HostUrl}/img.php/uye/$uyeId",
   );
 }
 

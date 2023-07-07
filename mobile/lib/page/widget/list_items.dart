@@ -19,7 +19,7 @@ Widget uyeListItem(Store store, UyeListDetay uyeData, VoidCallback? btnCallback,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  SizedBox(width: 90, height: 120, child: ClipRRect(borderRadius: const BorderRadius.all(Radius.circular(10)), child: uyeImageLoad(store, uyeData.uye_id))),
+                  SizedBox(width: 90, height: 120, child: ClipRRect(borderRadius: const BorderRadius.all(Radius.circular(10)), child: uyeImageLoadCached(store, uyeData.uye_id))),
                   const SizedBox(width: 10),
                   Expanded(
                       child: SizedBox(
@@ -60,7 +60,7 @@ Widget macCalismasiKendocuItem(Store store, MacCalismasiKendocu kendocu, Checked
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                SizedBox(width: 60, height: 90, child: ClipRRect(borderRadius: const BorderRadius.all(Radius.circular(10)), child: uyeImageLoad(store, kendocu.uye_id))),
+                SizedBox(width: 60, height: 90, child: ClipRRect(borderRadius: const BorderRadius.all(Radius.circular(10)), child: uyeImageLoadCached(store, kendocu.uye_id))),
                 const SizedBox(width: 10),
                 Expanded(
                     child: SizedBox(
