@@ -1,4 +1,5 @@
 import 'package:dojo_mobile/page/kyu_page.dart';
+import 'package:dojo_mobile/page/mac_page.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -30,11 +31,7 @@ appDrawer(BuildContext context) {
                 const SizedBox(
                   width: 5,
                 ),
-                Text(store.AppName,
-                    style: TextStyle(
-                        color: Colors.yellow.shade700,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 30))
+                Text(store.AppName, style: TextStyle(color: Colors.yellow.shade700, fontWeight: FontWeight.bold, fontSize: 30))
               ],
             ),
           )),
@@ -57,8 +54,7 @@ appDrawer(BuildContext context) {
           onPressed: () {
             //scaffoldKey.currentState?.openEndDrawer();
             //Navigator.push(context, MaterialPageRoute(builder: (context) => const YoklamaPage()));
-            Navigator.of(context).pushReplacement(MaterialPageRoute(
-                builder: (context) => YoklamaPage(store: store)));
+            Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => YoklamaPage(store: store)));
             //callback(AppWindow.yoklamalar);
           },
           child: const ListTile(
@@ -69,8 +65,7 @@ appDrawer(BuildContext context) {
               title: Text("Yoklamalar"))),
       TextButton(
           onPressed: () {
-            Navigator.of(context).pushReplacement(MaterialPageRoute(
-                builder: (context) => KyuSinaviPage(store: store)));
+            Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => KyuSinaviPage(store: store)));
           },
           child: const ListTile(
               leading: Icon(
@@ -80,8 +75,15 @@ appDrawer(BuildContext context) {
               title: Text("Kyu Sınavı"))),
       TextButton(
           onPressed: () {
-            Navigator.of(context).pushReplacement(MaterialPageRoute(
-                builder: (context) => GrafiklerPage(store: store)));
+            Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => MacCalismasi(store: store)));
+          },
+          child: const ListTile(
+            leading: Icon(Icons.flag),
+            title: Text("Maç Çalışması"),
+          )),
+      TextButton(
+          onPressed: () {
+            Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => GrafiklerPage(store: store)));
           },
           child: const ListTile(
               leading: Icon(
@@ -91,8 +93,7 @@ appDrawer(BuildContext context) {
               title: Text("Grafikler"))),
       TextButton(
           onPressed: () {
-            Navigator.of(context).pushReplacement(MaterialPageRoute(
-                builder: (context) => RaporlarPage(store: store)));
+            Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => RaporlarPage(store: store)));
           },
           child: const ListTile(
               leading: Icon(
@@ -102,8 +103,7 @@ appDrawer(BuildContext context) {
               title: Text("Raporlar"))),
       TextButton(
           onPressed: () {
-            Navigator.of(context).pushReplacement(MaterialPageRoute(
-                builder: (context) => BilgiPage(store: store)));
+            Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => BilgiPage(store: store)));
           },
           child: const ListTile(
               leading: Icon(
@@ -114,8 +114,7 @@ appDrawer(BuildContext context) {
       TextButton(
           onPressed: () {
             //scaffoldKey.currentState?.openEndDrawer();
-            Navigator.push(context,
-                MaterialPageRoute(builder: (context) => const WebLoginPage()));
+            Navigator.push(context, MaterialPageRoute(builder: (context) => const WebLoginPage()));
           },
           child: const ListTile(
               leading: Icon(

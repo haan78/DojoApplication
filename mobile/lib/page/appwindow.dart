@@ -23,7 +23,7 @@ ButtonStyle goodBtnStyle = ButtonStyle(backgroundColor: MaterialStateProperty.re
 ButtonStyle badBtnStyle = ButtonStyle(backgroundColor: MaterialStateProperty.resolveWith((states) => colorBad));
 ButtonStyle warnBtnStyle = ButtonStyle(backgroundColor: MaterialStateProperty.resolveWith((states) => colorWarn));
 
-enum AppWindow { harcamalar, uyeler, yoklamalar, ayarlar, raporlar }
+//enum AppWindow { harcamalar, uyeler, yoklamalar, ayarlar, raporlar }
 
 final buYil = DateTime.now().year;
 
@@ -138,6 +138,17 @@ List<DropdownMenuItem<int>> yoklamaMenuItems(List<Yoklama> yoklamalar, {bool bos
     l.insert(0, const DropdownMenuItem<int>(value: 0, child: Text("Seçiniz")));
   }
   return l;
+}
+
+Widget yoklamaSelect(List<Yoklama> yoklamalar, int yoklamaId, {bool bosSecenek = true, required void Function(int?) onChange}) {
+  if (yoklamalar.length == 1) {
+    onChange(yoklamalar[0].yoklama_id);
+    return Text(yoklamalar[0].tanim);
+  } else if (yoklamalar.length > 1) {
+    return DropdownButton<int>(items: yoklamaMenuItems(yoklamalar, bosSecenek: bosSecenek), value: yoklamaId, onChanged: onChange);
+  } else {
+    return const Text("");
+  }
 }
 
 String dateFormater(DateTime value, String format) {

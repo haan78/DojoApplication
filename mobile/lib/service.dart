@@ -204,6 +204,16 @@ class EldenTahsilat {
   DateTime zaman = DateTime.now();
 }
 
+class MacCalismasiKendocu {
+  int uye_id = 0;
+  String ad = "";
+  String seviye = "";
+  DateTime tarih = DateTime.now();
+  String cinsiyet = "";
+  int yas = 0;
+  bool secildi = true;
+}
+
 Future<List<UyeListDetay>> uye_listele(Api api, {required String durumlar}) async {
   dynamic r = await api.call("/admin/uyeler", data: {"durumlar": durumlar}, tryit: 5);
 
@@ -720,4 +730,40 @@ Future<List<EldenTahsilat>> rapor_eldentahsilat(Api api, String tahsilatci, Date
   }
 
   return list;
+}
+
+Future<void> yoklama10listesi(Api api, int yoklamaId, List<DateTime> tarihler) async {
+  tarihler.clear();
+  dynamic response;
+  try {
+    response = await api.call("/admin/mac/yoklama10/$yoklamaId");
+  } catch (err) {
+    return Future.error(err);
+  }
+
+  for (final raw in response) {
+    tarihler.add(DateTime.parse(raw["tarih"]));
+  }
+}
+
+Future<void> maccalismasi_listesi(Api api, int yoklamaId, DateTime tarih, List<MacCalismasiKendocu> kendocular) async {
+  kendocular.clear();
+  dynamic response;
+  try {
+    final tar = dateFormater(tarih, "yyyy-MM-dd");
+    response = await api.call("/admin/mac/liste/$yoklamaId/$tar");
+  } catch (err) {
+    return Future.error(err);
+  }
+
+  for (final raw in response) {
+    final mck = MacCalismasiKendocu();
+    mck.ad = raw["ad"];
+    mck.cinsiyet = raw["cinsiyet"];
+    mck.seviye = raw["seviye"];
+    mck.tarih = raw["tarih"] != null ? DateTime.parse(raw["tarih"]) : DateTime.now();
+    mck.uye_id = raw["uye_id"];
+    mck.yas = raw["yas"];
+    kendocular.add(mck);
+  }
 }

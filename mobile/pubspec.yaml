@@ -51,6 +51,7 @@ dependencies:
   d_chart: ^2.2.11
   excel: ^2.1.0
   safe_device: ^1.1.2
+  trotter: ^2.1.0
   ##exif: ^3.1.4
   ##image: ^4.0.17
 

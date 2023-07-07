@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import '../../service.dart';
 import '../appwindow.dart';
 
+typedef CheckedCallback = void Function(bool);
+
 Widget uyeListItem(Store store, UyeListDetay uyeData, VoidCallback? btnCallback, Color? bgColor) {
   return Padding(
     padding: const EdgeInsets.all(5),
@@ -44,5 +46,35 @@ Widget uyeListItem(Store store, UyeListDetay uyeData, VoidCallback? btnCallback,
                 ],
               )),
         )),
+  );
+}
+
+Widget macCalismasiKendocuItem(Store store, MacCalismasiKendocu kendocu, CheckedCallback onChecked) {
+  return Padding(
+    padding: const EdgeInsets.all(5),
+    child: ClipRRect(
+        borderRadius: const BorderRadius.all(Radius.circular(10)),
+        child: Padding(
+            padding: const EdgeInsets.all(10),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                SizedBox(width: 60, height: 90, child: ClipRRect(borderRadius: const BorderRadius.all(Radius.circular(10)), child: uyeImageLoad(store, kendocu.uye_id))),
+                const SizedBox(width: 10),
+                Expanded(
+                    child: SizedBox(
+                        height: 60,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text("${kendocu.ad} ${kendocu.seviye}", style: const TextStyle(fontWeight: FontWeight.bold)),
+                            Text("Sınav Tarihi: ${dateFormater(kendocu.tarih, "dd.MM.yyyy")}")
+                          ],
+                        ))),
+                Switch(value: kendocu.secildi, onChanged: onChecked),
+              ],
+            ))),
   );
 }

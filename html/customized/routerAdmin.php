@@ -200,7 +200,11 @@ function routerAdmin(DefaultJsonRouter $router)
         return rapor_eldentahsilat($req->param("tahsilatci"), $req->param("baslangic"), $req->param("bitis"));
     });
 
-    $router->add("/admin/mac/liste/#yoklam_id/@tarih",function(Request $req) {
+    $router->add("/admin/mac/yoklama10/#yoklama_id",function(Request $req) {
+        return yoklama10listesi($req->param("yoklama_id"));
+    });
+
+    $router->add("/admin/mac/liste/#yoklama_id/@tarih",function(Request $req) {
         return maccalismasi_listesi($req->param("yoklama_id"),$req->param("tarih"));
     });
 
