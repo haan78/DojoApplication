@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:dojo_mobile/api.dart';
 import 'package:dojo_mobile/page/appwindow.dart';
+import 'package:dojo_mobile/page/widget/saat.dart';
 import 'package:dojo_mobile/page/widget/app_drawer.dart';
 import 'package:dojo_mobile/page/widget/list_items.dart';
 import 'package:dojo_mobile/service.dart';
@@ -58,8 +59,6 @@ class _MacCalismasi extends State<MacCalismasi> {
   late Api api;
   late ScrollController _scrollController;
   double _offset = 0;
-  int gecensure = 0;
-  Timer? timer;
 
   @override
   void initState() {
@@ -306,9 +305,6 @@ class _MacCalismasi extends State<MacCalismasi> {
   @override
   void dispose() {
     super.dispose();
-    if (timer != null && timer!.isActive) {
-      timer!.cancel();
-    }
   }
 
   void sayitablosu(int index, {bool beyaz = false}) {
@@ -524,30 +520,8 @@ class _MacCalismasi extends State<MacCalismasi> {
               child: const Text("Takım Seçim Ekranı"))
         ]),
         Expanded(child: Table(border: TableBorder.all(color: Colors.white), children: tablosatirlari())),
-        Row(children: [
-          ElevatedButton(
-              onPressed: () {
-                if (timer == null) {
-                  timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-                    if (timer.isActive) {
-                      setState(() {
-                        gecensure += 1;
-                      });
-                    }
-                  });
-                } else {
-                  timer = null;
-                }
-              },
-              child: Text("${(gecensure ~/ 60).toString().padLeft(2, "0")}:${(gecensure % 60).toString().padLeft(2, "0")}")),
-          const SizedBox(width: 10),
-          ElevatedButton(
-              onPressed: (() {
-                gecensure = 0;
-                if (timer != null) timer!.cancel();
-              }),
-              child: const Text("Reset"))
-        ])
+        const Saat(),
+        const SizedBox(height: 20)
       ],
     );
   }
