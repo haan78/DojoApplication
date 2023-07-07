@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:dojo_mobile/api.dart';
 import 'package:dojo_mobile/page/appwindow.dart';
+import 'package:dojo_mobile/page/widget/radio_group.dart';
 import 'package:dojo_mobile/page/widget/saat.dart';
 import 'package:dojo_mobile/page/widget/app_drawer.dart';
 import 'package:dojo_mobile/page/widget/list_items.dart';
@@ -24,11 +25,11 @@ class MacCalismasi extends StatefulWidget {
 
 enum ScreenType { secim, hesap, takim }
 
-const ipponSymbols = ["", " M ", " K ", " D ", " T ", " H ", " Ht "];
+const ipponSymbols = [" M ", " K ", " D ", " T ", " H ", " Ht "];
 
 class IpponAndHansoku {
-  int ippon1 = 0;
-  int ippon2 = 0;
+  int ippon1 = -1;
+  int ippon2 = -1;
   int hansoku = 0;
 }
 
@@ -195,11 +196,11 @@ class _MacCalismasi extends State<MacCalismasi> {
       final da = degerleme(a);
       final db = degerleme(b);
       if (da > db) {
-        return -1;
-      } else if (db > da) {
         return 1;
+      } else if (db > da) {
+        return -1;
       } else {
-        return a.tarih.compareTo(b.tarih);
+        return -1 * a.tarih.compareTo(b.tarih);
       }
     }
 
@@ -308,33 +309,7 @@ class _MacCalismasi extends State<MacCalismasi> {
   }
 
   void sayitablosu(int index, {bool beyaz = false}) {
-    const sayilar = [
-      DropdownMenuItem(value: 0, child: Text("SEÇ")),
-      DropdownMenuItem(
-        value: 1,
-        child: Text("M"),
-      ),
-      DropdownMenuItem(
-        value: 2,
-        child: Text("K"),
-      ),
-      DropdownMenuItem(
-        value: 3,
-        child: Text("D"),
-      ),
-      DropdownMenuItem(
-        value: 4,
-        child: Text("T"),
-      ),
-      DropdownMenuItem(
-        value: 5,
-        child: Text("H"),
-      ),
-      DropdownMenuItem(
-        value: 6,
-        child: Text("Ht"),
-      )
-    ];
+    const sayilar = [Text("M"), Text("K"), Text("D"), Text("T"), Text("H"), Text("Ht")];
     String oyuncu = beyaz ? "${seciliTakimListesi.white[index].ad} (BEYAZ)" : "${seciliTakimListesi.red[index].ad} (KIRMIZI)";
     IpponAndHansoku ih = beyaz ? seciliTakimListesi.sonuclar[index].sihro : seciliTakimListesi.sonuclar[index].aka;
 
@@ -344,64 +319,42 @@ class _MacCalismasi extends State<MacCalismasi> {
             builder: ((context, setState) => AlertDialog(
                   scrollable: true,
                   title: Text(oyuncu, style: const TextStyle(color: Colors.blue)),
-                  content: Column(children: [
-                    Row(children: [
-                      const Text("1. Sayı"),
-                      const SizedBox(width: 10),
-                      DropdownButton<int>(
-                          value: ih.ippon1,
-                          items: sayilar,
-                          onChanged: (value) {
-                            setState(() {
-                              if (beyaz) {
-                                seciliTakimListesi.sonuclar[index].sihro.ippon1 = value ?? ih.ippon1;
-                              } else {
-                                seciliTakimListesi.sonuclar[index].aka.ippon1 = value ?? ih.ippon1;
-                              }
-                            });
-                          })
-                    ]),
-                    Row(children: [
-                      const Text("2. Sayı"),
-                      const SizedBox(width: 10),
-                      DropdownButton<int>(
-                          value: ih.ippon2,
-                          items: sayilar,
-                          onChanged: (value) {
-                            setState(() {
-                              if (beyaz) {
-                                seciliTakimListesi.sonuclar[index].sihro.ippon2 = value ?? ih.ippon2;
-                              } else {
-                                seciliTakimListesi.sonuclar[index].aka.ippon2 = value ?? ih.ippon2;
-                              }
-                            });
-                          })
-                    ]),
-                    Row(children: [
-                      const Text("Hansoku"),
-                      const SizedBox(width: 10),
-                      DropdownButton<int>(
-                          value: ih.hansoku,
-                          items: const [
-                            DropdownMenuItem(value: 0, child: Text("SEÇ")),
-                            DropdownMenuItem(
-                              value: 1,
-                              child: Text("1. Hansoku"),
-                            ),
-                            DropdownMenuItem(value: 2, child: Text("2. Hansoku")),
-                            DropdownMenuItem(value: 3, child: Text("3. Hansoku")),
-                            DropdownMenuItem(value: 4, child: Text("4. Hansoku"))
-                          ],
-                          onChanged: (value) {
-                            setState(() {
-                              if (beyaz) {
-                                seciliTakimListesi.sonuclar[index].sihro.hansoku = value ?? ih.hansoku;
-                              } else {
-                                seciliTakimListesi.sonuclar[index].aka.hansoku = value ?? ih.hansoku;
-                              }
-                            });
-                          })
-                    ])
+                  content: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                    const Text("1. Ippon"),
+                    RadioGroup(
+                        selectedIndex: ih.ippon1,
+                        onSelect: (v) {
+                          if (beyaz) {
+                            seciliTakimListesi.sonuclar[index].sihro.ippon1 = v;
+                          } else {
+                            seciliTakimListesi.sonuclar[index].aka.ippon1 = v;
+                          }
+                        },
+                        children: sayilar),
+                    const SizedBox(height: 10),
+                    const Text("2. Ippon"),
+                    RadioGroup(
+                        selectedIndex: ih.ippon2,
+                        onSelect: (v) {
+                          if (beyaz) {
+                            seciliTakimListesi.sonuclar[index].sihro.ippon2 = v;
+                          } else {
+                            seciliTakimListesi.sonuclar[index].aka.ippon2 = v;
+                          }
+                        },
+                        children: sayilar),
+                    const SizedBox(height: 10),
+                    const Text("Hansoku"),
+                    RadioGroup(
+                        selectedIndex: ih.hansoku - 1,
+                        onSelect: (v) {
+                          if (beyaz) {
+                            seciliTakimListesi.sonuclar[index].sihro.hansoku = v + 1;
+                          } else {
+                            seciliTakimListesi.sonuclar[index].aka.hansoku = v + 1;
+                          }
+                        },
+                        children: const [Text("1"), Text("2"), Text("3"), Text("4")])
                   ]),
                   actions: [
                     TextButton(
@@ -418,7 +371,8 @@ class _MacCalismasi extends State<MacCalismasi> {
   }
 
   String sembolgoster(IpponAndHansoku ih) {
-    String str = ipponSymbols[ih.ippon1] + ipponSymbols[ih.ippon2];
+    String str = ih.ippon1 > -1 ? ipponSymbols[ih.ippon1] : "";
+    str += ih.ippon2 > -1 ? ipponSymbols[ih.ippon2] : "";
     if (ih.ippon1 > 0 || ih.ippon2 > 0) {
       str += "\n";
     }
@@ -509,7 +463,7 @@ class _MacCalismasi extends State<MacCalismasi> {
                   ekran = ScreenType.secim;
                 });
               },
-              child: const Text("Oyuncu Seçim Ekranı")),
+              child: const Text("Başa Dön")),
           const SizedBox(width: 10),
           ElevatedButton(
               onPressed: () {
@@ -517,7 +471,9 @@ class _MacCalismasi extends State<MacCalismasi> {
                   ekran = ScreenType.hesap;
                 });
               },
-              child: const Text("Takım Seçim Ekranı"))
+              child: const Text("Takım Seç")),
+          const SizedBox(width: 10),
+          ElevatedButton(onPressed: () async {}, child: const Text("Kaydet"))
         ]),
         Expanded(child: Table(border: TableBorder.all(color: Colors.white), children: tablosatirlari())),
         const Saat(),
