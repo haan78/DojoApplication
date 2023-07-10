@@ -215,6 +215,23 @@ class MacCalismasiKendocu {
   bool secildi = true;
 }
 
+class MacCalismasiKayit {
+  int yoklama_id = 0;
+  int aka = 0;
+  int shiro = 0;
+  String tur = "";
+  DateTime tarih = DateTime.now();
+  String aka_ippon = "";
+  String shiro_ippon = "";
+  int aka_hansoku = 0;
+  int shiro_hansoku = 0;
+}
+
+class MacCalismasiIcinYoklama {
+  DateTime tarih = DateTime.now();
+  bool macyaipmis = false;
+}
+
 Future<List<UyeListDetay>> uye_listele(Api api, {required String durumlar}) async {
   dynamic r = await api.call("/admin/uyeler", data: {"durumlar": durumlar}, tryit: 5);
 
@@ -742,7 +759,7 @@ Future<List<EldenTahsilat>> rapor_eldentahsilat(Api api, String tahsilatci, Date
   return list;
 }
 
-Future<void> yoklama10listesi(Api api, int yoklamaId, List<DateTime> tarihler) async {
+Future<void> yoklama10listesi(Api api, int yoklamaId, List<MacCalismasiIcinYoklama> tarihler) async {
   tarihler.clear();
   dynamic response;
   try {
@@ -752,7 +769,10 @@ Future<void> yoklama10listesi(Api api, int yoklamaId, List<DateTime> tarihler) a
   }
 
   for (final raw in response) {
-    tarihler.add(DateTime.parse(raw["tarih"]));
+    final mciy = MacCalismasiIcinYoklama();
+    mciy.tarih = DateTime.parse(raw["tarih"]);
+    mciy.macyaipmis = (raw["macyaipmis"] ?? 0) > 0 ? true : false;
+    tarihler.add(mciy);
   }
 }
 
@@ -775,5 +795,30 @@ Future<void> maccalismasi_listesi(Api api, int yoklamaId, DateTime tarih, List<M
     mck.uye_id = raw["uye_id"];
     mck.yas = raw["yas"];
     kendocular.add(mck);
+  }
+}
+
+Future<void> maccalismasi_kayit(Api api, List<MacCalismasiKayit> list) async {
+  List<dynamic> data = [];
+  //aka, shiro, tur, tarih, aka_ippon, shiro_ippon, aka_hansoku, shiro_hansoku
+  for (int i = 0; i < list.length; i++) {
+    final raw = list[i];
+    data.add([
+      i + 1,
+      raw.yoklama_id,
+      raw.aka,
+      raw.shiro,
+      raw.tur,
+      dateFormater(raw.tarih, "yyyy-MM-dd"),
+      raw.aka_ippon.isEmpty ? null : raw.aka_ippon,
+      raw.shiro_ippon.isEmpty ? null : raw.shiro_ippon,
+      raw.shiro_hansoku,
+      raw.shiro_hansoku
+    ]);
+  }
+  try {
+    await api.call("/admin/mac/kayit", data: data);
+  } catch (err) {
+    return Future.error(err);
   }
 }

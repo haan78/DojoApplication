@@ -127,6 +127,22 @@ CREATE TABLE muhasebe_tanim (
   PRIMARY KEY (muhasebe_tanim_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_turkish_ci;
 
+CREATE TABLE `uye_shiai` (
+  `aka` bigint NOT NULL,
+  `shiro` bigint NOT NULL,
+  `tur` enum('TAKIM','HAVUZ','ELEME','IPPON-SHOBU') CHARACTER SET utf8mb4 COLLATE utf8mb4_turkish_ci NOT NULL,
+  `tarih` date DEFAULT NULL,
+  `aka_ippon` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_turkish_ci DEFAULT NULL,
+  `shiro_ippon` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_turkish_ci DEFAULT NULL,
+  `aka_hansoku` tinyint DEFAULT '0',
+  `shiro_hansoku` tinyint DEFAULT '0',
+  `olusma` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `degisme` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `sira` tinyint DEFAULT NULL,
+  `yoklama_id` bigint NOT NULL,  
+  KEY `uye_shiai_aka_un` (`aka`,`shiro`,`tur`,`tarih`,`yoklama_id`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=31 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_turkish_ci;
+
 INSERT INTO muhasebe_tanim (muhasebe_tanim_id,tanim,tur) VALUES
 	 (1,'Salon Kirası','GIDER'),
 	 (2,'Etkinlik Düzenleme Masrafı','GIDER'),

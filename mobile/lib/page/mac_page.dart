@@ -35,7 +35,7 @@ class IpponAndHansoku {
 
 class MacSonuc {
   IpponAndHansoku aka = IpponAndHansoku();
-  IpponAndHansoku sihro = IpponAndHansoku();
+  IpponAndHansoku shiro = IpponAndHansoku();
 }
 
 class TakimSitesi {
@@ -45,13 +45,14 @@ class TakimSitesi {
 }
 
 class _MacCalismasi extends State<MacCalismasi> {
+  late LoadingDialog loadingdlg;
   ScreenType ekran = ScreenType.secim;
   final List<MacCalismasiKendocu> kendocular = [];
-  final List<DateTime> tarihler = [];
+  final List<MacCalismasiIcinYoklama> tarihler = [];
   final _formKey = GlobalKey<FormState>();
   int yoklamaId = 0;
   int seciliksayi = 0;
-  DateTime? tarih;
+  MacCalismasiIcinYoklama? yoklama;
   List<TakimSitesi> takimlisteleri = [];
   TakimSitesi seciliTakimListesi = TakimSitesi();
   bool reload = true;
@@ -64,6 +65,7 @@ class _MacCalismasi extends State<MacCalismasi> {
   @override
   void initState() {
     super.initState();
+    loadingdlg = LoadingDialog(context);
     api = Api(url: widget.store.ApiUrl, authorization: widget.store.ApiToken);
 
     if (widget.store.sabitler.yoklamalar.isNotEmpty) {
@@ -74,14 +76,16 @@ class _MacCalismasi extends State<MacCalismasi> {
   Future<void> initData() async {
     if (reload) {
       ekran = ScreenType.secim;
-      if (tarih == null) {
+      if (yoklama == null) {
         await yoklama10listesi(api, yoklamaId, tarihler);
-        tarih = tarihler[0];
+        if (tarihler.isNotEmpty) {
+          yoklama = tarihler[0];
+        }
       }
 
       seciliksayi = 0;
-      if (tarihler.isNotEmpty) {
-        await maccalismasi_listesi(api, yoklamaId, tarih!, kendocular);
+      if (yoklama != null) {
+        await maccalismasi_listesi(api, yoklamaId, yoklama!.tarih, kendocular);
         for (int i = 0; i < kendocular.length; i++) {
           if (kendocular[i].seviye == "6 KYU" ||
               kendocular[i].seviye == "7 KYU" ||
@@ -114,13 +118,16 @@ class _MacCalismasi extends State<MacCalismasi> {
                 yoklamaId = value ?? 0;
               }),
               const SizedBox(width: 10),
-              DropdownButton<DateTime>(
-                value: tarih,
-                items: tarihler.map<DropdownMenuItem<DateTime>>((e) => DropdownMenuItem<DateTime>(value: e, child: Text(dateFormater(e, "dd.MM.yyyy")))).toList(),
-                onChanged: (DateTime? value) {
+              DropdownButton<MacCalismasiIcinYoklama>(
+                value: yoklama,
+                items: tarihler
+                    .map<DropdownMenuItem<MacCalismasiIcinYoklama>>(
+                        (e) => DropdownMenuItem<MacCalismasiIcinYoklama>(value: e, child: Text(dateFormater(e.tarih, "dd.MM.yyyy") + (e.macyaipmis ? " *" : ""))))
+                    .toList(),
+                onChanged: (MacCalismasiIcinYoklama? value) {
                   if (value != null) {
                     setState(() {
-                      tarih = value;
+                      yoklama = value;
                       reload = true;
                       _offset = 0;
                     });
@@ -311,7 +318,7 @@ class _MacCalismasi extends State<MacCalismasi> {
   void sayitablosu(int index, {bool beyaz = false}) {
     const sayilar = [Text("M"), Text("K"), Text("D"), Text("T"), Text("H"), Text("Ht")];
     String oyuncu = beyaz ? "${seciliTakimListesi.white[index].ad} (BEYAZ)" : "${seciliTakimListesi.red[index].ad} (KIRMIZI)";
-    IpponAndHansoku ih = beyaz ? seciliTakimListesi.sonuclar[index].sihro : seciliTakimListesi.sonuclar[index].aka;
+    IpponAndHansoku ih = beyaz ? seciliTakimListesi.sonuclar[index].shiro : seciliTakimListesi.sonuclar[index].aka;
 
     showDialog(
         context: context,
@@ -325,7 +332,7 @@ class _MacCalismasi extends State<MacCalismasi> {
                         selectedIndex: ih.ippon1,
                         onSelect: (v) {
                           if (beyaz) {
-                            seciliTakimListesi.sonuclar[index].sihro.ippon1 = v;
+                            seciliTakimListesi.sonuclar[index].shiro.ippon1 = v;
                           } else {
                             seciliTakimListesi.sonuclar[index].aka.ippon1 = v;
                           }
@@ -337,7 +344,7 @@ class _MacCalismasi extends State<MacCalismasi> {
                         selectedIndex: ih.ippon2,
                         onSelect: (v) {
                           if (beyaz) {
-                            seciliTakimListesi.sonuclar[index].sihro.ippon2 = v;
+                            seciliTakimListesi.sonuclar[index].shiro.ippon2 = v;
                           } else {
                             seciliTakimListesi.sonuclar[index].aka.ippon2 = v;
                           }
@@ -349,7 +356,7 @@ class _MacCalismasi extends State<MacCalismasi> {
                         selectedIndex: ih.hansoku - 1,
                         onSelect: (v) {
                           if (beyaz) {
-                            seciliTakimListesi.sonuclar[index].sihro.hansoku = v + 1;
+                            seciliTakimListesi.sonuclar[index].shiro.hansoku = v + 1;
                           } else {
                             seciliTakimListesi.sonuclar[index].aka.hansoku = v + 1;
                           }
@@ -377,15 +384,26 @@ class _MacCalismasi extends State<MacCalismasi> {
       str += "\n";
     }
     if (ih.hansoku == 1) {
-      str += " ■ ";
+      str += " ▲ ";
     } else if (ih.hansoku == 2) {
-      str += " ■ ■ ";
+      str += " ▲ ▲ ";
     } else if (ih.hansoku == 3) {
-      str += " ■ ■ \n ■";
+      str += " ▲ ▲ \n ▲ ";
     } else if (ih.hansoku == 4) {
-      str += " ■ ■ \n ■ ■ ";
+      str += " ▲ ▲ \n ▲ ▲ ";
     }
 
+    return str;
+  }
+
+  String sayistr(IpponAndHansoku ih) {
+    String str = "";
+    if (ih.ippon1 > -1) {
+      str += ih.ippon1.toString();
+    }
+    if (ih.ippon2 > -1) {
+      str += ih.ippon2.toString();
+    }
     return str;
   }
 
@@ -432,7 +450,7 @@ class _MacCalismasi extends State<MacCalismasi> {
                   children: [
                     Text(sembolgoster(seciliTakimListesi.sonuclar[i].aka), style: const TextStyle(color: Colors.red, fontSize: 16, fontWeight: FontWeight.bold)),
                     Text(
-                      sembolgoster(seciliTakimListesi.sonuclar[i].sihro),
+                      sembolgoster(seciliTakimListesi.sonuclar[i].shiro),
                       style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
                       textAlign: TextAlign.right,
                     )
@@ -473,7 +491,27 @@ class _MacCalismasi extends State<MacCalismasi> {
               },
               child: const Text("Takım Seç")),
           const SizedBox(width: 10),
-          ElevatedButton(onPressed: () async {}, child: const Text("Kaydet"))
+          ElevatedButton(
+              onPressed: () async {
+                loadingdlg.push();
+                List<MacCalismasiKayit> mckl = [];
+                for (int i = 0; i < seciliTakimListesi.sonuclar.length; i++) {
+                  final mck = MacCalismasiKayit();
+                  mck.yoklama_id = yoklamaId;
+                  mck.aka = seciliTakimListesi.red[i].uye_id;
+                  mck.shiro = seciliTakimListesi.white[i].uye_id;
+                  mck.tarih = yoklama!.tarih;
+                  mck.tur = 'TAKIM';
+                  mck.aka_hansoku = seciliTakimListesi.sonuclar[i].aka.hansoku;
+                  mck.shiro_hansoku = seciliTakimListesi.sonuclar[i].shiro.hansoku;
+                  mck.aka_ippon = sayistr(seciliTakimListesi.sonuclar[i].aka);
+                  mck.shiro_ippon = sayistr(seciliTakimListesi.sonuclar[i].shiro);
+                  mckl.add(mck);
+                }
+                await maccalismasi_kayit(api, mckl);
+                loadingdlg.pop();
+              },
+              child: const Text("Kaydet"))
         ]),
         Expanded(child: Table(border: TableBorder.all(color: Colors.white), children: tablosatirlari())),
         const Saat(),

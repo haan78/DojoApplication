@@ -56,9 +56,9 @@ class _YoklamaGun extends State<YoklamaGun> {
     return list;
   }
 
-  Image getImg(int index) {
+  Widget getImg(int index) {
     if (list[index].img == null) {
-      return uyeImageLoad(widget.store, list[index].uye_id);
+      return uyeImageLoadCached(widget.store, list[index].uye_id);
     } else {
       return list[index].img!;
     }

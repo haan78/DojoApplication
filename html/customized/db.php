@@ -390,7 +390,8 @@ WHERE (m.tarih BETWEEN DATE(?) AND DATE(?)) and kasa = 'Elden' and  COALESCE(m.t
 }
 
 function yoklama10listesi(int $yoklama_id) {
-    $sql = "SELECT uy.tarih FROM uye_yoklama uy WHERE uy.yoklama_id = ? GROUP BY uy.tarih ORDER BY uy.tarih DESC LIMIT 10";
+    $sql = "SELECT uy.tarih, IF((SELECT COUNT(1) FROM uye_shiai us WHERE us.tur = 'TAKIM' AND us.tarih = uy.tarih AND us.yoklama_id = uy.yoklama_id)>0,1,0) AS macyaipmis
+    FROM uye_yoklama uy WHERE uy.yoklama_id = ? GROUP BY uy.yoklama_id,uy.tarih ORDER BY uy.tarih DESC LIMIT 10";
     return MySqlStmt::query(mysqlilink(),$sql,[$yoklama_id]);
 }
 
@@ -404,3 +405,19 @@ function maccalismasi_listesi(int $yoklama_id, string $tarih ) {
 
     return MySqlStmt::query(mysqlilink(),$sql,[$yoklama_id, $tarih]);    
 }
+
+function maccalismasi_kayit(array $data) {    
+    $sql = "INSERT INTO uye_shiai 
+        (sira, yoklama_id, aka, shiro, tur, tarih, aka_ippon, shiro_ippon, aka_hansoku, shiro_hansoku)
+        VALUES 
+        (?, ?, ?, ?, ?, ?, ? , ?, ?, ?)
+        ON DUPLICATE KEY UPDATE 
+        sira = VALUES(sira), aka_ippon = VALUES(aka_ippon), shiro_ippon = VALUES(shiro_ippon), aka_hansoku = VALUES(aka_hansoku), shiro_hansoku = VALUES(shiro_hansoku)";
+    return MySqlStmt::repeatedQuery(mysqlilink(),$sql,$data);
+}
+
+function maccliasmasi_sil(string $tarih) {
+    $sql = "DELETE FROM uye_shiai WHERE tarih = ? AND tur = 'TAKIM'";
+    return MySqlStmt::query(mysqlilink(),$sql,[$tarih]);
+}
+

@@ -153,5 +153,37 @@ namespace MySqlTool {
             }            
             return $results;
         }
+
+        public static function repeatedQuery(mysqli $conn,string $sql,array $params = []):array {
+            $conn->begin_transaction();
+            $ex = null;
+            $arr = [];
+            for($i=0; $i<count($params); $i++) {                
+                $stmt = null;
+                try {
+                    $stmt = self::sqlToStmt($conn,$sql,$params[$i]);
+                    array_push($arr,self::stmtResult($stmt));
+                } catch (\Exception $err) {                    
+                    $ex = $err;
+                    break;
+                } finally {
+                    if ( !is_null($stmt) ) {
+                        $stmt->close();
+                    }
+                }
+            }
+            if (is_null($ex)) {
+                $conn->commit();
+            } else {
+                $conn->rollback();
+            }
+            if (self::$closeConnection) {
+                $conn->close();
+            }
+            if (!is_null($ex)) {
+                throw $ex;
+            }
+            return $arr;
+        }
     }
 }
