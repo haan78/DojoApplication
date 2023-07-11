@@ -208,6 +208,10 @@ function routerAdmin(DefaultJsonRouter $router)
         return maccalismasi_listesi($req->param("yoklama_id"),$req->param("tarih"));
     });
 
+    $router->add("/admin/mac/tumunusil/@tarih/#yoklama_id/@tur",function(Request $req) {
+        return maccliasmasi_tumunusil($req->param("tarih"),$req->param("yoklama_id"),$req->param("tur"));
+    });
+
     $router->add("/admin/mac/kayit",function(Request $req) {
         $data = $req->json();
         return maccalismasi_kayit($data);

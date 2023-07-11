@@ -12,7 +12,7 @@ import '../service.dart';
 const Color colorGood = Color.fromARGB(255, 88, 153, 78);
 const Color colorBad = Color.fromARGB(255, 221, 27, 27);
 const Color colorWarn = Color.fromARGB(255, 129, 122, 23);
-const colorTile1 = Color.fromARGB(255, 195, 204, 194);
+const colorTile1 = Color.fromARGB(255, 227, 233, 226);
 const colorTile2 = Color.fromARGB(255, 188, 201, 201);
 const colorInfo = Color.fromARGB(255, 16, 148, 148);
 const appVersion = "1.0.6-beta";

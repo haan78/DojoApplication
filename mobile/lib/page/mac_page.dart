@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:dojo_mobile/api.dart';
 import 'package:dojo_mobile/page/appwindow.dart';
+import 'package:dojo_mobile/page/widget/alert.dart';
 import 'package:dojo_mobile/page/widget/radio_group.dart';
 import 'package:dojo_mobile/page/widget/saat.dart';
 import 'package:dojo_mobile/page/widget/app_drawer.dart';
@@ -91,7 +92,9 @@ class _MacCalismasi extends State<MacCalismasi> {
               kendocular[i].seviye == "7 KYU" ||
               kendocular[i].seviye == "5 KYU" ||
               kendocular[i].seviye == "5 DAN" ||
-              kendocular[i].seviye == "6 DAN") {
+              kendocular[i].seviye == "6 DAN" ||
+              kendocular[i].yas > 42 ||
+              kendocular[i].yas < 16) {
             kendocular[i].secildi = false;
           } else {
             seciliksayi += 1;
@@ -266,40 +269,40 @@ class _MacCalismasi extends State<MacCalismasi> {
                 itemCount: takimlisteleri.length,
                 itemBuilder: (context, index) {
                   final tl = takimlisteleri[index];
-                  String tRed = "KIRMIZI";
-                  String tWhite = "BEYAZ";
-                  for (final r in tl.red) {
-                    tRed += "\n${r.seviye} ${r.ad}";
-                  }
-                  for (final w in tl.white) {
-                    tWhite += "\n${w.ad} ${w.seviye}";
-                  }
+                  String tRed = tl.red.map<String>((e) => "${e.seviye} ${e.ad}").join("\n");
+                  String tWhite = tl.white.map<String>((e) => "${e.ad} ${e.seviye}").join("\n");
                   return Padding(
-                    padding: const EdgeInsets.all(10),
-                    child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, crossAxisAlignment: CrossAxisAlignment.center, children: [
-                      Container(
-                          color: Colors.red,
+                    padding: const EdgeInsets.only(top: 10),
+                    child: Container(
+                      color: tileColorByIndex(index),
+                      child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, crossAxisAlignment: CrossAxisAlignment.start, children: [
+                        Container(
+                            color: Colors.red,
+                            child: Text(
+                              tRed,
+                              style: const TextStyle(color: Colors.white),
+                            )),
+                        TextButton(
+                          onPressed: () {
+                            setState(() {
+                              seciliTakimListesi = takimlisteleri[index];
+                              ekran = ScreenType.takim;
+                            });
+                          },
                           child: Text(
-                            tRed,
-                            style: const TextStyle(color: Colors.white),
-                          )),
-                      TextButton(
-                        onPressed: () {
-                          setState(() {
-                            seciliTakimListesi = takimlisteleri[index];
-                            ekran = ScreenType.takim;
-                          });
-                        },
-                        child: Text("${index + 1} SEÇ"),
-                      ),
-                      Container(
-                          color: Colors.white,
-                          child: Text(
-                            tWhite,
-                            textAlign: TextAlign.right,
-                            style: const TextStyle(color: Colors.black),
-                          ))
-                    ]),
+                            "${index + 1}.\nSeç",
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                        Container(
+                            color: Colors.white,
+                            child: Text(
+                              tWhite,
+                              textAlign: TextAlign.right,
+                              style: const TextStyle(color: Colors.black),
+                            ))
+                      ]),
+                    ),
                   );
                 }))
       ],
@@ -508,7 +511,20 @@ class _MacCalismasi extends State<MacCalismasi> {
                   mck.shiro_ippon = sayistr(seciliTakimListesi.sonuclar[i].shiro);
                   mckl.add(mck);
                 }
-                await maccalismasi_kayit(api, mckl);
+                try {
+                  maccliasmasi_tumunusil(api, yoklama!.tarih, 'TAKIM', yoklamaId).then((value) {
+                    maccalismasi_kayit(api, mckl).then((value) {
+                      successAlert(context, "İşlem Başarılı");
+                    }).catchError((err) {
+                      errorAlert(context, "$err maccalismasi_kayit");
+                    });
+                  }).catchError((err) {
+                    errorAlert(context, "$err maccliasmasi_tumunusil");
+                  });
+                } catch (err) {
+                  errorAlert(context, "$err try");
+                }
+
                 loadingdlg.pop();
               },
               child: const Text("Kaydet"))

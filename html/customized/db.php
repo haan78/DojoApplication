@@ -416,8 +416,39 @@ function maccalismasi_kayit(array $data) {
     return MySqlStmt::repeatedQuery(mysqlilink(),$sql,$data);
 }
 
-function maccliasmasi_sil(string $tarih) {
-    $sql = "DELETE FROM uye_shiai WHERE tarih = ? AND tur = 'TAKIM'";
-    return MySqlStmt::query(mysqlilink(),$sql,[$tarih]);
+function maccliasmasi_tumunusil(string $tarih, int $yoklama_id, string $tur) {
+    $sql = "DELETE FROM uye_shiai WHERE tarih = ? AND yoklama_id = ? AND tur = ?";
+    return MySqlStmt::query(mysqlilink(),$sql,[$tarih,$yoklama_id,$tur]);
+}
+
+function rapor_maccalismasi() {
+    $sql = "SELECT q.uye_id,q.ad,q.cinsiyet,
+    SUM(IF(q.sonuc = 'G',1,0)) AS galibiyet,
+    SUM(IF(q.sonuc = 'M',1,0)) AS maglubiyet,
+    SUM(IF(q.sonuc = 'B',1,0)) AS beraberlik,
+    SUM(q.aldigi) AS alinansayi, 
+    SUM(q.verdigi) AS verilensayi, AVG(hansoku) AS hansokuort,
+    COUNT(*) macsayisi,
+    (SELECT count(*) FROM  uye_yoklama uy WHERE uy.uye_id  = q.uye_id AND uy.tarih >= DATE_ADD(CURRENT_DATE,INTERVAL -3 MONTH)) as son3Ay
+    FROM (
+    SELECT u.uye_id,u.ad,u.cinsiyet,
+    COALESCE(IF(us.shiro = u.uye_id,LENGTH(us.shiro_ippon),LENGTH(us.aka_ippon)),0) as aldigi,
+    COALESCE(IF(us.shiro <> u.uye_id,LENGTH(us.shiro_ippon),LENGTH(us.aka_ippon)),0) as verdigi,
+    COALESCE(IF(us.shiro = u.uye_id,us.shiro_hansoku,us.aka_hansoku),0) AS hansoku,
+    
+    CASE 
+        WHEN us.shiro = u.uye_id AND LENGTH(COALESCE(us.shiro_ippon,'')) > LENGTH(COALESCE(us.aka_ippon,'')) THEN 'G'
+        WHEN us.shiro = u.uye_id AND LENGTH(COALESCE(us.shiro_ippon,'')) < LENGTH(COALESCE(us.aka_ippon,'')) THEN 'M'
+        WHEN us.aka = u.uye_id AND LENGTH(COALESCE(us.shiro_ippon,'')) < LENGTH(COALESCE(us.aka_ippon,'')) THEN 'G'
+        WHEN us.aka = u.uye_id AND LENGTH(COALESCE(us.shiro_ippon,'')) > LENGTH(COALESCE(us.aka_ippon,'')) THEN 'M'
+        ELSE 'B'
+    END as sonuc
+    
+    FROM uye u
+    inner JOIN uye_shiai us ON (us.aka = u.uye_id OR us.shiro = u.uye_id) AND us.tarih >=DATE_ADD(CURRENT_DATE,INTERVAL -3 MONTH)
+    WHERE u.durum IN ('active','admin','super-admin') ) q GROUP BY q.uye_id, q.ad, q.cinsiyet
+    ORDER BY cinsiyet,galibiyet DESC,maglubiyet ASC, macsayisi DESC, son3Ay DESC, alinansayi DESC, verilensayi ASC, hansokuort ASC";
+
+    return MySqlStmt::query(mysqlilink(),$sql);
 }
 

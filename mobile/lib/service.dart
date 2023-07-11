@@ -812,12 +812,20 @@ Future<void> maccalismasi_kayit(Api api, List<MacCalismasiKayit> list) async {
       dateFormater(raw.tarih, "yyyy-MM-dd"),
       raw.aka_ippon.isEmpty ? null : raw.aka_ippon,
       raw.shiro_ippon.isEmpty ? null : raw.shiro_ippon,
-      raw.shiro_hansoku,
+      raw.aka_hansoku,
       raw.shiro_hansoku
     ]);
   }
   try {
     await api.call("/admin/mac/kayit", data: data);
+  } catch (err) {
+    return Future.error(err);
+  }
+}
+
+Future<void> maccliasmasi_tumunusil(Api api, DateTime tarih, String tur, int yoklama_id) async {
+  try {
+    await api.call("/admin/mac/tumunusil/${dateFormater(tarih, "yyyy-MM-dd")}/$yoklama_id/$tur");
   } catch (err) {
     return Future.error(err);
   }
