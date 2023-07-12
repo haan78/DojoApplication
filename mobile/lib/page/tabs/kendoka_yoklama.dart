@@ -1,8 +1,9 @@
 import 'package:dojo_mobile/page/widget/alert.dart';
+import 'package:dojo_mobile/service/servicemethods.dart';
+import 'package:dojo_mobile/service/servicetypes.dart';
 import 'package:flutter/material.dart';
 
-import '../../api.dart';
-import '../../service.dart';
+import '../../tools/api.dart';
 import '../../store.dart';
 import '../appwindow.dart';
 
@@ -11,11 +12,7 @@ class KendokaYoklama extends StatefulWidget {
   final Store store;
   final Sabitler sabitler;
 
-  const KendokaYoklama(
-      {super.key,
-      required this.sabitler,
-      required this.bilgi,
-      required this.store});
+  const KendokaYoklama({super.key, required this.sabitler, required this.bilgi, required this.store});
 
   @override
   State<StatefulWidget> createState() {
@@ -43,25 +40,17 @@ class _KendokaYoklama extends State<KendokaYoklama> {
               child: ListView.builder(
                   itemCount: widget.bilgi.yoklamalar.length,
                   itemBuilder: (context, index) {
-                    final tar = dateFormater(
-                        widget.bilgi.yoklamalar[index].tarih, "dd.MM.yyyy");
+                    final tar = dateFormater(widget.bilgi.yoklamalar[index].tarih, "dd.MM.yyyy");
                     final tanim = widget.bilgi.yoklamalar[index].tanim;
                     return Padding(
                         padding: const EdgeInsets.all(3),
                         child: ElevatedButton(
                           onPressed: () {
-                            yesNoDialog(context,
-                                text:
-                                    "Bu yoklama kaydını silmek istediğinizden emin misiniz?",
-                                title: "Onay", onYes: () async {
+                            yesNoDialog(context, text: "Bu yoklama kaydını silmek istediğinizden emin misiniz?", title: "Onay", onYes: () async {
                               try {
                                 loadingdlg.push();
                                 await uyeYoklama(api,
-                                    yoklama_id: widget
-                                        .bilgi.yoklamalar[index].yoklama_id,
-                                    uye_id: widget.bilgi.uye_id,
-                                    tarih:
-                                        widget.bilgi.yoklamalar[index].tarih);
+                                    yoklama_id: widget.bilgi.yoklamalar[index].yoklama_id, uye_id: widget.bilgi.uye_id, tarih: widget.bilgi.yoklamalar[index].tarih);
                                 loadingdlg.pop();
                                 setState(() {
                                   widget.bilgi.yoklamalar.removeAt(index);

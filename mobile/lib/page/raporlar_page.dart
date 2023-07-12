@@ -5,7 +5,7 @@ import 'package:dojo_mobile/report/raporseviyebildirimi.dart';
 import 'package:dojo_mobile/report/raporuye.dart';
 import 'package:flutter/material.dart';
 
-import '../api.dart';
+import '../tools/api.dart';
 import '../store.dart';
 import 'appwindow.dart';
 
@@ -43,20 +43,9 @@ class _RaporlarPage extends State<RaporlarPage> with TickerProviderStateMixin {
                 onTap: (value) {},
                 controller: tbc,
                 labelColor: Colors.blueAccent.shade700,
-                tabs: const [
-                  Tab(text: "Gelir\nGider"),
-                  Tab(text: "Seviye\nBildirimi"),
-                  Tab(text: "Üye\nRaporu"),
-                  Tab(text: "Elden\nTahsilat")
-                ],
+                tabs: const [Tab(text: "Gelir\nGider"), Tab(text: "Seviye\nBildirimi"), Tab(text: "Üye\nRaporu"), Tab(text: "Elden\nTahsilat")],
               ),
-              Expanded(
-                  child: TabBarView(controller: tbc, children: [
-                RaporGelirGider(api: api),
-                RaporSeviyeBildirimi(api: api),
-                RaporUye(api: api),
-                RaporEldenTahsilat(api: api)
-              ]))
+              Expanded(child: TabBarView(controller: tbc, children: [RaporGelirGider(api: api), RaporSeviyeBildirimi(api: api), RaporUye(api: api), RaporEldenTahsilat(api: api)]))
             ])));
   }
 }

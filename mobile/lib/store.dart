@@ -1,5 +1,5 @@
 // ignore_for_file: non_constant_identifier_names
-import 'package:dojo_mobile/service.dart';
+import 'package:dojo_mobile/service/servicetypes.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:safe_device/safe_device.dart';
@@ -49,8 +49,7 @@ Future<Store> LoadStore() async {
   } else {
     jdata = await rootBundle.loadString("assets/defaults.release.json");
   }
-  kendokaImg =
-      (await rootBundle.load("assets/kendoka.jpg")).buffer.asUint8List();
+  kendokaImg = (await rootBundle.load("assets/kendoka.jpg")).buffer.asUint8List();
   final Map<String, dynamic> data = jsonDecode(jdata);
   s.HostUrl = data["Host"].toString();
   s.AppName = data["Name"].toString();

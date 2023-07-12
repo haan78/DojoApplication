@@ -1,13 +1,14 @@
 import 'dart:async';
 
-import 'package:dojo_mobile/api.dart';
+import 'package:dojo_mobile/service/servicemethods.dart';
+import 'package:dojo_mobile/service/servicetypes.dart';
+import 'package:dojo_mobile/tools/api.dart';
 import 'package:dojo_mobile/page/appwindow.dart';
 import 'package:dojo_mobile/page/widget/alert.dart';
 import 'package:dojo_mobile/page/widget/radio_group.dart';
 import 'package:dojo_mobile/page/widget/saat.dart';
 import 'package:dojo_mobile/page/widget/app_drawer.dart';
 import 'package:dojo_mobile/page/widget/list_items.dart';
-import 'package:dojo_mobile/service.dart';
 import 'package:dojo_mobile/store.dart';
 import 'package:flutter/material.dart';
 
@@ -514,18 +515,20 @@ class _MacCalismasi extends State<MacCalismasi> {
                 try {
                   maccliasmasi_tumunusil(api, yoklama!.tarih, 'TAKIM', yoklamaId).then((value) {
                     maccalismasi_kayit(api, mckl).then((value) {
+                      loadingdlg.pop();
                       successAlert(context, "İşlem Başarılı");
                     }).catchError((err) {
+                      loadingdlg.pop();
                       errorAlert(context, "$err maccalismasi_kayit");
                     });
                   }).catchError((err) {
+                    loadingdlg.pop();
                     errorAlert(context, "$err maccliasmasi_tumunusil");
                   });
                 } catch (err) {
+                  loadingdlg.pop();
                   errorAlert(context, "$err try");
                 }
-
-                loadingdlg.pop();
               },
               child: const Text("Kaydet"))
         ]),

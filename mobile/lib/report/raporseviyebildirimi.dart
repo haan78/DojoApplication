@@ -1,7 +1,8 @@
-import 'package:dojo_mobile/api.dart';
+import 'package:dojo_mobile/service/servicemethods.dart';
+import 'package:dojo_mobile/service/servicetypes.dart';
+import 'package:dojo_mobile/tools/api.dart';
 import 'package:dojo_mobile/page/appwindow.dart';
 import 'package:dojo_mobile/page/widget/alert.dart';
-import 'package:dojo_mobile/service.dart';
 import 'package:excel/excel.dart';
 import 'package:flutter/material.dart';
 
@@ -45,18 +46,15 @@ class _RaporSeviyeBildirimi extends State<RaporSeviyeBildirimi> {
                           DataColumn(label: Text("Sınav Tarihi")),
                           DataColumn(label: Text("Açıklama"))
                         ],
-                        rows: List<DataRow>.generate(listSeviyeBildirim.length,
-                            (index) {
+                        rows: List<DataRow>.generate(listSeviyeBildirim.length, (index) {
                           final sb = listSeviyeBildirim[index];
                           return DataRow(cells: [
                             DataCell(Text((index + 1).toString())),
                             DataCell(Text(sb.ad)),
                             DataCell(Text(sb.ekfno)),
-                            DataCell(Text(
-                                dateFormater(sb.dogum_tarih, "dd.MM.yyyy"))),
+                            DataCell(Text(dateFormater(sb.dogum_tarih, "dd.MM.yyyy"))),
                             DataCell(Text(sb.seviye)),
-                            DataCell(
-                                Text(dateFormater(sb.tarih, "dd.MM.yyyy"))),
+                            DataCell(Text(dateFormater(sb.tarih, "dd.MM.yyyy"))),
                             DataCell(Text(sb.aciklama))
                           ]);
                         }),
@@ -68,56 +66,20 @@ class _RaporSeviyeBildirimi extends State<RaporSeviyeBildirimi> {
                 try {
                   final excel = Excel.createExcel();
                   final sheet = excel.sheets[excel.getDefaultSheet()!]!;
-                  sheet
-                      .cell(CellIndex.indexByColumnRow(
-                          columnIndex: 0, rowIndex: 0))
-                      .value = "Ad";
-                  sheet
-                      .cell(CellIndex.indexByColumnRow(
-                          columnIndex: 1, rowIndex: 0))
-                      .value = "EkfNo";
-                  sheet
-                      .cell(CellIndex.indexByColumnRow(
-                          columnIndex: 2, rowIndex: 0))
-                      .value = "Doğum Tarihi";
-                  sheet
-                      .cell(CellIndex.indexByColumnRow(
-                          columnIndex: 3, rowIndex: 0))
-                      .value = "Seviye";
-                  sheet
-                      .cell(CellIndex.indexByColumnRow(
-                          columnIndex: 4, rowIndex: 0))
-                      .value = "Sınav Tarihi";
-                  sheet
-                      .cell(CellIndex.indexByColumnRow(
-                          columnIndex: 5, rowIndex: 0))
-                      .value = "Açıklama";
+                  sheet.cell(CellIndex.indexByColumnRow(columnIndex: 0, rowIndex: 0)).value = "Ad";
+                  sheet.cell(CellIndex.indexByColumnRow(columnIndex: 1, rowIndex: 0)).value = "EkfNo";
+                  sheet.cell(CellIndex.indexByColumnRow(columnIndex: 2, rowIndex: 0)).value = "Doğum Tarihi";
+                  sheet.cell(CellIndex.indexByColumnRow(columnIndex: 3, rowIndex: 0)).value = "Seviye";
+                  sheet.cell(CellIndex.indexByColumnRow(columnIndex: 4, rowIndex: 0)).value = "Sınav Tarihi";
+                  sheet.cell(CellIndex.indexByColumnRow(columnIndex: 5, rowIndex: 0)).value = "Açıklama";
                   for (int i = 0; i < listSeviyeBildirim.length; i++) {
                     final sb = listSeviyeBildirim[i];
-                    sheet
-                        .cell(CellIndex.indexByColumnRow(
-                            columnIndex: 0, rowIndex: i + 1))
-                        .value = sb.ad;
-                    sheet
-                        .cell(CellIndex.indexByColumnRow(
-                            columnIndex: 1, rowIndex: i + 1))
-                        .value = sb.ekfno;
-                    sheet
-                        .cell(CellIndex.indexByColumnRow(
-                            columnIndex: 2, rowIndex: i + 1))
-                        .value = dateFormater(sb.dogum_tarih, "dd/MM/yyyy");
-                    sheet
-                        .cell(CellIndex.indexByColumnRow(
-                            columnIndex: 3, rowIndex: i + 1))
-                        .value = sb.seviye;
-                    sheet
-                        .cell(CellIndex.indexByColumnRow(
-                            columnIndex: 4, rowIndex: i + 1))
-                        .value = dateFormater(sb.tarih, "dd/MM/yyyy");
-                    sheet
-                        .cell(CellIndex.indexByColumnRow(
-                            columnIndex: 5, rowIndex: i + 1))
-                        .value = sb.aciklama;
+                    sheet.cell(CellIndex.indexByColumnRow(columnIndex: 0, rowIndex: i + 1)).value = sb.ad;
+                    sheet.cell(CellIndex.indexByColumnRow(columnIndex: 1, rowIndex: i + 1)).value = sb.ekfno;
+                    sheet.cell(CellIndex.indexByColumnRow(columnIndex: 2, rowIndex: i + 1)).value = dateFormater(sb.dogum_tarih, "dd/MM/yyyy");
+                    sheet.cell(CellIndex.indexByColumnRow(columnIndex: 3, rowIndex: i + 1)).value = sb.seviye;
+                    sheet.cell(CellIndex.indexByColumnRow(columnIndex: 4, rowIndex: i + 1)).value = dateFormater(sb.tarih, "dd/MM/yyyy");
+                    sheet.cell(CellIndex.indexByColumnRow(columnIndex: 5, rowIndex: i + 1)).value = sb.aciklama;
                   }
                   openExcel(context, "gelirgider", excel);
                 } catch (err) {

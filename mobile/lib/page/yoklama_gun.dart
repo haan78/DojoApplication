@@ -1,9 +1,10 @@
 import 'package:dojo_mobile/page/appwindow.dart';
 import 'package:dojo_mobile/page/widget/alert.dart';
+import 'package:dojo_mobile/service/servicemethods.dart';
+import 'package:dojo_mobile/service/servicetypes.dart';
 import 'package:flutter/material.dart';
 
-import '../api.dart';
-import '../service.dart';
+import '../tools/api.dart';
 import '../store.dart';
 
 class YoklamaGun extends StatefulWidget {

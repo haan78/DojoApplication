@@ -1,8 +1,9 @@
 import 'package:dojo_mobile/page/kendoka.dart';
 import 'package:dojo_mobile/page/widget/list_items.dart';
 import 'package:dojo_mobile/page/widget/app_drawer.dart';
-import '../api.dart';
-import '../service.dart';
+import 'package:dojo_mobile/service/servicemethods.dart';
+import 'package:dojo_mobile/service/servicetypes.dart';
+import '../tools/api.dart';
 import '../store.dart';
 import 'package:flutter/material.dart';
 
@@ -75,10 +76,7 @@ class _AdminPageState extends State<FirstPage> {
                             });
                           },
                           child: const Row(
-                            children: [
-                              Icon(Icons.group_off),
-                              Text("Pasif Üyeler")
-                            ],
+                            children: [Icon(Icons.group_off), Text("Pasif Üyeler")],
                           ))),
                   PopupMenuItem(
                       child: TextButton(
@@ -89,10 +87,7 @@ class _AdminPageState extends State<FirstPage> {
                             });
                           },
                           child: const Row(
-                            children: [
-                              Icon(Icons.group_add),
-                              Text("Bekleyenler")
-                            ],
+                            children: [Icon(Icons.group_add), Text("Bekleyenler")],
                           )))
                 ];
               },
@@ -100,11 +95,7 @@ class _AdminPageState extends State<FirstPage> {
             ),
             IconButton(
                 onPressed: () {
-                  Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const Kendoka(0)))
-                      .then((value) {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => const Kendoka(0))).then((value) {
                     setState(() {
                       _reload = true;
                     });
@@ -134,10 +125,7 @@ class _AdminPageState extends State<FirstPage> {
                                     });
                                   },
                                   child: const Row(
-                                    children: [
-                                      Icon(Icons.payments),
-                                      Text("Aidat Borcu")
-                                    ],
+                                    children: [Icon(Icons.payments), Text("Aidat Borcu")],
                                   ))),
                           PopupMenuItem(
                               child: TextButton(
@@ -148,10 +136,7 @@ class _AdminPageState extends State<FirstPage> {
                                     });
                                   },
                                   child: const Row(
-                                    children: [
-                                      Icon(Icons.calendar_month),
-                                      Text("Gelmeyenler")
-                                    ],
+                                    children: [Icon(Icons.calendar_month), Text("Gelmeyenler")],
                                   ))),
                           PopupMenuItem(
                             child: TextButton(
@@ -162,10 +147,7 @@ class _AdminPageState extends State<FirstPage> {
                                   });
                                 },
                                 child: const Row(
-                                  children: [
-                                    Icon(Icons.sort_by_alpha),
-                                    Text("İsime Göre")
-                                  ],
+                                  children: [Icon(Icons.sort_by_alpha), Text("İsime Göre")],
                                 )),
                           )
                         ];
@@ -187,11 +169,7 @@ class _AdminPageState extends State<FirstPage> {
                     itemCount: data.length,
                     itemBuilder: (context, index) {
                       return uyeListItem(store, data[index], () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) =>
-                                    Kendoka(data[index].uye_id))).then((value) {
+                        Navigator.push(context, MaterialPageRoute(builder: (context) => Kendoka(data[index].uye_id))).then((value) {
                           setState(() {
                             _reload = true;
                           });
@@ -206,8 +184,7 @@ class _AdminPageState extends State<FirstPage> {
         ));
   }
 
-  Future<List<UyeListDetay>> uyeler(ListType type, String search,
-      FilterAction fa, Store store, bool reload) async {
+  Future<List<UyeListDetay>> uyeler(ListType type, String search, FilterAction fa, Store store, bool reload) async {
     List<UyeListDetay> data = [];
     String durumlar = "active,admin,super-admin";
     if (type == ListType.registerd) {
@@ -225,8 +202,7 @@ class _AdminPageState extends State<FirstPage> {
 
     if (search.isNotEmpty) {
       data = listData.where((element) {
-        if (element.ad.toLowerCase().startsWith(search.toLowerCase()) ||
-            element.seviye.startsWith(search.toUpperCase())) {
+        if (element.ad.toLowerCase().startsWith(search.toLowerCase()) || element.seviye.startsWith(search.toUpperCase())) {
           return true;
         } else {
           return false;

@@ -452,3 +452,29 @@ function rapor_maccalismasi() {
     return MySqlStmt::query(mysqlilink(),$sql);
 }
 
+function maccalismasi_kisibazli(int $uye_id) {
+    $sql = "SELECT 
+	k.ad as aka,
+	b.ad as shiro,
+	us.tarih,
+	us.tur,
+	us.aka_ippon,
+	us.shiro_ippon,
+	us.aka_hansoku,
+	us.shiro_hansoku,
+	CASE 
+		WHEN us.aka = ? AND COALESCE(LENGTH(us.aka_ippon),0) > COALESCE(LENGTH(us.shiro_ippon),0) THEN 'G'
+		WHEN us.aka = ? AND COALESCE(LENGTH(us.aka_ippon),0) < COALESCE(LENGTH(us.shiro_ippon),0) THEN 'M'
+		WHEN us.shiro = ? AND COALESCE(LENGTH(us.aka_ippon),0) < COALESCE(LENGTH(us.shiro_ippon),0) THEN 'G'
+		WHEN us.shiro = ? AND COALESCE(LENGTH(us.aka_ippon),0) > COALESCE(LENGTH(us.shiro_ippon),0) THEN 'M'
+		ELSE 'B'
+	END AS sonuc
+FROM uye_shiai us
+inner join uye k on k.uye_id = us.aka
+INNER join uye b on b.uye_id = us.shiro 
+WHERE us.tarih >=DATE_ADD(CURRENT_DATE,INTERVAL -3 MONTH) 
+AND ( us.aka = ? OR us.shiro = ? ) ORDER BY tarih DESC";
+    return MySqlStmt::query(mysqlilink(),$sql,[$uye_id,$uye_id,$uye_id,$uye_id,$uye_id,$uye_id]);
+
+}
+

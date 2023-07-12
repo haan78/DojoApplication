@@ -1,9 +1,10 @@
 import 'package:dojo_mobile/page/widget/alert.dart';
-import 'package:dojo_mobile/service.dart';
+import 'package:dojo_mobile/service/servicemethods.dart';
+import 'package:dojo_mobile/service/servicetypes.dart';
 import 'package:extended_masked_text/extended_masked_text.dart';
 import 'package:flutter/material.dart';
 
-import '../api.dart';
+import '../tools/api.dart';
 import '../store.dart';
 import 'appwindow.dart';
 

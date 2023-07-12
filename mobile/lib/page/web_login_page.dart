@@ -1,10 +1,10 @@
 import 'dart:convert';
 
-import 'package:dojo_mobile/api.dart';
+import 'package:dojo_mobile/service/servicemethods.dart';
+import 'package:dojo_mobile/tools/api.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:webview_flutter/webview_flutter.dart';
-import '../service.dart';
 import 'first_page.dart';
 import '../store.dart';
 

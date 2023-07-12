@@ -2,12 +2,13 @@ import 'package:dojo_mobile/page/tabs/kendoka_aidat.dart';
 import 'package:dojo_mobile/page/tabs/kendoka_base.dart';
 import 'package:dojo_mobile/page/tabs/kendoka_seviye.dart';
 import 'package:dojo_mobile/page/tabs/kendoka_yoklama.dart';
+import 'package:dojo_mobile/service/servicemethods.dart';
+import 'package:dojo_mobile/service/servicetypes.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../api.dart';
-import '../service.dart';
+import '../tools/api.dart';
 import '../store.dart';
 import 'appwindow.dart';
 
@@ -29,10 +30,7 @@ class _Kendoka extends State<Kendoka> {
   bool _reload = true;
   final scaffoldKey = GlobalKey<ScaffoldState>();
 
-  Widget getWigget(
-      {required Sabitler sabitler,
-      required UyeBilgi bilgi,
-      required Store store}) {
+  Widget getWigget({required Sabitler sabitler, required UyeBilgi bilgi, required Store store}) {
     if (_bottomNavIndex == 0) {
       return KendokaBase(
         sabitler: formSabitler,
@@ -46,8 +44,7 @@ class _Kendoka extends State<Kendoka> {
         store: store,
       );
     } else if (_bottomNavIndex == 2) {
-      return KendokaSeviye(
-          sabitler: sabitler, bilgi: bilgi, store: store, uyeAd: bilgi.ad);
+      return KendokaSeviye(sabitler: sabitler, bilgi: bilgi, store: store, uyeAd: bilgi.ad);
     } else {
       return KendokaYoklama(sabitler: sabitler, bilgi: bilgi, store: store);
     }
@@ -108,14 +105,10 @@ class _Kendoka extends State<Kendoka> {
                   },
                   type: BottomNavigationBarType.fixed,
                   items: const [
-                      BottomNavigationBarItem(
-                          label: "Genel", icon: Icon(Icons.person)),
-                      BottomNavigationBarItem(
-                          label: "Aidatlar", icon: Icon(Icons.payments)),
-                      BottomNavigationBarItem(
-                          label: "Sinavlar", icon: Icon(Icons.card_membership)),
-                      BottomNavigationBarItem(
-                          label: "Keikolar", icon: Icon(Icons.checklist))
+                      BottomNavigationBarItem(label: "Genel", icon: Icon(Icons.person)),
+                      BottomNavigationBarItem(label: "Aidatlar", icon: Icon(Icons.payments)),
+                      BottomNavigationBarItem(label: "Sinavlar", icon: Icon(Icons.card_membership)),
+                      BottomNavigationBarItem(label: "Keikolar", icon: Icon(Icons.checklist))
                     ])
               : null,
         );

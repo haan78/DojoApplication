@@ -1,7 +1,8 @@
+import 'package:dojo_mobile/service/servicemethods.dart';
+import 'package:dojo_mobile/service/servicetypes.dart';
 import 'package:dojo_mobile/store.dart';
 import 'package:flutter/material.dart';
 
-import '../../service.dart';
 import '../appwindow.dart';
 
 typedef CheckedCallback = void Function(bool);

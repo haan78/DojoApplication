@@ -1,9 +1,10 @@
-import 'package:dojo_mobile/service.dart';
+import 'package:dojo_mobile/service/servicemethods.dart';
+import 'package:dojo_mobile/service/servicetypes.dart';
 import 'package:dojo_mobile/tools/fotocek.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import '../../api.dart';
+import '../../tools/api.dart';
 import '../../store.dart';
 import '../appwindow.dart';
 import '../widget/alert.dart';
