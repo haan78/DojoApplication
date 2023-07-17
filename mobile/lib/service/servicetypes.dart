@@ -70,7 +70,7 @@ class UyeBilgi {
 class UyeListDetay {
   int uye_id = 0;
   String ad = "";
-  int dosya_id = 0;
+  //int dosya_id = 0;
   String seviye = "";
   int odenmemis_aidat_syisi = 0;
   double odenmemis_aidat_borcu = 0;

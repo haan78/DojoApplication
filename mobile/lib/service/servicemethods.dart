@@ -15,7 +15,7 @@ Future<List<UyeListDetay>> uye_listele(Api api, {required String durumlar}) asyn
   for (final urd in r) {
     UyeListDetay uld = UyeListDetay();
     uld.ad = urd["ad"];
-    uld.dosya_id = int.parse(urd["dosya_id"].toString());
+    //uld.dosya_id = urd["dosya_id"] ?? 0;
     uld.odenmemis_aidat_borcu = double.parse(urd["odenmemis_aidat_borcu"].toString());
     uld.odenmemis_aidat_syisi = int.parse(urd["odenmemis_aidat_syisi"].toString());
     uld.seviye = urd["seviye"];
@@ -491,8 +491,10 @@ Future<List<GenelRap>> rapor_geneluyeraporu(Api api) async {
 
 Image uyeImageLoad(Store s, int uyeId, {BoxFit? fit}) {
   Map<String, String> headers = {"authorization": s.ApiToken};
+  final iurl = "${s.HostUrl}/img.php/uye/$uyeId";
+  CachedNetworkImage.evictFromCache(iurl);
   return Image.network(
-    "${s.HostUrl}/img.php/uye/$uyeId",
+    iurl,
     headers: headers,
     fit: fit,
   );
@@ -503,6 +505,9 @@ CachedNetworkImage uyeImageLoadCached(Store s, int uyeId, {BoxFit? fit}) {
   return CachedNetworkImage(
     httpHeaders: headers,
     fit: fit,
+    errorWidget: (context, url, error) {
+      return Text("HATA $uyeId");
+    },
     imageUrl: "${s.HostUrl}/img.php/uye/$uyeId",
   );
 }
