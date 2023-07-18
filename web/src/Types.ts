@@ -14,6 +14,18 @@ export interface Due {
     keikolar:string
 }
 
+export interface Score {
+    aka:string,
+    shiro:string,
+    tarih:string,
+    tur:string,
+    aka_ippon:string,
+    shiro_ippon:string,
+    aka_hansoku:number,
+    shiro_hansoku:number,
+    sonuc:string
+}
+
 export const Aylar = ["Ocak","Şubat","Mart", "Nisan", "Mayıs", "Haziran", "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"];
 export function trDate(isodate:string|null ) : string {
     if (isodate) {

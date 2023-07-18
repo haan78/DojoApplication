@@ -7,6 +7,7 @@
         <div class="settings">            
             <a class:active={module=="Member"}  href={'javascript:;'} on:click={()=>{ module="Member"; }}><UserIcon size="1x" /> Üye Bilgisi</a>
             <a class:active={module=="Dues"}  href={'javascript:;'} on:click={()=>{ module="Dues"; }}><CreditCardIcon size="1x" /> Aidatlar</a>
+            <a class:active={module=="Scores"} href={'javascript:;'} on:click={()=>{ module="Scores"; }}><CreditCardIcon size="1x" /> Çalışmalar</a>
             <a class:active={module=="PasswordChange"} href={'javascript:;'} on:click={()=>{ module="PasswordChange"; }}><KeyIcon size="1x" /> Parola Değiştir</a>
         </div>
         {/if}
@@ -15,6 +16,8 @@
         <PasswordChange />
         {:else if module == "Dues"}
         <Dues/>
+        {:else if module == "Scores"}
+        <Scores/>
         {:else if module == "Loading"}
         <img src="loading.svg" alt="" />
         {:else if module == "Error"}
@@ -58,7 +61,8 @@
     import { KeyIcon, UserIcon, CreditCardIcon } from 'svelte-feather-icons';
     import { push } from "svelte-spa-router";
     import PasswordChange from './PasswordChange.svelte';
-    import Dues from './Dues.svelte';    
+    import Dues from './Dues.svelte';
+    import Scores from './Scores.svelte';   
     import { onMount } from "svelte";
     import {JRequest } from "../lib/JRequest";
     import type { JRequestError } from "../lib/JRequest";

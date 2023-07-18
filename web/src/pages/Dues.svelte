@@ -83,7 +83,6 @@
             loading = false;
             popup.push({message:err.message, type:"bad"});
         });
-        
     });
 </script>
 <style>

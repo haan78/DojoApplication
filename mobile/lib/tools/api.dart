@@ -8,8 +8,6 @@ class ApiResponse {
   dynamic data;
 }
 
-class ApiUserInfo {}
-
 class ApiException implements Exception {
   int status;
   int code;

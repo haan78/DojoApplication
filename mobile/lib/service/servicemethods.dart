@@ -15,7 +15,6 @@ Future<List<UyeListDetay>> uye_listele(Api api, {required String durumlar}) asyn
   for (final urd in r) {
     UyeListDetay uld = UyeListDetay();
     uld.ad = urd["ad"];
-    //uld.dosya_id = urd["dosya_id"] ?? 0;
     uld.odenmemis_aidat_borcu = double.parse(urd["odenmemis_aidat_borcu"].toString());
     uld.odenmemis_aidat_syisi = int.parse(urd["odenmemis_aidat_syisi"].toString());
     uld.seviye = urd["seviye"];

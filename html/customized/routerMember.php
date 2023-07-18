@@ -54,4 +54,8 @@ function routerMember(DefaultJsonRouter $router)
         session_unset();
         return "OK";
     });
+
+    $router->add("/member/scores", function (Request $req) {
+        return maccalismasi_kisibazli($req->local()->uye_id);
+    });
 }
