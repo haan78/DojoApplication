@@ -427,7 +427,7 @@ function rapor_maccalismasi() {
     SUM(IF(q.sonuc = 'M',1,0)) AS maglubiyet,
     SUM(IF(q.sonuc = 'B',1,0)) AS beraberlik,
     SUM(q.aldigi) AS alinansayi, 
-    SUM(q.verdigi) AS verilensayi, AVG(hansoku) AS hansokuort,
+    SUM(q.verdigi) AS verilensayi,
     COUNT(*) macsayisi,
     (SELECT count(*) FROM  uye_yoklama uy WHERE uy.uye_id  = q.uye_id AND uy.tarih >= DATE_ADD(CURRENT_DATE,INTERVAL -3 MONTH)) as son3Ay
     FROM (

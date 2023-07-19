@@ -610,3 +610,27 @@ Future<void> maccliasmasi_tumunusil(Api api, DateTime tarih, String tur, int yok
     return Future.error(err);
   }
 }
+
+Future<List<MaccalismasiRapor>> rapor_maccalismasi(Api api) async {
+  List<MaccalismasiRapor> l = [];
+  try {
+    final data = await api.call("/admin/rapor/mac");
+    for(final raw in data) {
+      final mcr = MaccalismasiRapor();
+      mcr.uye_id = raw["uye_id"] ?? 0;
+      mcr.ad = raw["ad"] ?? "";
+      mcr.cinsiyet = raw["cinsiyet"] ?? "";
+      mcr.galibiyet = raw["galibiyet"] ?? 0;
+      mcr.maglubiyet = raw["maglubiyet"] ?? 0;
+      mcr.beraberlik = raw["beraberlik"] ?? 0;
+      mcr.alinansayi = raw["alinansayi"] ?? 0;
+      mcr.verilensayi = raw["verilensayi"] ?? 0;
+      mcr.macsayisi = raw["macsayisi"] ?? 0;
+      mcr.son3Ay = raw["son3Ay"] ?? 0;      
+    }
+    
+  } catch (err) {
+    return Future.error(err);
+  }
+  return l;
+}

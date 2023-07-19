@@ -224,3 +224,16 @@ class MacCalismasiIcinYoklama {
   DateTime tarih = DateTime.now();
   bool macyaipmis = false;
 }
+
+class MaccalismasiRapor {
+  int uye_id = 0;
+  String ad = "";
+  String cinsiyet = "";
+  int galibiyet = 0;
+  int maglubiyet = 0;
+  int beraberlik = 0;
+  int alinansayi = 0;
+  int verilensayi = 0;
+  int macsayisi = 0;
+  int son3Ay = 0;
+}

@@ -217,4 +217,8 @@ function routerAdmin(DefaultJsonRouter $router)
         return maccalismasi_kayit($data);
     });
 
+    $router->add("/admin/rapor/mac",function(Request $req){
+        return rapor_maccalismasi();
+    });
+
 }
