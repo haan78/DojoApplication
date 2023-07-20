@@ -5,9 +5,9 @@ error_reporting(E_ALL);
 ini_set('display_errors', TRUE);
 ini_set('display_startup_errors', TRUE);
 
-define("MAX_LOGIN_ATTEMPT",5);
 define("TOKEN_TIME",7200);
 define("SECRET_FILE_PATH","/etc/.secrets/dojo.json");
+define("MIN_MOBILE_CLIENT_VERSION","1.0.8");
 
 function initSecret():void {
     $file = @file_get_contents(SECRET_FILE_PATH);

@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'first_page.dart';
+import 'appwindow.dart';
 import '../store.dart';
 
 import 'package:url_launcher/url_launcher.dart';
@@ -19,9 +20,9 @@ class WebLoginPage extends StatelessWidget {
     c.loadRequest(Uri.parse(s.LoginUrl));
     c.setNavigationDelegate(NavigationDelegate(
       onPageFinished: (url) {
-        c.runJavaScript(("setLoginData('${s.ApiUser}','${s.ApiPassword}','mobile')"));
+        c.runJavaScript(("setLoginData('${s.ApiUser}','${s.ApiPassword}','mobile','${appVersion}')"));
       },
-    ));
+    ));    
     c.addJavaScriptChannel("MobileApp", onMessageReceived: (JavaScriptMessage message) async {
       final Map<String, dynamic> data = jsonDecode(message.message);
       s.UserStatus = data["durum"];
@@ -73,7 +74,7 @@ class WebLoginPage extends StatelessWidget {
                           await forgetSettings();
                           s.UserName = "";
                           s.ApiPassword = "";
-                          pageController.runJavaScript("setLoginData('${s.ApiUser}','${s.ApiPassword}','mobile')");
+                          pageController.runJavaScript("setLoginData('${s.ApiUser}','${s.ApiPassword}','mobile','${appVersion}')");
                         },
                         child: const Text("Beni Unut")),
                     const Spacer(),

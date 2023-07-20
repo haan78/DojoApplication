@@ -5,21 +5,6 @@ use Minmi\Request;
 use Minmi\MinmiExeption;
 
 function authOpen(Request $req) : void {
-    session_start();
-    if (isset($_SESSION["attempt"])) {
-        $attempt = intval($_SESSION["attempt"] ?? 0);
-        if ($attempt < MAX_LOGIN_ATTEMPT)  {
-            $newnum = $attempt + 1;
-            $_SESSION["attempt"] = $newnum;
-            $req->setLocal((object)[
-                "attempt" => $newnum
-            ]);
-        } else {
-            throw new MinmiExeption("Too many attempt in session time",401);    
-        }
-    } else {        
-        throw new MinmiExeption("No valid session!",401);
-    }
 }
 
 function routerOpen(DefaultJsonRouter $router) {
@@ -50,10 +35,26 @@ function routerOpen(DefaultJsonRouter $router) {
     });
     
     $router->add("/open/token", function (Request $request) {
-        $jdata = $request->json();
-        $num = ($request->local())->attempt ?? -1;        
+
+        function versionnum(string $ver) : float {    
+            if (preg_match_all("/^([0-9]{1,2})\.([0-9]{1,2})\.([0-9]{1,2})($|-.*)/",$ver,$matches)) {
+                $strval = $matches[1][0].str_pad($matches[2][0],2,"0",STR_PAD_LEFT).".".str_pad($matches[3][0],2,"0",STR_PAD_LEFT);
+                return floatval($strval);
+            } else {        
+                return 0;
+            }    
+        }
+
+        $jdata = $request->json();     
         $type = $jdata->type ?? "";
         $username = $password = "";
+        $clientversion = versionnum($jdata->version ?? "");
+        $minversion = versionnum(MIN_MOBILE_CLIENT_VERSION);
+        
+        if ( $type == "mobile" && $clientversion < $minversion ) {
+            throw new MinmiExeption("Client version is older than =".($jdata->version ?? "")." / ".MIN_MOBILE_CLIENT_VERSION, 402);
+        }
+        
         if ($request->hasBasicAuth($username, $password)) {
             $user = validate(trim($username), trim($password), $type);
             if (!is_null($user)) {
@@ -67,8 +68,10 @@ function routerOpen(DefaultJsonRouter $router) {
                         "ad" => $user->ad
                     ];
                     $token = \Firebase\JWT\JWT::encode($payload, $GLOBALS["JWT_KEY"], 'HS256');
-                    session_unset();
                 } else { // type == "web"
+                    if (!isset($_SESSION)) {
+                        session_start();
+                    }                    
                     $_SESSION["attempt"] = 0;
                     $_SESSION["uye_id"] = $user->uye_id;
                     $_SESSION["ad"] = $user->ad;
@@ -81,7 +84,7 @@ function routerOpen(DefaultJsonRouter $router) {
                     "token" => $token
                 ];
             } else {
-                throw new MinmiExeption("Username or password is wrong (".$num.")", 402);
+                throw new MinmiExeption("Username or password is wrong", 402);
             }
         } else {
             throw new MinmiExeption("Username, password and captcha are required", 400);

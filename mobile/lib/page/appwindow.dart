@@ -14,7 +14,7 @@ const Color colorWarn = Color.fromARGB(255, 129, 122, 23);
 const colorTile1 = Color.fromARGB(255, 227, 233, 226);
 const colorTile2 = Color.fromARGB(255, 188, 201, 201);
 const colorInfo = Color.fromARGB(255, 16, 148, 148);
-const appVersion = "1.0.7-beta";
+const appVersion = "1.0.8-beta";
 const programerEmail = "alibarisozturk@gmail.com";
 const appPading = EdgeInsets.all(3);
 
