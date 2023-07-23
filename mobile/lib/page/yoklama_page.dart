@@ -88,7 +88,7 @@ class _YoklamaPage extends State<YoklamaPage> {
                                   tileColor: tileColorByIndex(index),
                                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
                                   trailing: IconButton(
-                                    icon: const Icon(Icons.arrow_forward),
+                                    icon: const Icon(Icons.arrow_forward, color: colorMenuFG),
                                     onPressed: () {
                                       Navigator.push(context, MaterialPageRoute(builder: (context) {
                                         return YoklamaGun(

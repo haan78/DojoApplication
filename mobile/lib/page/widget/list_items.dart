@@ -39,6 +39,7 @@ Widget uyeListItem(Store store, UyeListDetay uyeData, VoidCallback? btnCallback,
                   IconButton(
                     onPressed: btnCallback,
                     icon: const Icon(
+                      color: colorMenuFG,
                       Icons.arrow_circle_right_sharp,
                       size: 40,
                     ),

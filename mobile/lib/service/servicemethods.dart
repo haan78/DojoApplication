@@ -130,10 +130,11 @@ Future<int> uyeKayit(Api api, {required UyeBilgi ub, String? foto}) async {
     "ekfno": ub.ekfno,
     "durum": ub.durum
   });
-  if (foto != null) {
-    await api.upload("/admin/uye/foto/${ub.uye_id}", path: foto);
-  }
   final int uye_id = int.parse(response as String);
+  if (foto != null) {
+    await api.upload("/admin/uye/foto/$uye_id", path: foto);
+  }
+
   if (ub.durum == "registered") {
     await epostaTest(api, uye_id: uye_id);
   }
@@ -615,7 +616,7 @@ Future<List<MaccalismasiRapor>> rapor_maccalismasi(Api api) async {
   List<MaccalismasiRapor> l = [];
   try {
     final data = await api.call("/admin/rapor/mac");
-    for(final raw in data) {
+    for (final raw in data) {
       final mcr = MaccalismasiRapor();
       mcr.uye_id = raw["uye_id"] ?? 0;
       mcr.ad = raw["ad"] ?? "";
@@ -626,9 +627,8 @@ Future<List<MaccalismasiRapor>> rapor_maccalismasi(Api api) async {
       mcr.alinansayi = raw["alinansayi"] ?? 0;
       mcr.verilensayi = raw["verilensayi"] ?? 0;
       mcr.macsayisi = raw["macsayisi"] ?? 0;
-      mcr.son3Ay = raw["son3Ay"] ?? 0;      
+      mcr.son3Ay = raw["son3Ay"] ?? 0;
     }
-    
   } catch (err) {
     return Future.error(err);
   }
