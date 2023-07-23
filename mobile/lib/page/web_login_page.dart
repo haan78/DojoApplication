@@ -20,9 +20,9 @@ class WebLoginPage extends StatelessWidget {
     c.loadRequest(Uri.parse(s.LoginUrl));
     c.setNavigationDelegate(NavigationDelegate(
       onPageFinished: (url) {
-        c.runJavaScript(("setLoginData('${s.ApiUser}','${s.ApiPassword}','mobile','${appVersion}')"));
+        c.runJavaScript(("setLoginData('${s.ApiUser}','${s.ApiPassword}','mobile','$appVersion')"));
       },
-    ));    
+    ));
     c.addJavaScriptChannel("MobileApp", onMessageReceived: (JavaScriptMessage message) async {
       final Map<String, dynamic> data = jsonDecode(message.message);
       s.UserStatus = data["durum"];
@@ -74,7 +74,7 @@ class WebLoginPage extends StatelessWidget {
                           await forgetSettings();
                           s.UserName = "";
                           s.ApiPassword = "";
-                          pageController.runJavaScript("setLoginData('${s.ApiUser}','${s.ApiPassword}','mobile','${appVersion}')");
+                          pageController.runJavaScript("setLoginData('${s.ApiUser}','${s.ApiPassword}','mobile','$appVersion')");
                         },
                         child: const Text("Beni Unut")),
                     const Spacer(),
