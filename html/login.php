@@ -27,7 +27,7 @@ page(function () {
                 <a href="email.php">Şifremi Bilmiyorum</a>
             </div>
             <div class="link">
-                <a href="mailto:<?php echo $GLOBALS["INFO_EMAIL"]; ?>"><?php echo $GLOBALS["INFO_EMAIL"]; ?></a>
+                <a href="mailto:<?php echo INFO_EMAIL; ?>"><?php echo INFO_EMAIL; ?></a>
             </div>
             <input type="text" name="type12" value="" placeholder="Boş bırak" style="display: none;" />
         </div>

@@ -51,7 +51,7 @@ BEGIN
 	declare uid bigint default null;
   
 	SELECT ukd.email, ukd.uye_id into _email,uid FROM  uye_kimlik_degisim ukd  
-		WHERE  ukd.anahtar = p_anahtar and ukd.olusma >= DATE_ADD(CURRENT_TIMESTAMP, INTERVAL -24 HOUR ) LIMIT 1;
+		WHERE  ukd.anahtar = p_anahtar COLLATE utf8mb4_turkish_ci and COALESCE( ukd.degisme,ukd.olusma) >= DATE_ADD(CURRENT_TIMESTAMP, INTERVAL -24 HOUR ) LIMIT 1;
 	
 	IF uid is not null and _email is not null THEN 
 		UPDATE uye u SET u.email = _email, u.parola = if(p_parola is null,u.parola,MD5(p_parola)), 

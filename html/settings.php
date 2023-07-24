@@ -9,6 +9,8 @@ define("TOKEN_TIME",7200);
 define("SECRET_FILE_PATH","/etc/.secrets/dojo.json");
 define("MIN_MOBILE_CLIENT_VERSION","1.0.9");
 define("APP_MODE","development");
+define("SERVICE_ROOT","https://dojo.ankarakendo.com");
+define("INFO_EMAIL","ankarakendo2007@gmail.com");
 
 function initSecret():void {
     $file = @file_get_contents(SECRET_FILE_PATH);

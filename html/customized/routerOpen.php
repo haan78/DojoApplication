@@ -16,7 +16,7 @@ function routerOpen(DefaultJsonRouter $router) {
             create_identity(0, $email, $ad, $code);
             sendinblue($email, 3, (object)[
                 "AD" => $ad,
-                "URL" => $GLOBALS["SERVICE_ROOT"] . "/reset.php?code=$code"
+                "URL" => SERVICE_ROOT . "/reset.php?code=$code"
             ]);
         } else {
             throw new MinmiExeption("Email is required", 400);

@@ -66,10 +66,10 @@ function routerAdmin(DefaultJsonRouter $router)
         uye_eposta_onkayit($uye_id, $ad, $email, $code,$parola);
         sendinblue($email, 5, (object)[
             "AD" => $ad,
-            "URL" => $GLOBALS["SERVICE_ROOT"]. "/activate.php?code=$code",
+            "URL" => SERVICE_ROOT. "/activate.php?code=$code",
             "PAROLA" => $parola,
             "EPOSTA" => $email,
-            "ADRES" => $GLOBALS["SERVICE_ROOT"]
+            "ADRES" => SERVICE_ROOT
         ]);
     });
 
