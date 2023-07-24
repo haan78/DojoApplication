@@ -8,6 +8,7 @@ ini_set('display_startup_errors', TRUE);
 define("TOKEN_TIME",7200);
 define("SECRET_FILE_PATH","/etc/.secrets/dojo.json");
 define("MIN_MOBILE_CLIENT_VERSION","1.0.9");
+define("APP_MODE","development");
 
 function initSecret():void {
     $file = @file_get_contents(SECRET_FILE_PATH);

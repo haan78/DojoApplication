@@ -20,8 +20,11 @@
     <div class="left">
         <img src={logo} alt="LOGO" style="vertical-align: middle" />
         <span
-            style="margin-left: .5em; font-weight: bolder; font-size: x-large; "
-            >{title}</span
+            style="margin-left: .5em; font-weight: bolder; font-size: x-large; ">
+            {#if $$slots.title}<slot name="title" />{:else}
+            {title}
+            {/if}
+        </span
         >
     </div>
     <div class="right">

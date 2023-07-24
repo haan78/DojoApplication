@@ -7,7 +7,7 @@ use Minmi\MinmiExeption;
 function authAdmin(Request $req): void
 {
     $token = $req->getBearerToken();
-    if ($token=="labidur") {
+    if ($token=="labidur" && APP_MODE == "development") {
         $req->setLocal((object)[
             "uye_id" => 1,
             "durum" => "super-admin",

@@ -1,5 +1,9 @@
 <main>
-    <AppBar title="Ankara Kendo" on:exit={exit}>
+    <AppBar on:exit={exit}>
+        <span slot="title">
+            Ankara Kendo<br/>
+            <span style="font-size: xx-small;">{appVersion}</span>
+        </span>
         <span slot="exit"></span>
     </AppBar>
     <div class="container">
@@ -58,6 +62,7 @@
 
 <script lang="ts">
     // @ts-strict
+    import { appVersion } from '../settings';
     import { KeyIcon, UserIcon, CreditCardIcon } from 'svelte-feather-icons';
     import { push } from "svelte-spa-router";
     import PasswordChange from './PasswordChange.svelte';
