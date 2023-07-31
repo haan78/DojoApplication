@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 
 class Saat extends StatefulWidget {
+  Timer? timer;
   const Saat({super.key});
 
   @override
@@ -11,11 +12,10 @@ class Saat extends StatefulWidget {
   }
 }
 
-class _Saat extends State<Saat> {
-  Timer? timer;
+class _Saat extends State<Saat> {  
   int sure = 0;
   void _start() {
-    timer = Timer.periodic(const Duration(seconds: 1), (t) {
+    widget.timer = Timer.periodic(const Duration(seconds: 1), (t) {
       setState(() {
         sure += 1;
       });
@@ -23,8 +23,8 @@ class _Saat extends State<Saat> {
   }
 
   void _stop(bool reset) {
-    timer?.cancel();
-    timer = null;
+    widget.timer?.cancel();
+    widget.timer = null;
     if (reset) {
       setState(() {
         sure = 0;
@@ -45,7 +45,7 @@ class _Saat extends State<Saat> {
     return Row(mainAxisAlignment: MainAxisAlignment.center, children: [
       ElevatedButton(
           onPressed: () {
-            if (timer == null) {
+            if (widget.timer == null) {
               _start();
             } else {
               _stop(false);
