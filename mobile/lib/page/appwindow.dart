@@ -15,7 +15,7 @@ const colorTile1 = Color.fromARGB(255, 227, 233, 226);
 const colorTile2 = Color.fromARGB(255, 188, 201, 201);
 const colorInfo = Color.fromARGB(255, 16, 148, 148);
 const colorMenuFG = Colors.black;
-const appVersion = "1.0.9-beta";
+const appVersion = "1.1.1";
 const programerEmail = "alibarisozturk@gmail.com";
 const appPading = EdgeInsets.all(3);
 

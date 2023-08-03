@@ -2,36 +2,72 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
+typedef IntervalFnc = void Function(int);
+
+class Zamanlayici {
+  int _sure = 0;
+  Timer? timer;
+
+  IntervalFnc? intFnc;
+
+  Zamanlayici();
+
+  void start() {
+    timer = Timer.periodic(const Duration(seconds: 1), (t) {
+      _sure += 1;
+      if (intFnc != null) {
+        intFnc!(_sure);
+      }
+    });
+  }
+
+  void _stop() {
+    timer?.cancel();
+    timer = null;
+  }
+
+  void stop() {
+    _stop();
+    if (intFnc != null) {
+      intFnc!(_sure);
+    }
+  }
+
+  void startStop() {
+    if (timer == null) {
+      start();
+    } else {
+      stop();
+    }
+  }
+
+  void reset() {
+    _stop();
+    _sure = 0;
+    if (intFnc != null) {
+      intFnc!(_sure);
+    }
+  }
+
+  get sure {
+    return _sure;
+  }
+}
+
 class Saat extends StatefulWidget {
-  const Saat({super.key});
+  final Zamanlayici z;
+  const Saat({super.key, required this.z});
 
   @override
   State<StatefulWidget> createState() {
     return _Saat();
   }
+
+  void stop() {}
 }
 
-class _Saat extends State<Saat> {  
-  Timer? timer;
+class _Saat extends State<Saat> {
   int sure = 0;
-  void _start() {
-    timer = Timer.periodic(const Duration(seconds: 1), (t) {
-      setState(() {
-        sure += 1;
-      });
-    });
-  }
-
-  void _stop(bool reset) {
-    timer?.cancel();
-    timer = null;
-    if (reset) {
-      setState(() {
-        sure = 0;
-      });
-    }
-  }
-
   String zamangoster(int s) {
     int saat = (s ~/ 3600);
     int dakika = (s % 3600) ~/ 60;
@@ -40,16 +76,27 @@ class _Saat extends State<Saat> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    sure = widget.z.sure;
+    widget.z.intFnc = zaman;
+  }
+
+  void zaman(int s) {
+    if (mounted) {
+      setState(() {
+        sure = s;
+      });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     const sty = TextStyle(fontSize: 24, fontWeight: FontWeight.bold);
     return Row(mainAxisAlignment: MainAxisAlignment.center, children: [
       ElevatedButton(
           onPressed: () {
-            if (timer == null) {
-              _start();
-            } else {
-              _stop(false);
-            }
+            widget.z.startStop();
           },
           child: Text(
             zamangoster(sure),
@@ -58,7 +105,7 @@ class _Saat extends State<Saat> {
       const SizedBox(width: 10),
       ElevatedButton(
           onPressed: () {
-            _stop(true);
+            widget.z.reset();
           },
           child: const Text("RESET", style: sty))
     ]);

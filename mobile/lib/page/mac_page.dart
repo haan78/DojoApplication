@@ -47,6 +47,7 @@ class TakimSitesi {
 }
 
 class _MacCalismasi extends State<MacCalismasi> {
+  late Zamanlayici zaman;
   late LoadingDialog loadingdlg;
   ScreenType ekran = ScreenType.secim;
   final List<MacCalismasiKendocu> kendocular = [];
@@ -67,6 +68,7 @@ class _MacCalismasi extends State<MacCalismasi> {
   @override
   void initState() {
     super.initState();
+    zaman = Zamanlayici();
     loadingdlg = LoadingDialog(context);
     api = Api(url: widget.store.ApiUrl, authorization: widget.store.ApiToken);
 
@@ -323,7 +325,7 @@ class _MacCalismasi extends State<MacCalismasi> {
     const sayilar = [Text("M"), Text("K"), Text("D"), Text("T"), Text("H"), Text("Ht")];
     String oyuncu = beyaz ? "${seciliTakimListesi.white[index].ad} (BEYAZ)" : "${seciliTakimListesi.red[index].ad} (KIRMIZI)";
     IpponAndHansoku ih = beyaz ? seciliTakimListesi.sonuclar[index].shiro : seciliTakimListesi.sonuclar[index].aka;
-
+    zaman.stop();
     showDialog(
         context: context,
         builder: (BuildContext context) => StatefulBuilder(
@@ -374,6 +376,7 @@ class _MacCalismasi extends State<MacCalismasi> {
                         if (context.mounted) {
                           Navigator.of(context).pop();
                           anaformuyenile();
+                          zaman.start();
                         }
                       },
                     )
@@ -533,7 +536,7 @@ class _MacCalismasi extends State<MacCalismasi> {
               child: const Text("Kaydet"))
         ]),
         Expanded(child: Table(border: TableBorder.all(color: Colors.white), children: tablosatirlari())),
-        const Saat(),
+        Saat(z: zaman),
         const SizedBox(height: 20)
       ],
     );
