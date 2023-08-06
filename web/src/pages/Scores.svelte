@@ -39,15 +39,20 @@
     let scores:Array<Score> = [];
     const ipponSymbols = [" M ", " K ", " D ", " T ", " H ", " Ht "];
 
-    function printIppons(ippons:string) {
-        let str = "";
-        for (let i = 0; i < ippons.length; i++) {
-            const v = parseInt(ippons[i]);
-            if ( typeof v == "number") {
-                str += ipponSymbols[v];
-            }            
+    function printIppons(ippons:string|null) {
+        if (ippons) {
+            let str = "";
+            for (let i = 0; i < ippons.length; i++) {
+                const v = parseInt(ippons[i]);
+                if ( typeof v == "number") {
+                    str += ipponSymbols[v];
+                }            
+            }
+            return str.trim();
+        } else {
+            return "";
         }
-        return str.trim();
+        
     }
     function printHansoku(num:number) {
         let str = "";
