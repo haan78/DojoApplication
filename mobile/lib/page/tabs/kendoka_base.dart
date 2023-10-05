@@ -15,9 +15,14 @@ class KendokaBase extends StatefulWidget {
   final Sabitler sabitler;
 
   final List<DropdownMenuItem<int>> ddTahakkular = [];
-  KendokaBase({super.key, required this.sabitler, required this.bilgi, required this.store}) {
+  KendokaBase(
+      {super.key,
+      required this.sabitler,
+      required this.bilgi,
+      required this.store}) {
     for (final t in sabitler.tahakkuklar) {
-      ddTahakkular.add(DropdownMenuItem(value: t.tahakkuk_id, child: Text(t.tanim)));
+      ddTahakkular
+          .add(DropdownMenuItem(value: t.tahakkuk_id, child: Text(t.tanim)));
     }
     if (bilgi.uye_id == 0) {
       bilgi.durum = 'registered';
@@ -55,7 +60,8 @@ class _KendokaBase extends State<KendokaBase> {
     api = Api(url: widget.store.ApiUrl, authorization: widget.store.ApiToken);
     ekfnoEdit = TextEditingController(text: widget.bilgi.ekfno);
     emailEdit = TextEditingController(text: widget.bilgi.email);
-    buttonImage = uyeImageLoad(widget.store, widget.bilgi.uye_id, fit: BoxFit.fill);
+    buttonImage =
+        uyeImageLoad(widget.store, widget.bilgi.uye_id, fit: BoxFit.fill);
     if (widget.bilgi.uye_id == 0) {
       resimsecildi = false;
       tarihsecildi = false;
@@ -73,7 +79,9 @@ class _KendokaBase extends State<KendokaBase> {
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             TextButton(
-                style: TextButton.styleFrom(padding: const EdgeInsets.all(0), fixedSize: const Size(170, 250)),
+                style: TextButton.styleFrom(
+                    padding: const EdgeInsets.all(0),
+                    fixedSize: const Size(170, 250)),
                 onPressed: () async {
                   final xfile = await fotoFile();
                   if (xfile != null) {
@@ -113,7 +121,8 @@ class _KendokaBase extends State<KendokaBase> {
                   child: SizedBox(
                       //height: 60,
                       child: DropdownButtonFormField(
-                          decoration: const InputDecoration(labelText: "Cinsiyet"),
+                          decoration:
+                              const InputDecoration(labelText: "Cinsiyet"),
                           value: widget.bilgi.cinsiyet,
                           validator: (value) {
                             if (value == null || value == "") {
@@ -122,7 +131,12 @@ class _KendokaBase extends State<KendokaBase> {
                               return null;
                             }
                           },
-                          items: const [DropdownMenuItem(value: "ERKEK", child: Text("Erkek")), DropdownMenuItem(value: "KADIN", child: Text("Kadın"))],
+                          items: const [
+                            DropdownMenuItem(
+                                value: "ERKEK", child: Text("Erkek")),
+                            DropdownMenuItem(
+                                value: "KADIN", child: Text("Kadın"))
+                          ],
                           onChanged: (value) {
                             if (value != null) {
                               setState(() {
@@ -155,9 +169,17 @@ class _KendokaBase extends State<KendokaBase> {
                   onPressed: () async {
                     DateTime? dt;
                     if (tarihsecildi) {
-                      dt = await showDatePicker(context: context, initialDate: widget.bilgi.dogum_tarih, firstDate: tbas, lastDate: tbit);
+                      dt = await showDatePicker(
+                          context: context,
+                          initialDate: widget.bilgi.dogum_tarih,
+                          firstDate: tbas,
+                          lastDate: tbit);
                     } else {
-                      dt = await showDatePicker(context: context, initialDate: tbit, firstDate: tbas, lastDate: tbit);
+                      dt = await showDatePicker(
+                          context: context,
+                          initialDate: tbit,
+                          firstDate: tbas,
+                          lastDate: tbit);
                     }
                     if (dt != null) {
                       setState(() {
@@ -167,7 +189,12 @@ class _KendokaBase extends State<KendokaBase> {
                     }
                   },
                   child: Column(
-                    children: [const Text("Doğum Tarihi"), Text(tarihsecildi ? dateFormater(widget.bilgi.dogum_tarih, "dd.MM.yyyy") : "[Seçiniz]")],
+                    children: [
+                      const Text("Doğum Tarihi"),
+                      Text(tarihsecildi
+                          ? dateFormater(widget.bilgi.dogum_tarih, "dd.MM.yyyy")
+                          : "[Seçiniz]")
+                    ],
                   ))
             ]),
             const SizedBox(height: 15),
@@ -176,17 +203,30 @@ class _KendokaBase extends State<KendokaBase> {
                   child: SizedBox(
                       child: widget.bilgi.uye_id > 0
                           ? DropdownButtonFormField(
-                              decoration: const InputDecoration(labelText: "Durum"),
+                              decoration:
+                                  const InputDecoration(labelText: "Durum"),
                               value: widget.bilgi.durum,
                               items: [
-                                DropdownMenuItem(value: "active", enabled: (widget.bilgi.durum != "registered"), child: const Text("Aktif")),
-                                DropdownMenuItem(value: "passive", enabled: (widget.bilgi.durum != "registered"), child: const Text("Pasif")),
+                                DropdownMenuItem(
+                                    value: "active",
+                                    enabled:
+                                        (widget.bilgi.durum != "registered"),
+                                    child: const Text("Aktif")),
+                                DropdownMenuItem(
+                                    value: "passive",
+                                    enabled:
+                                        (widget.bilgi.durum != "registered"),
+                                    child: const Text("Pasif")),
                                 DropdownMenuItem(
                                   value: "admin",
                                   enabled: (widget.bilgi.durum != "registered"),
                                   child: const Text("Admin"),
                                 ),
-                                DropdownMenuItem(value: "super-admin", enabled: (widget.bilgi.durum != "registered"), child: const Text("Süper-Admin")),
+                                DropdownMenuItem(
+                                    value: "super-admin",
+                                    enabled:
+                                        (widget.bilgi.durum != "registered"),
+                                    child: const Text("Süper-Admin")),
                                 DropdownMenuItem(
                                   value: "registered",
                                   enabled: (widget.bilgi.durum == "registered"),
@@ -194,10 +234,16 @@ class _KendokaBase extends State<KendokaBase> {
                                 )
                               ],
                               onChanged: (value) {
-                                if (value != null && widget.bilgi.durum != "registered") {
+                                if (value != null &&
+                                    widget.bilgi.durum != "registered") {
                                   const adlist = ["admin", "super-admin"];
-                                  if (widget.store.UserStatus != "super-admin" && (adlist.contains(value) || adlist.contains(widget.bilgi.durum))) {
-                                    errorAlert(context, "Sadece Süper-Admin böyle bir değişikliği yapabilir");
+                                  if (widget.store.UserStatus !=
+                                          "super-admin" &&
+                                      (adlist.contains(value) ||
+                                          adlist
+                                              .contains(widget.bilgi.durum))) {
+                                    errorAlert(context,
+                                        "Sadece Süper-Admin böyle bir değişikliği yapabilir");
                                   } else {
                                     setState(() {
                                       widget.bilgi.durum = value;
@@ -211,7 +257,8 @@ class _KendokaBase extends State<KendokaBase> {
               Expanded(
                   child: SizedBox(
                       child: DropdownButtonFormField(
-                          decoration: const InputDecoration(labelText: "Üyelik Tipi"),
+                          decoration:
+                              const InputDecoration(labelText: "Üyelik Tipi"),
                           value: widget.bilgi.tahakkuk_id,
                           items: widget.ddTahakkular,
                           onChanged: ((value) {
@@ -255,14 +302,16 @@ class _KendokaBase extends State<KendokaBase> {
                   if (_formKey.currentState!.validate()) {
                     try {
                       loadingdlg.push();
-                      widget.bilgi.uye_id = await uyeKayit(api, ub: widget.bilgi, foto: imagePath);
+                      widget.bilgi.uye_id = await uyeKayit(api,
+                          ub: widget.bilgi, foto: imagePath);
                       loadingdlg.pop();
-                      if (widget.bilgi.durum == "registered" && context.mounted) {
+                      if (widget.bilgi.durum == "registered" &&
+                          context.mounted) {
                         Navigator.pop(context);
                       }
                     } catch (err) {
                       if (loadingdlg.started) loadingdlg.pop();
-                      errorAlert(context, err.toString());
+                      if (mounted) errorAlert(context, err.toString());
                     }
                   }
                 },
