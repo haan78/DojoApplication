@@ -163,7 +163,7 @@ function uye_eposta_onkayit(int $uye_id,string &$ad,string &$email,string &$code
 }
 
 function uye_eposta_onay(string $code) : void { //coklu   
-    $sqlSel = "SELECT uye_id FROM uye_kimlik_degisim WHERE anahtar = ? AND TIME_TO_SEC(TIMEDIFF(NOW(), COALESCE(olusma,degisme))) <= 86400";
+    $sqlSel = "SELECT uye_id FROM uye_kimlik_degisim WHERE anahtar = ? AND TIME_TO_SEC(TIMEDIFF(NOW(), COALESCE(degisme,olusma))) <= 86400";
     $sqlUp = "UPDATE uye SET durum = 'active' WHERE durum = 'registered' AND uye_id = ?";
     MySqlStmt::$closeConnection = FALSE;
     $mysqli = mysqlilink();
