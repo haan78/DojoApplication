@@ -120,15 +120,19 @@ class _MacCalismasi extends State<MacCalismasi> {
           key: _formKey,
           child: Row(
             children: [
-              yoklamaSelect(widget.store.sabitler.yoklamalar, yoklamaId, onChange: (value) {
+              yoklamaSelect(widget.store.sabitler.yoklamalar, yoklamaId,
+                  onChange: (value) {
                 yoklamaId = value ?? 0;
               }),
               const SizedBox(width: 10),
               DropdownButton<MacCalismasiIcinYoklama>(
                 value: yoklama,
                 items: tarihler
-                    .map<DropdownMenuItem<MacCalismasiIcinYoklama>>(
-                        (e) => DropdownMenuItem<MacCalismasiIcinYoklama>(value: e, child: Text(dateFormater(e.tarih, "dd.MM.yyyy") + (e.macyaipmis ? " *" : ""))))
+                    .map<DropdownMenuItem<MacCalismasiIcinYoklama>>((e) =>
+                        DropdownMenuItem<MacCalismasiIcinYoklama>(
+                            value: e,
+                            child: Text(dateFormater(e.tarih, "dd.MM.yyyy") +
+                                (e.macyaipmis ? " *" : ""))))
                     .toList(),
                 onChanged: (MacCalismasiIcinYoklama? value) {
                   if (value != null) {
@@ -158,7 +162,8 @@ class _MacCalismasi extends State<MacCalismasi> {
               controller: _scrollController,
               itemCount: kendocular.length,
               itemBuilder: (context, index) {
-                return macCalismasiKendocuItem(widget.store, kendocular[index], (val) {
+                return macCalismasiKendocuItem(widget.store, kendocular[index],
+                    (val) {
                   setState(() {
                     kendocular[index].secildi = val;
                     if (val) {
@@ -173,7 +178,8 @@ class _MacCalismasi extends State<MacCalismasi> {
     ]);
   }
 
-  List<TakimSitesi> hesapla(List<MacCalismasiKendocu> orjinal, {int hassiyet = 10}) {
+  List<TakimSitesi> hesapla(List<MacCalismasiKendocu> orjinal,
+      {int hassiyet = 10}) {
     int degerleme(MacCalismasiKendocu kendocu) {
       if (kendocu.seviye == "6 DAN") {
         return 60;
@@ -243,13 +249,17 @@ class _MacCalismasi extends State<MacCalismasi> {
       if (toplam >= degalt && toplam <= degust) {
         //if (toplam >= 0 && toplam <= 10000) {
         for (int j = 0; j < l.length; j++) {
-          if (tl.red.where((element) => element.uye_id == l[j].uye_id).isEmpty) {
+          if (tl.red
+              .where((element) => element.uye_id == l[j].uye_id)
+              .isEmpty) {
             tl.white.add(l[j]);
           }
         }
-        tl.white.sort(sirala);
-        tl.red.sort(sirala);
-        alternatifler2.add(tl);
+        if (tl.white.length == tl.red.length) {
+          tl.white.sort(sirala);
+          tl.red.sort(sirala);
+          alternatifler2.add(tl);
+        }
       }
     }
     return alternatifler2;
@@ -272,39 +282,46 @@ class _MacCalismasi extends State<MacCalismasi> {
                 itemCount: takimlisteleri.length,
                 itemBuilder: (context, index) {
                   final tl = takimlisteleri[index];
-                  String tRed = tl.red.map<String>((e) => "${e.seviye} ${e.ad}").join("\n");
-                  String tWhite = tl.white.map<String>((e) => "${e.ad} ${e.seviye}").join("\n");
+                  String tRed = tl.red
+                      .map<String>((e) => "${e.seviye} ${e.ad}")
+                      .join("\n");
+                  String tWhite = tl.white
+                      .map<String>((e) => "${e.ad} ${e.seviye}")
+                      .join("\n");
                   return Padding(
                     padding: const EdgeInsets.only(top: 10),
                     child: Container(
                       color: tileColorByIndex(index),
-                      child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, crossAxisAlignment: CrossAxisAlignment.start, children: [
-                        Container(
-                            color: Colors.red,
-                            child: Text(
-                              tRed,
-                              style: const TextStyle(color: Colors.white),
-                            )),
-                        TextButton(
-                          onPressed: () {
-                            setState(() {
-                              seciliTakimListesi = takimlisteleri[index];
-                              ekran = ScreenType.takim;
-                            });
-                          },
-                          child: Text(
-                            "${index + 1}.\nSeç",
-                            textAlign: TextAlign.center,
-                          ),
-                        ),
-                        Container(
-                            color: Colors.white,
-                            child: Text(
-                              tWhite,
-                              textAlign: TextAlign.right,
-                              style: const TextStyle(color: Colors.black),
-                            ))
-                      ]),
+                      child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Container(
+                                color: Colors.red,
+                                child: Text(
+                                  tRed,
+                                  style: const TextStyle(color: Colors.white),
+                                )),
+                            TextButton(
+                              onPressed: () {
+                                setState(() {
+                                  seciliTakimListesi = takimlisteleri[index];
+                                  ekran = ScreenType.takim;
+                                });
+                              },
+                              child: Text(
+                                "${index + 1}.\nSeç",
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                            Container(
+                                color: Colors.white,
+                                child: Text(
+                                  tWhite,
+                                  textAlign: TextAlign.right,
+                                  style: const TextStyle(color: Colors.black),
+                                ))
+                          ]),
                     ),
                   );
                 }))
@@ -322,53 +339,80 @@ class _MacCalismasi extends State<MacCalismasi> {
   }
 
   void sayitablosu(int index, {bool beyaz = false}) {
-    const sayilar = [Text("M"), Text("K"), Text("D"), Text("T"), Text("H"), Text("Ht")];
-    String oyuncu = beyaz ? "${seciliTakimListesi.white[index].ad} (BEYAZ)" : "${seciliTakimListesi.red[index].ad} (KIRMIZI)";
-    IpponAndHansoku ih = beyaz ? seciliTakimListesi.sonuclar[index].shiro : seciliTakimListesi.sonuclar[index].aka;
+    const sayilar = [
+      Text("M"),
+      Text("K"),
+      Text("D"),
+      Text("T"),
+      Text("H"),
+      Text("Ht")
+    ];
+    String oyuncu = beyaz
+        ? "${seciliTakimListesi.white[index].ad} (BEYAZ)"
+        : "${seciliTakimListesi.red[index].ad} (KIRMIZI)";
+    IpponAndHansoku ih = beyaz
+        ? seciliTakimListesi.sonuclar[index].shiro
+        : seciliTakimListesi.sonuclar[index].aka;
     zaman.stop();
     showDialog(
         context: context,
         builder: (BuildContext context) => StatefulBuilder(
             builder: ((context, setState) => AlertDialog(
+                  insetPadding: const EdgeInsets.all(7),
+                  contentPadding: const EdgeInsets.all(5),
                   scrollable: true,
-                  title: Text(oyuncu, style: const TextStyle(color: Colors.blue)),
-                  content: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                    const Text("1. Ippon"),
-                    RadioGroup(
-                        selectedIndex: ih.ippon1,
-                        onSelect: (v) {
-                          if (beyaz) {
-                            seciliTakimListesi.sonuclar[index].shiro.ippon1 = v;
-                          } else {
-                            seciliTakimListesi.sonuclar[index].aka.ippon1 = v;
-                          }
-                        },
-                        children: sayilar),
-                    const SizedBox(height: 10),
-                    const Text("2. Ippon"),
-                    RadioGroup(
-                        selectedIndex: ih.ippon2,
-                        onSelect: (v) {
-                          if (beyaz) {
-                            seciliTakimListesi.sonuclar[index].shiro.ippon2 = v;
-                          } else {
-                            seciliTakimListesi.sonuclar[index].aka.ippon2 = v;
-                          }
-                        },
-                        children: sayilar),
-                    const SizedBox(height: 10),
-                    const Text("Hansoku"),
-                    RadioGroup(
-                        selectedIndex: ih.hansoku - 1,
-                        onSelect: (v) {
-                          if (beyaz) {
-                            seciliTakimListesi.sonuclar[index].shiro.hansoku = v + 1;
-                          } else {
-                            seciliTakimListesi.sonuclar[index].aka.hansoku = v + 1;
-                          }
-                        },
-                        children: const [Text("1"), Text("2"), Text("3"), Text("4")])
-                  ]),
+                  title:
+                      Text(oyuncu, style: const TextStyle(color: Colors.blue)),
+                  content: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text("1. Ippon"),
+                        RadioGroup(
+                            selectedIndex: ih.ippon1,
+                            onSelect: (v) {
+                              if (beyaz) {
+                                seciliTakimListesi
+                                    .sonuclar[index].shiro.ippon1 = v;
+                              } else {
+                                seciliTakimListesi.sonuclar[index].aka.ippon1 =
+                                    v;
+                              }
+                            },
+                            children: sayilar),
+                        const SizedBox(height: 10),
+                        const Text("2. Ippon"),
+                        RadioGroup(
+                            selectedIndex: ih.ippon2,
+                            onSelect: (v) {
+                              if (beyaz) {
+                                seciliTakimListesi
+                                    .sonuclar[index].shiro.ippon2 = v;
+                              } else {
+                                seciliTakimListesi.sonuclar[index].aka.ippon2 =
+                                    v;
+                              }
+                            },
+                            children: sayilar),
+                        const SizedBox(height: 10),
+                        const Text("Hansoku"),
+                        RadioGroup(
+                            selectedIndex: ih.hansoku - 1,
+                            onSelect: (v) {
+                              if (beyaz) {
+                                seciliTakimListesi
+                                    .sonuclar[index].shiro.hansoku = v + 1;
+                              } else {
+                                seciliTakimListesi.sonuclar[index].aka.hansoku =
+                                    v + 1;
+                              }
+                            },
+                            children: const [
+                              Text("1"),
+                              Text("2"),
+                              Text("3"),
+                              Text("4")
+                            ])
+                      ]),
                   actions: [
                     TextButton(
                       child: const Text('Tamam'),
@@ -417,7 +461,7 @@ class _MacCalismasi extends State<MacCalismasi> {
   Widget ekranTakim(BuildContext context) {
     List<TableRow> tablosatirlari() {
       List<TableRow> l = [];
-      const style = TextStyle(fontSize: 24);
+      const style = TextStyle(fontSize: 22);
 
       l.add(TableRow(children: [
         TableCell(
@@ -447,7 +491,10 @@ class _MacCalismasi extends State<MacCalismasi> {
                     onPressed: () {
                       sayitablosu(i, beyaz: false);
                     },
-                    child: Text(seciliTakimListesi.red[i].ad, style: const TextStyle(fontSize: 24, color: Colors.white), textAlign: TextAlign.left),
+                    child: Text(seciliTakimListesi.red[i].ad,
+                        style:
+                            const TextStyle(fontSize: 18, color: Colors.white),
+                        textAlign: TextAlign.left),
                   ))),
           TableCell(
             child: Padding(
@@ -455,10 +502,17 @@ class _MacCalismasi extends State<MacCalismasi> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(sembolgoster(seciliTakimListesi.sonuclar[i].aka), style: const TextStyle(color: Colors.red, fontSize: 16, fontWeight: FontWeight.bold)),
+                    Text(sembolgoster(seciliTakimListesi.sonuclar[i].aka),
+                        style: const TextStyle(
+                            color: Colors.red,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold)),
                     Text(
                       sembolgoster(seciliTakimListesi.sonuclar[i].shiro),
-                      style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+                      style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold),
                       textAlign: TextAlign.right,
                     )
                   ],
@@ -472,7 +526,10 @@ class _MacCalismasi extends State<MacCalismasi> {
                     onPressed: () {
                       sayitablosu(i, beyaz: true);
                     },
-                    child: Text(seciliTakimListesi.white[i].ad, style: const TextStyle(fontSize: 24, color: Colors.white), textAlign: TextAlign.right),
+                    child: Text(seciliTakimListesi.white[i].ad,
+                        style:
+                            const TextStyle(fontSize: 18, color: Colors.white),
+                        textAlign: TextAlign.right),
                   )))
         ]));
       }
@@ -510,13 +567,17 @@ class _MacCalismasi extends State<MacCalismasi> {
                   mck.tarih = yoklama!.tarih;
                   mck.tur = 'TAKIM';
                   mck.aka_hansoku = seciliTakimListesi.sonuclar[i].aka.hansoku;
-                  mck.shiro_hansoku = seciliTakimListesi.sonuclar[i].shiro.hansoku;
+                  mck.shiro_hansoku =
+                      seciliTakimListesi.sonuclar[i].shiro.hansoku;
                   mck.aka_ippon = sayistr(seciliTakimListesi.sonuclar[i].aka);
-                  mck.shiro_ippon = sayistr(seciliTakimListesi.sonuclar[i].shiro);
+                  mck.shiro_ippon =
+                      sayistr(seciliTakimListesi.sonuclar[i].shiro);
                   mckl.add(mck);
                 }
                 try {
-                  maccliasmasi_tumunusil(api, yoklama!.tarih, 'TAKIM', yoklamaId).then((value) {
+                  maccliasmasi_tumunusil(
+                          api, yoklama!.tarih, 'TAKIM', yoklamaId)
+                      .then((value) {
                     maccalismasi_kayit(api, mckl).then((value) {
                       loadingdlg.pop();
                       successAlert(context, "İşlem Başarılı");
@@ -535,7 +596,10 @@ class _MacCalismasi extends State<MacCalismasi> {
               },
               child: const Text("Kaydet"))
         ]),
-        Expanded(child: Table(border: TableBorder.all(color: Colors.white), children: tablosatirlari())),
+        Expanded(
+            child: Table(
+                border: TableBorder.all(color: Colors.white),
+                children: tablosatirlari())),
         Saat(z: zaman),
         const SizedBox(height: 20)
       ],
@@ -544,7 +608,8 @@ class _MacCalismasi extends State<MacCalismasi> {
 
   @override
   Widget build(BuildContext context) {
-    _scrollController = ScrollController(keepScrollOffset: true, initialScrollOffset: _offset);
+    _scrollController =
+        ScrollController(keepScrollOffset: true, initialScrollOffset: _offset);
     return Scaffold(
       drawer: appDrawer(context),
       appBar: AppBar(title: appTitle(text: "Maç Çalışması"), actions: [
