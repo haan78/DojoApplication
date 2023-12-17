@@ -52,7 +52,7 @@ dependencies:
   excel: ^2.1.0
   safe_device: ^1.1.2
   trotter: ^2.1.0
-  cached_network_image: ^3.2.3
+  cached_network_image: ^3.3.0
   ##exif: ^3.1.4
   ##image: ^4.0.17
 

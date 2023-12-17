@@ -90,7 +90,7 @@ BEGIN
        	
     else
     	UPDATE uye u 
-        	SET u.ad = p_ad, u.cinsiyet = p_cinsiyet, u.durum = p_durum, u.ekfno = ekfno, u.email = p_email, 
+        	SET u.ad = p_ad, u.cinsiyet = p_cinsiyet, u.durum = p_durum, u.ekfno = p_ekfno, u.email = p_email, 
         	u.tahakkuk_id = p_tahakkuk_id
             	WHERE u.uye_id = p_uye_id;   
 	end if;
