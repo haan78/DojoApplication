@@ -132,7 +132,7 @@ class _KyuSinaviPage extends State<KyuSinaviPage> {
   pw.Column uret() {
     List<pw.Widget> l = [];
 
-    l.add(pw.Text("${widget.store.AppName} Kyu Sınvı Listesi ${dateFormater(tarih, "dd.MM.yyyy")}", style: const pw.TextStyle(fontSize: 20)));
+    l.add(pw.Text("${widget.store.AppName} Kyu Sınavı Listesi ${dateFormater(tarih, "dd.MM.yyyy")}", style: const pw.TextStyle(fontSize: 20)));
     int tind = 0;
     if (list.isNotEmpty) {
       String sinav = "";
