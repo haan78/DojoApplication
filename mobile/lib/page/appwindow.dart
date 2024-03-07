@@ -8,14 +8,14 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 
-const Color colorGood = Color.fromARGB(255, 88, 153, 78);
+const Color colorGood = Color.fromARGB(255, 140, 219, 128);
 const Color colorBad = Color.fromARGB(255, 221, 27, 27);
-const Color colorWarn = Color.fromARGB(255, 129, 122, 23);
-const colorTile1 = Color.fromARGB(255, 227, 233, 226);
-const colorTile2 = Color.fromARGB(255, 188, 201, 201);
+const Color colorWarn = Color.fromARGB(255, 172, 163, 48);
+const colorTile1 = Color.fromARGB(255, 99, 104, 99);
+const colorTile2 = Color.fromARGB(255, 118, 131, 131);
 const colorInfo = Color.fromARGB(255, 16, 148, 148);
 const colorMenuFG = Colors.black;
-const appVersion = "1.1.4";
+const appVersion = "1.1.5";
 const programerEmail = "alibarisozturk@gmail.com";
 const appPading = EdgeInsets.all(3);
 

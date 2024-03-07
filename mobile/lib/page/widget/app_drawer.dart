@@ -122,6 +122,7 @@ appDrawer(BuildContext context) {
                 size: 32,
               ),
               title: Text("Çıkış")))
+              
     ],
   ));
 }
