@@ -1,4 +1,4 @@
-import 'package:better_open_file/better_open_file.dart';
+//import 'package:better_open_file/better_open_file.dart';
 import 'package:dojo_mobile/page/appwindow.dart';
 import 'package:dojo_mobile/page/widget/app_drawer.dart';
 import 'package:dojo_mobile/service/servicemethods.dart';
@@ -120,7 +120,7 @@ class _KyuSinaviPage extends State<KyuSinaviPage> {
 
                               final file = File("${tempDir.path}/kyu${dateFormater(DateTime.now(), "yyyyMMddHHmmss")}.pdf");
                               await file.writeAsBytes(await pdf.save());
-                              await OpenFile.open(file.path);
+                              await dosyaAc(file.path);
                             },
                             child: const Text("PDF Ouştur")))
                   ])

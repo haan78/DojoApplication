@@ -202,7 +202,7 @@ function yoklamaliste(int $yoklama_id, string $tarih) {
 }
 
 function uyetahakkuklist(int $uye_id) {
-    $sql = "SELECT ut.uye_tahakkuk_id,ut.yil, ut.ay, ut.tahakkuk_tarih,ut.borc, t.tanim, ut.tahakkuk_id,
+    $sql = "SELECT ut.uye_tahakkuk_id,CAST(ut.yil AS UNSIGNED) as yil, ut.ay, ut.tahakkuk_tarih,ut.borc, t.tanim, ut.tahakkuk_id,
     m.`tutar` as odeme_tutar,m.`tarih` as odeme_tarih, m.muhasebe_id, m.aciklama,m.kasa,
      y.tanim as yoklama, ut.yoklama_id,
      (SELECT 

@@ -38,19 +38,26 @@ dependencies:
   cupertino_icons: ^1.0.2
   provider: ^6.0.4
   http: ^1.0.0
-  flutter_secure_storage: ^8.0.0
-  webview_flutter: ^4.0.5
-  url_launcher: ^6.1.7
+  flutter_secure_storage: ^9.2.2
+  #webview_flutter: ^4.0.5
+  webview_flutter: ^4.10.0
+  #url_launcher: ^6.1.7
+  url_launcher: ^6.3.1
   intl: ^0.18.0
   extended_masked_text: ^2.3.1
   #camera: ^0.10.3+2
   image_picker: ^0.8.6+4
   pdf: ^3.10.1
-  path_provider: ^2.0.14
-  better_open_file: ^3.6.4
-  d_chart: ^2.2.11
+  #path_provider: ^2.0.14
+  path_provider: ^2.1.5
+  path: ^1.9.0
+  open_file: ^3.5.10
+  #better_open_file: ^3.6.5
+  #better_open_file: 3.6.4
+  d_chart: 2.2.11
   excel: ^2.1.0
-  safe_device: ^1.1.2
+  #safe_device: ^1.1.2
+  safe_device: ^1.1.9
   trotter: ^2.1.0
   cached_network_image: ^3.3.0
   ##exif: ^3.1.4

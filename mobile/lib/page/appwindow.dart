@@ -1,21 +1,23 @@
 import 'dart:io';
 
-import 'package:better_open_file/better_open_file.dart';
+//import 'package:better_open_file/better_open_file.dart';
 import 'package:dojo_mobile/page/widget/alert.dart';
 import 'package:dojo_mobile/service/servicetypes.dart';
 import 'package:excel/excel.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:path/path.dart' as path;
+import 'package:open_file/open_file.dart';
 
 const Color colorGood = Color.fromARGB(255, 140, 219, 128);
 const Color colorBad = Color.fromARGB(255, 221, 27, 27);
 const Color colorWarn = Color.fromARGB(255, 172, 163, 48);
-const colorTile1 = Color.fromARGB(255, 99, 104, 99);
-const colorTile2 = Color.fromARGB(255, 118, 131, 131);
-const colorInfo = Color.fromARGB(255, 16, 148, 148);
+const colorTile1 = Color.fromARGB(255, 59, 63, 59);
+const colorTile2 = Color.fromARGB(255, 50, 54, 54);
+const colorInfo = Color.fromARGB(255, 11, 146, 146);
 const colorMenuFG = Colors.black;
-const appVersion = "1.1.5";
+const appVersion = "1.1.6";
 const programerEmail = "alibarisozturk@gmail.com";
 const appPading = EdgeInsets.all(3);
 
@@ -477,8 +479,22 @@ Future<void> openExcel(
   final file = File(fname);
   await file.writeAsBytes(excel.save(fileName: fname)!);
 
-  final result = await OpenFile.open(file.path);
+  final result = await dosyaAc(file.path);
   if (result.type != ResultType.done) {
     if (context.mounted) errorAlert(context, result.message);
   }
+}
+
+
+Future<OpenResult> dosyaAc(String filePath) async {
+  const types = {
+    ".xls" : "application/vnd.ms-excel",
+    ".xlsx" : "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    ".pdf" : "application/pdf"
+  };
+
+  final extension = path.extension(filePath);
+ 
+  return await OpenFile.open(filePath, type: types[extension]);
+
 }
