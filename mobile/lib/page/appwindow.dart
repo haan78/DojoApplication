@@ -22,11 +22,11 @@ const programerEmail = "alibarisozturk@gmail.com";
 const appPading = EdgeInsets.all(3);
 
 ButtonStyle goodBtnStyle = ButtonStyle(
-    backgroundColor: MaterialStateProperty.resolveWith((states) => colorGood));
+    backgroundColor: WidgetStateProperty.resolveWith((states) => colorGood));
 ButtonStyle badBtnStyle = ButtonStyle(
-    backgroundColor: MaterialStateProperty.resolveWith((states) => colorBad));
+    backgroundColor: WidgetStateProperty.resolveWith((states) => colorBad));
 ButtonStyle warnBtnStyle = ButtonStyle(
-    backgroundColor: MaterialStateProperty.resolveWith((states) => colorWarn));
+    backgroundColor: WidgetStateProperty.resolveWith((states) => colorWarn));
 
 //enum AppWindow { harcamalar, uyeler, yoklamalar, ayarlar, raporlar }
 
